@@ -29,6 +29,8 @@ static void printMessage(lua_State *state, const char* message) {
 int CHTTP(lua_State *state) {
 	printMessage(state, "Called HTTP()! STUB!");
 
+	LUA->CheckType(1, Lua::Type::TABLE);
+
 	LUA->PushBool(true); // Push result to the stack
 	return 1; // We are returning a single value
 }
