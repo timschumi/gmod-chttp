@@ -1,6 +1,33 @@
+#include <map>
 #include "GarrysMod/Lua/Interface.h"
 
 using namespace GarrysMod;
+
+struct HTTPRequest {
+	// Handler for failed requests. args: (string) reason
+	Lua::CFunc failed;
+
+	// Handler for successful requests. args: (number) code, (string) body, (table) headers
+	Lua::CFunc success;
+
+	// Request method (GET, POST, etc.)
+	char* method;
+
+	// Well, what could that be?
+	char* url;
+
+	// Key-Value table for GET, POST, and HEAD request parameters.
+	std::map<std::string, std::string> parameters;
+
+	// Key-Value table for headers.
+	std::map<std::string, std::string> headers;
+
+	// Request body for POST-like requests (overwrites parameters)
+	char* body;
+
+	// Content-Type string for the request body.
+	char* type;
+};
 
 static void printMessage(lua_State *state, const char* message) {
 	// Push global table to the stack to work on it
