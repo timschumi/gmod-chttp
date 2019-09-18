@@ -1,4 +1,4 @@
-solution "my_module"
+solution "chttp"
 	language		"C++"
 	architecture	"x86"
 	location		"project"
@@ -15,7 +15,7 @@ solution "my_module"
 		flags		"symbols"	-- Generate debugging information
 		optimize	"On"		-- Optimize the build output for size and speed
 
-	project "my_module"
+	project "chttp"
 		kind	"SharedLib"
 		include	"LuaInterface"
 
