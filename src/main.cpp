@@ -24,7 +24,7 @@ static void printMessage(lua_State *state, const char* message) {
 /*
  * See https://wiki.garrysmod.com/page/Global/HTTP for documentation.
  * The function takes a single table argument, based off the HTTPRequest structure.
- * It returns a boolean whether the request failed or succeeded.
+ * It returns a boolean whether a request was sent or not.
  */
 int CHTTP(lua_State *state) {
 	printMessage(state, "Called HTTP()! STUB!");
