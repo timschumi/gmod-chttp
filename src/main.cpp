@@ -1,6 +1,8 @@
 #include <map>
 #include "GarrysMod/Lua/Interface.h"
 
+#define LOG(x) printMessage(state, x);
+
 using namespace GarrysMod;
 
 struct HTTPRequest {
@@ -54,7 +56,7 @@ static void printMessage(lua_State *state, const char* message) {
  * It returns a boolean whether a request was sent or not.
  */
 int CHTTP(lua_State *state) {
-	printMessage(state, "Called HTTP()! STUB!");
+	LOG("Called HTTP()! STUB!");
 
 	LUA->CheckType(1, Lua::Type::TABLE);
 
@@ -63,7 +65,7 @@ int CHTTP(lua_State *state) {
 }
 
 GMOD_MODULE_OPEN() {
-	printMessage(state, "Loading CHTTP module.");
+	LOG("Loading CHTTP module.");
 
 	// We are working on the global table today
 	LUA->PushSpecial(Lua::SPECIAL_GLOB);
@@ -81,7 +83,7 @@ GMOD_MODULE_OPEN() {
 	// Pop the global table from the stack again
 	LUA->Pop();
 
-	printMessage(state, "Finished loading CHTTP module.");
+	LOG("Finished loading CHTTP module.");
 
 	return 0;
 }
