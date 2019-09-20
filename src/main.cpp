@@ -1,7 +1,7 @@
 #include <map>
 #include "GarrysMod/Lua/Interface.h"
 
-#define LOG(x) printMessage(state, x);
+#define LOG(x) printMessage(state, "[CHTTP] " x);
 
 using namespace GarrysMod;
 
