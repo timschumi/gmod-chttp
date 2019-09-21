@@ -52,8 +52,8 @@ static void printMessage(lua_State *state, std::string message) {
 
 void dumpRequest(lua_State *state, HTTPRequest request) {
 	LOG("Dumping request:");
-	LOG("method: " + request.method);
 	LOG("url: " + request.url);
+	LOG("method: " + request.method);
 }
 
 /*
