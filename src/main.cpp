@@ -31,7 +31,7 @@ struct HTTPRequest {
 	char* type;
 };
 
-static void printMessage(lua_State *state, const char* message) {
+static void printMessage(lua_State *state, std::string message) {
 	// Push global table to the stack to work on it
 	LUA->PushSpecial(Lua::SPECIAL_GLOB);
 
@@ -39,7 +39,7 @@ static void printMessage(lua_State *state, const char* message) {
 	LUA->GetField(-1, "print");
 
 	// Pushes the argument to the stack
-	LUA->PushString(message);
+	LUA->PushString(message.c_str());
 
 	// Calls the function (arg1 = number of arguments, arg2 = number of return values).
 	// The function is the top of the stack after arguments have been popped.
