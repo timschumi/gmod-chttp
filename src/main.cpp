@@ -1,7 +1,7 @@
 #include <map>
 #include "GarrysMod/Lua/Interface.h"
 
-#define LOG(x) printMessage(state, "[CHTTP] " x);
+#define LOG(x) printMessage(state, x);
 
 using namespace GarrysMod;
 
@@ -39,7 +39,7 @@ static void printMessage(lua_State *state, std::string message) {
 	LUA->GetField(-1, "print");
 
 	// Pushes the argument to the stack
-	LUA->PushString(message.c_str());
+	LUA->PushString(("[CHTTP] " + message).c_str());
 
 	// Calls the function (arg1 = number of arguments, arg2 = number of return values).
 	// The function is the top of the stack after arguments have been popped.
