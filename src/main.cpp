@@ -50,15 +50,25 @@ static void printMessage(lua_State *state, std::string message) {
 	LUA->Pop();
 }
 
+void dumpRequest(lua_State *state, HTTPRequest request) {
+	LOG("Dumping request:");
+	LOG("method: " + request.method);
+	LOG("url: " + request.url);
+}
+
 /*
  * See https://wiki.garrysmod.com/page/Global/HTTP for documentation.
  * The function takes a single table argument, based off the HTTPRequest structure.
  * It returns a boolean whether a request was sent or not.
  */
 int CHTTP(lua_State *state) {
+	HTTPRequest request = HTTPRequest();
+
 	LOG("Called HTTP()! STUB!");
 
 	LUA->CheckType(1, Lua::Type::TABLE);
+
+	dumpRequest(state, request);
 
 	LUA->PushBool(true); // Push result to the stack
 	return 1; // We are returning a single value
