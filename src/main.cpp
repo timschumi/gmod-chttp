@@ -68,6 +68,18 @@ int CHTTP(lua_State *state) {
 
 	LUA->CheckType(1, Lua::Type::TABLE);
 
+	// Fetch method
+	LUA->GetField(1, "method");
+	LUA->CheckType(-1, Lua::Type::STRING);
+	request.method = LUA->GetString(-1);
+	LUA->Pop();
+
+	// Fetch url
+	LUA->GetField(1, "url");
+	LUA->CheckType(-1, Lua::Type::STRING);
+	request.url = LUA->GetString(-1);
+	LUA->Pop();
+
 	dumpRequest(state, request);
 
 	LUA->PushBool(true); // Push result to the stack
