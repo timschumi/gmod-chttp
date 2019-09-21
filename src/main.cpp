@@ -13,10 +13,10 @@ struct HTTPRequest {
 	Lua::CFunc success;
 
 	// Request method (GET, POST, etc.)
-	char* method;
+	std::string method;
 
 	// Well, what could that be?
-	char* url;
+	std::string url;
 
 	// Key-Value table for GET, POST, and HEAD request parameters.
 	std::map<std::string, std::string> parameters;
@@ -25,10 +25,10 @@ struct HTTPRequest {
 	std::map<std::string, std::string> headers;
 
 	// Request body for POST-like requests (overwrites parameters)
-	char* body;
+	std::string body;
 
 	// Content-Type string for the request body.
-	char* type;
+	std::string type;
 };
 
 static void printMessage(lua_State *state, std::string message) {
