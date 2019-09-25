@@ -3,6 +3,7 @@ solution "chttp"
 	architecture	"x86"
 	location		"project"
 	targetdir		"bin"
+	includedirs {"curl/include/"}
 
 	--
 	-- Statically link the C-Runtime to reduce dependencies needed to run our module
@@ -20,3 +21,4 @@ solution "chttp"
 		include	"LuaInterface"
 
 		files { "src/**.cpp", "src/**.h" }
+		links {"curl"}
