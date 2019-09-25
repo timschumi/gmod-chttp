@@ -132,6 +132,20 @@ int CHTTP(lua_State *state) {
 	request.url = LUA->GetString(-1);
 	LUA->Pop();
 
+	// Fetch failed handler
+	LUA->GetField(1, "failed");
+	if (LUA->IsType(-1, Lua::Type::FUNCTION)) {
+		request.failed = LUA->GetCFunction(-1);
+	}
+	LUA->Pop();
+
+	// Fetch success handler
+	LUA->GetField(1, "success");
+	if (LUA->IsType(-1, Lua::Type::FUNCTION)) {
+		request.success = LUA->GetCFunction(-1);
+	}
+	LUA->Pop();
+
 	dumpRequest(state, request);
 	ret = request_process(state, request);
 
