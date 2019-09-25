@@ -94,7 +94,7 @@ bool request_process(lua_State *state, HTTPRequest request) {
 	cres = curl_easy_perform(curl);
 
 	if (cres != CURLE_OK) {
-		request_failed(state, request, "Something went wrong during the request.");
+		request_failed(state, request, curl_easy_strerror(cres));
 		ret = false;
 		goto cleanup;
 	}
