@@ -1,4 +1,5 @@
 #include <map>
+#include <curl/curl.h>
 #include "GarrysMod/Lua/Interface.h"
 
 #define LOG(x) printMessage(state, x);
@@ -56,6 +57,56 @@ void dumpRequest(lua_State *state, HTTPRequest request) {
 	LOG("method: " + request.method);
 }
 
+void request_failed(lua_State *state, HTTPRequest request, std::string reason) {
+	// The request doesn't have a failure handler attached,
+	// so just print the error in the log.
+	if (!request.failed) {
+		printMessage(state, "[request_failed] reason: " + reason);
+		return;
+	}
+
+	// Push fail handler to stack
+	LUA->PushCFunction(request.failed);
+
+	// Push the argument
+	LUA->PushString(reason.c_str());
+
+	// Call the fail handler with one argument
+	LUA->Call(1, 0);
+}
+
+bool request_process(lua_State *state, HTTPRequest request) {
+	CURL *curl;
+	CURLcode cres;
+	bool ret = true;
+
+	curl_global_init(CURL_GLOBAL_ALL);
+
+	curl = curl_easy_init();
+
+	if (!curl) {
+		request_failed(state, request, "Failed to init curl struct!");
+		ret = false;
+		goto global_cleanup;
+	}
+
+	curl_easy_setopt(curl, CURLOPT_URL, request.url);
+	cres = curl_easy_perform(curl);
+
+	if (cres != CURLE_OK) {
+		request_failed(state, request, "Something went wrong during the request.");
+		ret = false;
+		goto cleanup;
+	}
+
+cleanup:
+	curl_easy_cleanup(curl);
+
+global_cleanup:
+	curl_global_cleanup();
+	return ret;
+}
+
 /*
  * See https://wiki.garrysmod.com/page/Global/HTTP for documentation.
  * The function takes a single table argument, based off the HTTPRequest structure.
@@ -63,6 +114,7 @@ void dumpRequest(lua_State *state, HTTPRequest request) {
  */
 int CHTTP(lua_State *state) {
 	HTTPRequest request = HTTPRequest();
+	bool ret;
 
 	LOG("Called HTTP()! STUB!");
 
@@ -81,8 +133,9 @@ int CHTTP(lua_State *state) {
 	LUA->Pop();
 
 	dumpRequest(state, request);
+	ret = request_process(state, request);
 
-	LUA->PushBool(true); // Push result to the stack
+	LUA->PushBool(ret); // Push result to the stack
 	return 1; // We are returning a single value
 }
 
