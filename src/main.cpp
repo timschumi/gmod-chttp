@@ -90,7 +90,7 @@ bool request_process(lua_State *state, HTTPRequest request) {
 		goto global_cleanup;
 	}
 
-	curl_easy_setopt(curl, CURLOPT_URL, request.url);
+	curl_easy_setopt(curl, CURLOPT_URL, request.url.c_str());
 	cres = curl_easy_perform(curl);
 
 	if (cres != CURLE_OK) {
