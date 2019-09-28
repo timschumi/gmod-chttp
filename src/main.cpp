@@ -6,6 +6,20 @@
 
 using namespace GarrysMod;
 
+std::string buildUserAgent() {
+	std::string user = "";
+	curl_version_info_data *info = curl_version_info(CURLVERSION_NOW);
+
+	user += "User-Agent:";
+
+	user += " curl/";
+	user += info->version;
+
+	user += " gmod-chttp/0";
+
+	return user;
+}
+
 static void printMessage(GarrysMod::Lua::ILuaBase *LUA, std::string message) {
 	// Push global table to the stack to work on it
 	LUA->PushSpecial(Lua::SPECIAL_GLOB);
@@ -53,6 +67,7 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	CURL *curl;
 	CURLcode cres;
 	bool ret = true;
+	struct curl_slist *headers = NULL;
 
 	curl_global_init(CURL_GLOBAL_ALL);
 
@@ -65,6 +80,10 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	}
 
 	curl_easy_setopt(curl, CURLOPT_URL, request.url.c_str());
+
+	headers = curl_slist_append(headers, buildUserAgent().c_str());
+	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
 	cres = curl_easy_perform(curl);
 
 	if (cres != CURLE_OK) {
