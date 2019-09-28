@@ -112,8 +112,13 @@ LUA_FUNCTION(CHTTP) {
 
 	// Fetch url
 	LUA->GetField(1, "url");
-	LUA->CheckType(-1, Lua::Type::STRING);
-	request.url = LUA->GetString(-1);
+	if (LUA->IsType(-1, Lua::Type::STRING)) {
+		request.url = LUA->GetString(-1);
+	} else {
+		requestFailed(LUA, request, "invalid url");
+		ret = false;
+		goto exit;
+	}
 	LUA->Pop();
 
 	// Fetch success handler
@@ -126,6 +131,7 @@ LUA_FUNCTION(CHTTP) {
 	dumpRequest(LUA, request);
 	ret = processRequest(LUA, request);
 
+exit:
 	LUA->PushBool(ret); // Push result to the stack
 	return 1; // We are returning a single value
 }
