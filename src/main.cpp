@@ -94,6 +94,13 @@ LUA_FUNCTION(CHTTP) {
 
 	LUA->CheckType(1, Lua::Type::TABLE);
 
+	// Fetch failed handler
+	LUA->GetField(1, "failed");
+	if (LUA->IsType(-1, Lua::Type::FUNCTION)) {
+		request.failed = LUA->GetCFunction(-1);
+	}
+	LUA->Pop();
+
 	// Fetch method
 	LUA->GetField(1, "method");
 	LUA->CheckType(-1, Lua::Type::STRING);
@@ -104,13 +111,6 @@ LUA_FUNCTION(CHTTP) {
 	LUA->GetField(1, "url");
 	LUA->CheckType(-1, Lua::Type::STRING);
 	request.url = LUA->GetString(-1);
-	LUA->Pop();
-
-	// Fetch failed handler
-	LUA->GetField(1, "failed");
-	if (LUA->IsType(-1, Lua::Type::FUNCTION)) {
-		request.failed = LUA->GetCFunction(-1);
-	}
 	LUA->Pop();
 
 	// Fetch success handler
