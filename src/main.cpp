@@ -103,8 +103,11 @@ LUA_FUNCTION(CHTTP) {
 
 	// Fetch method
 	LUA->GetField(1, "method");
-	LUA->CheckType(-1, Lua::Type::STRING);
-	request.method = LUA->GetString(-1);
+	if (LUA->IsType(-1, Lua::Type::STRING)) {
+		request.method = LUA->GetString(-1);
+	} else {
+		request.method = "GET";
+	}
 	LUA->Pop();
 
 	// Fetch url
