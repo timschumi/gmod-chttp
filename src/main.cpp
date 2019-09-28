@@ -67,11 +67,25 @@ void requestFailed(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request, std::stri
 	LUA->Call(1, 0);
 }
 
+void curlAddHeaders(CURL *curl, HTTPRequest request) {
+	struct curl_slist *headers = NULL;
+
+	// Check if we have to add the default User-Agent
+	if (request.headers.count("User-Agent") == 0)
+		headers = curl_slist_append(headers, buildUserAgent().c_str());
+
+	// Add all the headers from the request struct
+	for (auto const& e : request.headers)
+		headers = curl_slist_append(headers, (e.first + ": " + e.second).c_str());
+
+	// Add the header list to the curl struct
+	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+}
+
 bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	CURL *curl;
 	CURLcode cres;
 	bool ret = true;
-	struct curl_slist *headers = NULL;
 
 	curl_global_init(CURL_GLOBAL_ALL);
 
@@ -85,8 +99,7 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 
 	curl_easy_setopt(curl, CURLOPT_URL, request.url.c_str());
 
-	headers = curl_slist_append(headers, buildUserAgent().c_str());
-	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+	curlAddHeaders(curl, request);
 
 	cres = curl_easy_perform(curl);
 
