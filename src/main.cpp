@@ -57,11 +57,11 @@ void dumpRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	LOG("method: " + request.method);
 }
 
-void request_failed(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request, std::string reason) {
+void requestFailed(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request, std::string reason) {
 	// The request doesn't have a failure handler attached,
 	// so just print the error in the log.
 	if (!request.failed) {
-		printMessage(LUA, "[request_failed] reason: " + reason);
+		printMessage(LUA, "[requestFailed] reason: " + reason);
 		return;
 	}
 
@@ -75,7 +75,7 @@ void request_failed(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request, std::str
 	LUA->Call(1, 0);
 }
 
-bool process_request(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
+bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	CURL *curl;
 	CURLcode cres;
 	bool ret = true;
@@ -85,7 +85,7 @@ bool process_request(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	curl = curl_easy_init();
 
 	if (!curl) {
-		request_failed(LUA, request, "Failed to init curl struct!");
+		requestFailed(LUA, request, "Failed to init curl struct!");
 		ret = false;
 		goto global_cleanup;
 	}
@@ -94,7 +94,7 @@ bool process_request(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	cres = curl_easy_perform(curl);
 
 	if (cres != CURLE_OK) {
-		request_failed(LUA, request, curl_easy_strerror(cres));
+		requestFailed(LUA, request, curl_easy_strerror(cres));
 		ret = false;
 		goto cleanup;
 	}
@@ -147,7 +147,7 @@ LUA_FUNCTION(CHTTP) {
 	LUA->Pop();
 
 	dumpRequest(LUA, request);
-	ret = process_request(LUA, request);
+	ret = processRequest(LUA, request);
 
 	LUA->PushBool(ret); // Push result to the stack
 	return 1; // We are returning a single value
