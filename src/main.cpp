@@ -43,6 +43,10 @@ void dumpRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	LOG("Dumping request:");
 	LOG("url: " + request.url);
 	LOG("method: " + request.method);
+	LOG("headers: [" + std::to_string(request.headers.size()) + "]");
+	for (auto const& e : request.headers) {
+		LOG("  " + e.first + ": " + e.second);
+	}
 }
 
 void requestFailed(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request, std::string reason) {
@@ -100,6 +104,29 @@ global_cleanup:
 	return ret;
 }
 
+// Transfers values from a LUA Table on the stack (at the given offset)
+// into a map that will be the return value.
+std::map<std::string, std::string> mapFromLuaTable(GarrysMod::Lua::ILuaBase *LUA, int index) {
+	std::map<std::string, std::string> map;
+
+	// Query the first entry (we're querying by key, nil = 1st)
+	LUA->PushNil();
+
+	// ->Next() gets the last key from the stack and pushes
+	// the key-value pair that follows that to the stack.
+	// key will now be top-2 and value will be top-1
+	while (LUA->Next(index - 1) != 0) {
+		// Only store things with String keys
+		if (LUA->IsType(-2, Lua::Type::STRING))
+			map[LUA->GetString(-2)] = LUA->GetString(-1);
+
+		// Pop value from the stack, key is needed for next iteration
+		LUA->Pop();
+	}
+
+	return map;
+}
+
 /*
  * See https://wiki.garrysmod.com/page/Global/HTTP for documentation.
  * The function takes a single table argument, based off the HTTPRequest structure.
@@ -148,6 +175,13 @@ LUA_FUNCTION(CHTTP) {
 	LUA->GetField(1, "success");
 	if (LUA->IsType(-1, Lua::Type::FUNCTION)) {
 		request.success = LUA->GetCFunction(-1);
+	}
+	LUA->Pop();
+
+	// Fetch headers
+	LUA->GetField(1, "headers");
+	if (LUA->IsType(-1, Lua::Type::TABLE)) {
+		request.headers = mapFromLuaTable(LUA, -1);
 	}
 	LUA->Pop();
 
