@@ -47,6 +47,7 @@ void dumpRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	for (auto const& e : request.headers) {
 		LOG("  " + e.first + ": " + e.second);
 	}
+	LOG("type: " + request.type);
 }
 
 void requestFailed(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request, std::string reason) {
@@ -73,6 +74,10 @@ void curlAddHeaders(CURL *curl, HTTPRequest request) {
 	// Check if we have to add the default User-Agent
 	if (request.headers.count("User-Agent") == 0)
 		headers = curl_slist_append(headers, buildUserAgent().c_str());
+
+	// Add the Content-Type header if not already set
+	if (request.headers.count("Content-Type") == 0)
+		headers = curl_slist_append(headers, ("Content-Type: " + request.type).c_str());
 
 	// Add all the headers from the request struct
 	for (auto const& e : request.headers)
@@ -195,6 +200,15 @@ LUA_FUNCTION(CHTTP) {
 	LUA->GetField(1, "headers");
 	if (LUA->IsType(-1, Lua::Type::TABLE)) {
 		request.headers = mapFromLuaTable(LUA, -1);
+	}
+	LUA->Pop();
+
+	// Fetch type
+	LUA->GetField(1, "type");
+	if (LUA->IsType(-1, Lua::Type::STRING)) {
+		request.type = LUA->GetString(-1);
+	} else {
+		request.type = "text/plain; charset=utf-8";
 	}
 	LUA->Pop();
 
