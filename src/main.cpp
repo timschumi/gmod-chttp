@@ -92,7 +92,11 @@ LUA_FUNCTION(CHTTP) {
 
 	LOG("Called HTTP()! STUB!");
 
-	LUA->CheckType(1, Lua::Type::TABLE);
+	if (!LUA->IsType(1, Lua::Type::TABLE)) {
+		LOG("No HTTPRequest table set.");
+		ret = false;
+		goto exit;
+	}
 
 	// Fetch failed handler
 	LUA->GetField(1, "failed");
