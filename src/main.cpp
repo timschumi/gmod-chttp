@@ -75,7 +75,7 @@ void request_failed(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request, std::str
 	LUA->Call(1, 0);
 }
 
-bool request_process(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
+bool process_request(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	CURL *curl;
 	CURLcode cres;
 	bool ret = true;
@@ -147,7 +147,7 @@ LUA_FUNCTION(CHTTP) {
 	LUA->Pop();
 
 	dumpRequest(LUA, request);
-	ret = request_process(LUA, request);
+	ret = process_request(LUA, request);
 
 	LUA->PushBool(ret); // Push result to the stack
 	return 1; // We are returning a single value
