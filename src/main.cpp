@@ -2,7 +2,7 @@
 #include <curl/curl.h>
 #include "GarrysMod/Lua/Interface.h"
 
-#define LOG(x) printMessage(state, x);
+#define LOG(x) printMessage(LUA, x);
 
 using namespace GarrysMod;
 
@@ -32,7 +32,7 @@ struct HTTPRequest {
 	std::string type;
 };
 
-static void printMessage(lua_State *state, std::string message) {
+static void printMessage(GarrysMod::Lua::ILuaBase *LUA, std::string message) {
 	// Push global table to the stack to work on it
 	LUA->PushSpecial(Lua::SPECIAL_GLOB);
 
@@ -51,17 +51,17 @@ static void printMessage(lua_State *state, std::string message) {
 	LUA->Pop();
 }
 
-void dumpRequest(lua_State *state, HTTPRequest request) {
+void dumpRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	LOG("Dumping request:");
 	LOG("url: " + request.url);
 	LOG("method: " + request.method);
 }
 
-void request_failed(lua_State *state, HTTPRequest request, std::string reason) {
+void request_failed(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request, std::string reason) {
 	// The request doesn't have a failure handler attached,
 	// so just print the error in the log.
 	if (!request.failed) {
-		printMessage(state, "[request_failed] reason: " + reason);
+		printMessage(LUA, "[request_failed] reason: " + reason);
 		return;
 	}
 
@@ -75,7 +75,7 @@ void request_failed(lua_State *state, HTTPRequest request, std::string reason) {
 	LUA->Call(1, 0);
 }
 
-bool request_process(lua_State *state, HTTPRequest request) {
+bool request_process(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	CURL *curl;
 	CURLcode cres;
 	bool ret = true;
@@ -85,7 +85,7 @@ bool request_process(lua_State *state, HTTPRequest request) {
 	curl = curl_easy_init();
 
 	if (!curl) {
-		request_failed(state, request, "Failed to init curl struct!");
+		request_failed(LUA, request, "Failed to init curl struct!");
 		ret = false;
 		goto global_cleanup;
 	}
@@ -94,7 +94,7 @@ bool request_process(lua_State *state, HTTPRequest request) {
 	cres = curl_easy_perform(curl);
 
 	if (cres != CURLE_OK) {
-		request_failed(state, request, curl_easy_strerror(cres));
+		request_failed(LUA, request, curl_easy_strerror(cres));
 		ret = false;
 		goto cleanup;
 	}
@@ -112,7 +112,7 @@ global_cleanup:
  * The function takes a single table argument, based off the HTTPRequest structure.
  * It returns a boolean whether a request was sent or not.
  */
-int CHTTP(lua_State *state) {
+LUA_FUNCTION(CHTTP) {
 	HTTPRequest request = HTTPRequest();
 	bool ret;
 
@@ -146,8 +146,8 @@ int CHTTP(lua_State *state) {
 	}
 	LUA->Pop();
 
-	dumpRequest(state, request);
-	ret = request_process(state, request);
+	dumpRequest(LUA, request);
+	ret = request_process(LUA, request);
 
 	LUA->PushBool(ret); // Push result to the stack
 	return 1; // We are returning a single value

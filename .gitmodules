@@ -1,3 +1,4 @@
-[submodule "LuaInterface"]
-	path = LuaInterface
-	url = https://github.com/glua/LuaInterface
+[submodule "gmod-module-base"]
+	path = gmod-module-base
+	url = https://github.com/Facepunch/gmod-module-base
+	branch = development

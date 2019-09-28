@@ -1,9 +1,16 @@
+local target_suffixes = {
+	bsd       = "_linux",
+	linux     = "_linux",
+	solaris   = "_linux",
+	windows   = "_win32",
+	macosx    = "_osx"  ,
+}
+
 solution "chttp"
 	language		"C++"
 	architecture	"x86"
 	location		"project"
 	targetdir		"bin"
-	includedirs {"curl/include/"}
 
 	--
 	-- Statically link the C-Runtime to reduce dependencies needed to run our module
@@ -18,7 +25,9 @@ solution "chttp"
 
 	project "chttp"
 		kind	"SharedLib"
-		include	"LuaInterface"
-
+		targetprefix "gmsv_"
+		targetextension ".dll"
+		targetsuffix ( target_suffixes[os.target()] )
+		includedirs { "curl/include/", "gmod-module-base/include/" }
 		files { "src/**.cpp", "src/**.h" }
 		links {"curl"}
