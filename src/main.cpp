@@ -231,7 +231,7 @@ GMOD_MODULE_OPEN() {
 
 	// Push the function mapping (first is the key/function name,
 	// second is the value/actual function)
-	LUA->PushString("HTTP");
+	LUA->PushString("CHTTP");
 	LUA->PushCFunction(CHTTP);
 
 	// SetTable takes the item at the top of the stack (value) and
