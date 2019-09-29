@@ -7,12 +7,6 @@
 
 using namespace GarrysMod;
 
-struct ResponseData {
-	long code;
-	std::string body;
-	std::map<std::string, std::string> headers;
-};
-
 std::string buildUserAgent() {
 	std::string user = "";
 	curl_version_info_data *info = curl_version_info(CURLVERSION_NOW);
@@ -62,7 +56,7 @@ void dumpRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	LOG("type: " + request.type);
 }
 
-void dumpResponse(Lua::ILuaBase *LUA, ResponseData response) {
+void dumpResponse(Lua::ILuaBase *LUA, HTTPResponse response) {
 	LOG("Dumping response:");
 	LOG("code: " + std::to_string(response.code));
 	LOG("headers: [" + std::to_string(response.headers.size()) + "]");
@@ -108,7 +102,7 @@ void mapToLuaTable(Lua::ILuaBase *LUA, std::map<std::string, std::string> map) {
 	}
 }
 
-void requestSuccess(Lua::ILuaBase *LUA, HTTPRequest request, ResponseData response) {
+void requestSuccess(Lua::ILuaBase *LUA, HTTPRequest request, HTTPResponse response) {
 	// If we don't have a success handler defined, just dump it to the console
 	if (!request.success) {
 		LOG("No success handler defined!");
@@ -183,7 +177,7 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	CURL *curl;
 	CURLcode cres;
 	bool ret = true;
-	ResponseData response = ResponseData();
+	HTTPResponse response = HTTPResponse();
 	int method = methodFromString(request.method);
 
 	curl_global_init(CURL_GLOBAL_ALL);
