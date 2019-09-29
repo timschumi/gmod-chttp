@@ -5,10 +5,12 @@
 // https://wiki.garrysmod.com/page/Structures/HTTPRequest
 struct HTTPRequest {
 	// Handler for failed requests. args: (string) reason
-	GarrysMod::Lua::CFunc failed;
+	// This is a reference to the function on the stack
+	int failed;
 
 	// Handler for successful requests. args: (number) code, (string) body, (table) headers
-	GarrysMod::Lua::CFunc success;
+	// This is a reference to the function on the stack
+	int success;
 
 	// Request method (GET, POST, etc.)
 	std::string method;

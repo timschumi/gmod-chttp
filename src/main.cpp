@@ -58,8 +58,9 @@ void requestFailed(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request, std::stri
 		return;
 	}
 
-	// Push fail handler to stack
-	LUA->PushCFunction(request.failed);
+	// Push fail handler to stack and free our ref
+	LUA->ReferencePush(request.failed);
+	LUA->ReferenceFree(request.failed);
 
 	// Push the argument
 	LUA->PushString(reason.c_str());
@@ -165,9 +166,10 @@ LUA_FUNCTION(CHTTP) {
 	// Fetch failed handler
 	LUA->GetField(1, "failed");
 	if (LUA->IsType(-1, Lua::Type::FUNCTION)) {
-		request.failed = LUA->GetCFunction(-1);
+		request.failed = LUA->ReferenceCreate();
+	} else {
+		LUA->Pop();
 	}
-	LUA->Pop();
 
 	// Fetch method
 	LUA->GetField(1, "method");
@@ -192,9 +194,10 @@ LUA_FUNCTION(CHTTP) {
 	// Fetch success handler
 	LUA->GetField(1, "success");
 	if (LUA->IsType(-1, Lua::Type::FUNCTION)) {
-		request.success = LUA->GetCFunction(-1);
+		request.success = LUA->ReferenceCreate();
+	} else {
+		LUA->Pop();
 	}
-	LUA->Pop();
 
 	// Fetch headers
 	LUA->GetField(1, "headers");
