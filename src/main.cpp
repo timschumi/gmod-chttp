@@ -1,6 +1,7 @@
 #include <curl/curl.h>
 #include "GarrysMod/Lua/Interface.h"
 #include "http.h"
+#include "method.h"
 
 #define LOG(x) printMessage(LUA, x);
 
@@ -149,6 +150,16 @@ void curlAddHeaders(CURL *curl, HTTPRequest request) {
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 }
 
+void curlSetMethod(CURL *curl, int method) {
+	// METHOD_GET is not listed here, since it doesn't require
+	// any specific setup
+	switch (method) {
+	case METHOD_PATCH:
+		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH");
+		break;
+	}
+}
+
 // Write callback for appending to an std::string
 size_t curl_string_append(char *contents, size_t size, size_t nmemb, std::string *userp) {
 	userp->append(contents, size * nmemb);
@@ -173,6 +184,7 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	CURLcode cres;
 	bool ret = true;
 	ResponseData response = ResponseData();
+	int method = methodFromString(request.method);
 
 	curl_global_init(CURL_GLOBAL_ALL);
 
@@ -184,10 +196,22 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 		goto global_cleanup;
 	}
 
-	if (request.method.compare("GET") != 0) {
-		requestFailed(LUA, request, "Everything except for GET requests is unsupported.");
+	if (method == METHOD_NOSUPP) {
+		requestFailed(LUA, request, "Unsupported request method: " + request.method);
 		ret = false;
 		goto cleanup;
+	}
+
+	curlSetMethod(curl, method);
+
+	if (isLikePost(method)) {
+		curl_easy_setopt(curl, CURLOPT_POST, 1L);
+
+		// Do we have a request body?
+		if (request.body.size() != 0) {
+			curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, request.body.size());
+			curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, request.body.c_str());
+		}
 	}
 
 	curl_easy_setopt(curl, CURLOPT_URL, request.url.c_str());
