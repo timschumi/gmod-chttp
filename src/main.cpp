@@ -106,7 +106,9 @@ void requestSuccess(Lua::ILuaBase *LUA, HTTPRequest request, ResponseData respon
 	// If we don't have a success handler defined, just dump it to the console
 	if (!request.success) {
 		LOG("No success handler defined!");
+#ifdef DEBUG_BUILD
 		dumpResponse(LUA, response);
+#endif
 		return;
 	}
 
@@ -310,7 +312,10 @@ LUA_FUNCTION(CHTTP) {
 	}
 	LUA->Pop();
 
+#ifdef DEBUG_BUILD
 	dumpRequest(LUA, request);
+#endif
+
 	ret = processRequest(LUA, request);
 
 exit:

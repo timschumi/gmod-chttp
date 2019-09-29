@@ -17,10 +17,15 @@ solution "chttp"
 	--
 	staticruntime "On"
 
-	configurations { "Release" }
+	configurations { "Debug", "Release" }
+
+	configuration "Debug"
+		defines { "DEBUG_BUILD" }
+		symbols		"On"		-- Generate debugging information
+		optimize	"On"		-- Optimize the build output for size and speed
 
 	configuration "Release"
-		symbols		"On"		-- Generate debugging information
+		defines { "RELEASE_BUILD" }
 		optimize	"On"		-- Optimize the build output for size and speed
 
 	project "chttp"

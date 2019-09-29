@@ -17,7 +17,7 @@ echo
 if premake5 gmake; then
 	cd project
 
-	if make; then
+	if make config="${1:-debug}"; then
 		# We're done!
 		cd ..
 		sleep 5
