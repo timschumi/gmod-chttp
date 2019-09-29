@@ -179,6 +179,9 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 
 	curl_easy_setopt(curl, CURLOPT_URL, request.url.c_str());
 
+	// Ensure that curl follows redirects
+	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+
 	// Set up saving the response body
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response.body);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_string_append);
