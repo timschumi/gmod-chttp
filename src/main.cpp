@@ -53,6 +53,11 @@ void dumpRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	for (auto const& e : request.headers) {
 		LOG("  " + e.first + ": " + e.second);
 	}
+	LOG("parameters: [" + std::to_string(request.parameters.size()) + "]");
+	for (auto const& e : request.parameters) {
+		LOG("  " + e.first + ": " + e.second);
+	}
+	LOG("body: " + request.body);
 	LOG("type: " + request.type);
 }
 
@@ -303,12 +308,26 @@ LUA_FUNCTION(CHTTP) {
 	}
 	LUA->Pop();
 
+	// Fetch parameters
+	LUA->GetField(1, "parameters");
+	if (LUA->IsType(-1, Lua::Type::TABLE)) {
+		request.parameters = mapFromLuaTable(LUA, -1);
+	}
+	LUA->Pop();
+
 	// Fetch type
 	LUA->GetField(1, "type");
 	if (LUA->IsType(-1, Lua::Type::STRING)) {
 		request.type = LUA->GetString(-1);
 	} else {
 		request.type = "text/plain; charset=utf-8";
+	}
+	LUA->Pop();
+
+	// Fetch body
+	LUA->GetField(1, "body");
+	if (LUA->IsType(-1, Lua::Type::STRING)) {
+		request.body = LUA->GetString(-1);
 	}
 	LUA->Pop();
 
