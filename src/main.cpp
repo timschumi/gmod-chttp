@@ -177,6 +177,12 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 		goto global_cleanup;
 	}
 
+	if (request.method.compare("GET") != 0) {
+		requestFailed(LUA, request, "Everything except for GET requests is unsupported.");
+		ret = false;
+		goto cleanup;
+	}
+
 	curl_easy_setopt(curl, CURLOPT_URL, request.url.c_str());
 
 	// Ensure that curl follows redirects
