@@ -6,6 +6,12 @@
 
 using namespace GarrysMod;
 
+struct ResponseData {
+	long code;
+	std::string body;
+	std::map<std::string, std::string> headers;
+};
+
 std::string buildUserAgent() {
 	std::string user = "";
 	curl_version_info_data *info = curl_version_info(CURLVERSION_NOW);
@@ -50,6 +56,16 @@ void dumpRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	LOG("type: " + request.type);
 }
 
+void dumpResponse(Lua::ILuaBase *LUA, ResponseData response) {
+	LOG("Dumping response:");
+	LOG("code: " + std::to_string(response.code));
+	LOG("headers: [" + std::to_string(response.headers.size()) + "]");
+	for (auto const& e : response.headers) {
+		LOG("  " + e.first + ": " + e.second);
+	}
+	LOG("body: " + response.body);
+}
+
 void requestFailed(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request, std::string reason) {
 	// The request doesn't have a failure handler attached,
 	// so just print the error in the log.
@@ -67,6 +83,44 @@ void requestFailed(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request, std::stri
 
 	// Call the fail handler with one argument
 	LUA->Call(1, 0);
+}
+
+// Builds a LUA table from a map and leaves it on the stack
+void mapToLuaTable(Lua::ILuaBase *LUA, std::map<std::string, std::string> map) {
+	// Create a new table on the stack
+	LUA->CreateTable();
+
+	for (auto const& e : map) {
+		// Push key to stack
+		LUA->PushString(e.first.c_str());
+
+		// Push value to stack
+		LUA->PushString(e.second.c_str());
+
+		// Append both values to the table
+		LUA->SetTable(-3);
+	}
+}
+
+void requestSuccess(Lua::ILuaBase *LUA, HTTPRequest request, ResponseData response) {
+	// If we don't have a success handler defined, just dump it to the console
+	if (!request.success) {
+		LOG("No success handler defined!");
+		dumpResponse(LUA, response);
+		return;
+	}
+
+	// Push success handler to stack and free our ref
+	LUA->ReferencePush(request.success);
+	LUA->ReferenceFree(request.success);
+
+	// Push the arguments
+	LUA->PushNumber(response.code);
+	LUA->PushString(response.body.c_str());
+	mapToLuaTable(LUA, response.headers);
+
+	// Call the success handler with three arguments
+	LUA->Call(3, 0);
 }
 
 void curlAddHeaders(CURL *curl, HTTPRequest request) {
@@ -88,10 +142,30 @@ void curlAddHeaders(CURL *curl, HTTPRequest request) {
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 }
 
+// Write callback for appending to an std::string
+size_t curl_string_append(char *contents, size_t size, size_t nmemb, std::string *userp) {
+	userp->append(contents, size * nmemb);
+	return size * nmemb;
+}
+
+// Write callback for appending to an std::map (will split header at the first colon)
+size_t curl_headermap_append(char *contents, size_t size, size_t nmemb, std::map<std::string, std::string> *userp) {
+	std::string header(contents, size * nmemb);
+
+	std::size_t found = header.find_first_of(":");
+
+	if (found != std::string::npos) {
+		(*userp)[header.substr(0, found)] = header.substr(found + 2, header.length() - found - 4);
+	}
+
+	return size * nmemb;
+}
+
 bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	CURL *curl;
 	CURLcode cres;
 	bool ret = true;
+	ResponseData response = ResponseData();
 
 	curl_global_init(CURL_GLOBAL_ALL);
 
@@ -105,6 +179,14 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 
 	curl_easy_setopt(curl, CURLOPT_URL, request.url.c_str());
 
+	// Set up saving the response body
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response.body);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_string_append);
+
+	// Set up saving the headers
+	curl_easy_setopt(curl, CURLOPT_HEADERDATA, &response.headers);
+	curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, curl_headermap_append);
+
 	curlAddHeaders(curl, request);
 
 	cres = curl_easy_perform(curl);
@@ -114,6 +196,10 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 		ret = false;
 		goto cleanup;
 	}
+
+	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.code);
+
+	requestSuccess(LUA, request, response);
 
 cleanup:
 	curl_easy_cleanup(curl);
