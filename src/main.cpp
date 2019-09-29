@@ -281,8 +281,6 @@ LUA_FUNCTION(CHTTP) {
 	HTTPRequest request = HTTPRequest();
 	bool ret;
 
-	LOG("Called HTTP()! STUB!");
-
 	if (!LUA->IsType(1, Lua::Type::TABLE)) {
 		LOG("No HTTPRequest table set.");
 		ret = false;
@@ -367,8 +365,6 @@ exit:
 }
 
 GMOD_MODULE_OPEN() {
-	LOG("Loading CHTTP module.");
-
 	// We are working on the global table today
 	LUA->PushSpecial(Lua::SPECIAL_GLOB);
 
@@ -384,8 +380,6 @@ GMOD_MODULE_OPEN() {
 
 	// Pop the global table from the stack again
 	LUA->Pop();
-
-	LOG("Finished loading CHTTP module.");
 
 	return 0;
 }
