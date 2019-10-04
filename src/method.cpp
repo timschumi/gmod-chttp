@@ -5,6 +5,8 @@
 int methodFromString(std::string method) {
 	if (method.compare("GET") == 0)
 		return METHOD_GET;
+	if (method.compare("HEAD") == 0)
+		return METHOD_HEAD;
 	if (method.compare("PATCH") == 0)
 		return METHOD_PATCH;
 

@@ -173,6 +173,9 @@ void curlSetMethod(CURL *curl, int method) {
 	// METHOD_GET is not listed here, since it doesn't require
 	// any specific setup
 	switch (method) {
+	case METHOD_HEAD:
+		curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
+		break;
 	case METHOD_PATCH:
 		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH");
 		break;
