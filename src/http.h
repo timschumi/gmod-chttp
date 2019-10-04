@@ -39,3 +39,6 @@ struct HTTPResponse {
 	std::string body;
 	std::map<std::string, std::string> headers;
 };
+
+std::string buildParameters(HTTPRequest request);
+std::string buildUrl(HTTPRequest request);
