@@ -180,7 +180,8 @@ void curlSetMethod(CURL *curl, int method) {
 		curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
 		break;
 	case METHOD_PATCH:
-		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH");
+	case METHOD_OPTIONS:
+		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, methodToString(method).c_str());
 		break;
 	}
 }

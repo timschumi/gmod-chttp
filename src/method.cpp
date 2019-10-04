@@ -11,6 +11,8 @@ int methodFromString(std::string method) {
 		return METHOD_HEAD;
 	if (method.compare("PATCH") == 0)
 		return METHOD_PATCH;
+	if (method.compare("OPTIONS") == 0)
+		return METHOD_OPTIONS;
 
 	return METHOD_NOSUPP;
 }
