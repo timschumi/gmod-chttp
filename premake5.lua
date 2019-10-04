@@ -35,4 +35,9 @@ solution "chttp"
 		targetsuffix ( target_suffixes[os.target()] )
 		includedirs { "curl/include/", "gmod-module-base/include/" }
 		files { "src/**.cpp", "src/**.h" }
-		links {"curl"}
+		if os.target() == "windows" then
+		    libdirs {"curl/lib"}
+		    links {"libcurl"}
+		else
+		    links {"curl"}
+		end
