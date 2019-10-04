@@ -21,6 +21,31 @@ std::string buildUserAgent() {
 	return user;
 }
 
+std::string buildParameters(HTTPRequest request) {
+	std::string params = "";
+
+	for (auto const& e : request.parameters) {
+		if (params.size() != 0)
+			params += "&";
+
+		params += e.first + "=" + e.second;
+	}
+
+	return params;
+}
+
+std::string buildUrl(HTTPRequest request) {
+	std::string url = request.url;
+
+	// Do we need a query string?
+	if (!isLikePost(methodFromString(request.method)) &&
+	    request.parameters.size() != 0) {
+		url += "?" + buildParameters(request);
+	}
+
+	return url;
+}
+
 static void printMessage(GarrysMod::Lua::ILuaBase *LUA, std::string message) {
 	// Push global table to the stack to work on it
 	LUA->PushSpecial(Lua::SPECIAL_GLOB);
@@ -179,6 +204,7 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	bool ret = true;
 	HTTPResponse response = HTTPResponse();
 	int method = methodFromString(request.method);
+	std::string postbody = "";
 
 	curl_global_init(CURL_GLOBAL_ALL);
 
@@ -203,12 +229,16 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 
 		// Do we have a request body?
 		if (request.body.size() != 0) {
-			curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, request.body.size());
-			curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, request.body.c_str());
+			postbody = request.body;
+		} else {
+			postbody = buildParameters(request);
 		}
+
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, postbody.size());
+		curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, postbody.c_str());
 	}
 
-	curl_easy_setopt(curl, CURLOPT_URL, request.url.c_str());
+	curl_easy_setopt(curl, CURLOPT_URL, buildUrl(request).c_str());
 
 	// Ensure that curl follows redirects
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
