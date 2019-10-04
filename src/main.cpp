@@ -170,8 +170,11 @@ void curlAddHeaders(CURL *curl, HTTPRequest request) {
 }
 
 void curlSetMethod(CURL *curl, int method) {
-	// METHOD_GET is not listed here, since it doesn't require
-	// any specific setup
+	if (isLikePost(method))
+		curl_easy_setopt(curl, CURLOPT_POST, 1L);
+
+	// METHOD_GET and METHOD_POST are not listed here,
+	// since they don't require any specific setup
 	switch (method) {
 	case METHOD_HEAD:
 		curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
@@ -221,8 +224,6 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	curlSetMethod(curl, request.method);
 
 	if (isLikePost(request.method)) {
-		curl_easy_setopt(curl, CURLOPT_POST, 1L);
-
 		// Do we have a request body?
 		if (request.body.size() != 0) {
 			postbody = request.body;
