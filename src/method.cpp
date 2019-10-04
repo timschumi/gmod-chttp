@@ -12,7 +12,7 @@ int methodFromString(std::string method) {
 }
 
 // Turns a method int back into a string
-const char* methodToString(int method) {
+std::string methodToString(int method) {
 	switch (method) {
 	case METHOD_GET:
 		return "GET";

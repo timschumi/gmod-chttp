@@ -38,7 +38,7 @@ std::string buildUrl(HTTPRequest request) {
 	std::string url = request.url;
 
 	// Do we need a query string?
-	if (!isLikePost(methodFromString(request.method)) &&
+	if (!isLikePost(request.method) &&
 	    request.parameters.size() != 0) {
 		url += "?" + buildParameters(request);
 	}
@@ -68,7 +68,7 @@ static void printMessage(GarrysMod::Lua::ILuaBase *LUA, std::string message) {
 void dumpRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	LOG("Dumping request:");
 	LOG("url: " + request.url);
-	LOG("method: " + request.method);
+	LOG("method: " + methodToString(request.method));
 	LOG("headers: [" + std::to_string(request.headers.size()) + "]");
 	for (auto const& e : request.headers) {
 		LOG("  " + e.first + ": " + e.second);
@@ -203,7 +203,6 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	CURLcode cres;
 	bool ret = true;
 	HTTPResponse response = HTTPResponse();
-	int method = methodFromString(request.method);
 	std::string postbody = "";
 
 	curl_global_init(CURL_GLOBAL_ALL);
@@ -216,15 +215,9 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 		goto global_cleanup;
 	}
 
-	if (method == METHOD_NOSUPP) {
-		requestFailed(LUA, request, "Unsupported request method: " + request.method);
-		ret = false;
-		goto cleanup;
-	}
+	curlSetMethod(curl, request.method);
 
-	curlSetMethod(curl, method);
-
-	if (isLikePost(method)) {
+	if (isLikePost(request.method)) {
 		curl_easy_setopt(curl, CURLOPT_POST, 1L);
 
 		// Do we have a request body?
@@ -322,9 +315,14 @@ LUA_FUNCTION(CHTTP) {
 	// Fetch method
 	LUA->GetField(1, "method");
 	if (LUA->IsType(-1, Lua::Type::STRING)) {
-		request.method = LUA->GetString(-1);
+		request.method = methodFromString(LUA->GetString(-1));
 	} else {
-		request.method = "GET";
+		request.method = METHOD_GET;
+	}
+	if (request.method == METHOD_NOSUPP) {
+		requestFailed(LUA, request, "Unsupported request method: " + std::string(LUA->GetString(-1)));
+		ret = false;
+		goto exit;
 	}
 	LUA->Pop();
 

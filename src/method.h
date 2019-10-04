@@ -8,5 +8,5 @@
 #define METHOD_OPTIONS	7
 
 int methodFromString(std::string method);
-const char* methodToString(int method);
+std::string methodToString(int method);
 bool isLikePost(int method);

@@ -12,8 +12,9 @@ struct HTTPRequest {
 	// This is a reference to the function on the stack
 	int success;
 
-	// Request method (GET, POST, etc.)
-	std::string method;
+	// Request method (GET = 1, POST = 2, etc.)
+	// See method.{h,c} for details.
+	int method;
 
 	// Well, what could that be?
 	std::string url;
