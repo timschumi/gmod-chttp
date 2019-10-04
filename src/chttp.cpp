@@ -1,5 +1,6 @@
 #include <curl/curl.h>
 #include "GarrysMod/Lua/Interface.h"
+#include "chttp.h"
 #include "http.h"
 #include "method.h"
 #include "lua.h"
@@ -17,7 +18,8 @@ std::string buildUserAgent() {
 	user += " curl/";
 	user += info->version;
 
-	user += " gmod-chttp/0";
+	user += " gmod-chttp/";
+	user += CHTTP_VERSION;
 
 	return user;
 }
