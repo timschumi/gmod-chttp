@@ -155,14 +155,12 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	HTTPResponse response = HTTPResponse();
 	std::string postbody = "";
 
-	curl_global_init(CURL_GLOBAL_ALL);
-
 	curl = curl_easy_init();
 
 	if (!curl) {
 		requestFailed(LUA, request, "Failed to init curl struct!");
 		ret = false;
-		goto global_cleanup;
+		goto cleanup;
 	}
 
 	curlSetMethod(curl, request.method);
@@ -207,10 +205,9 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	requestSuccess(LUA, request, response);
 
 cleanup:
-	curl_easy_cleanup(curl);
+	if (curl)
+		curl_easy_cleanup(curl);
 
-global_cleanup:
-	curl_global_cleanup();
 	return ret;
 }
 
@@ -312,6 +309,9 @@ exit:
 }
 
 GMOD_MODULE_OPEN() {
+	// Initialize curl
+	curl_global_init(CURL_GLOBAL_ALL);
+
 	// We are working on the global table today
 	LUA->PushSpecial(Lua::SPECIAL_GLOB);
 
@@ -327,6 +327,13 @@ GMOD_MODULE_OPEN() {
 
 	// Pop the global table from the stack again
 	LUA->Pop();
+
+	return 0;
+}
+
+GMOD_MODULE_CLOSE() {
+	// Cleanup curl
+	curl_global_cleanup();
 
 	return 0;
 }
