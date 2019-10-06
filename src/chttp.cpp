@@ -192,6 +192,10 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 
 	curlAddHeaders(curl, request);
 
+#ifdef WINDOWS_BUILD
+	curl_easy_setopt(curl, CURLOPT_CAINFO, "curl-ca-bundle.crt");
+#endif
+
 	cres = curl_easy_perform(curl);
 
 	if (cres != CURLE_OK) {

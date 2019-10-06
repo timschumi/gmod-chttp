@@ -36,6 +36,7 @@ solution "chttp"
 		includedirs { "curl/include/", "gmod-module-base/include/" }
 		files { "src/**.cpp", "src/**.h" }
 		if os.target() == "windows" then
+		    defines { "WINDOWS_BUILD" }
 		    libdirs {"curl/lib"}
 		    links {"libcurl"}
 		else
