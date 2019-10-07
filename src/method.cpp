@@ -9,6 +9,8 @@ int methodFromString(std::string method) {
 		return METHOD_POST;
 	if (method.compare("HEAD") == 0)
 		return METHOD_HEAD;
+	if (method.compare("PUT") == 0)
+		return METHOD_PUT;
 	if (method.compare("DELETE") == 0)
 		return METHOD_DELETE;
 	if (method.compare("PATCH") == 0)
@@ -44,6 +46,7 @@ std::string methodToString(int method) {
 bool isLikePost(int method) {
 	switch (method) {
 	case METHOD_POST:
+	case METHOD_PUT:
 	case METHOD_DELETE:
 	case METHOD_PATCH:
 		return true;
