@@ -1,1 +1,1 @@
-#define CHTTP_VERSION "0.0"
+#define CHTTP_VERSION "1.0"
