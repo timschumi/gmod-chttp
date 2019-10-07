@@ -122,6 +122,7 @@ void curlSetMethod(CURL *curl, int method) {
 	case METHOD_HEAD:
 		curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
 		break;
+	case METHOD_DELETE:
 	case METHOD_PATCH:
 	case METHOD_OPTIONS:
 		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, methodToString(method).c_str());
