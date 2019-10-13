@@ -156,6 +156,7 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 	bool ret = true;
 	HTTPResponse response = HTTPResponse();
 	std::string postbody = "";
+	char* redirect = "";
 
 	curl = curl_easy_init();
 
@@ -179,11 +180,6 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 		curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, postbody.c_str());
 	}
 
-	curl_easy_setopt(curl, CURLOPT_URL, buildUrl(request).c_str());
-
-	// Ensure that curl follows redirects
-	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-
 	// Set up saving the response body
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response.body);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_string_append);
@@ -194,12 +190,32 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 
 	curlAddHeaders(curl, request);
 
+resend:
+	curl_easy_setopt(curl, CURLOPT_URL, buildUrl(request).c_str());
+
 	cres = curl_easy_perform(curl);
 
 	if (cres != CURLE_OK) {
 		requestFailed(LUA, request, curl_easy_strerror(cres));
 		ret = false;
 		goto cleanup;
+	}
+
+	curl_easy_getinfo(curl, CURLINFO_REDIRECT_URL, &redirect);
+	if (redirect) {
+#ifdef DEBUG_BUILD
+		LOG("Redirecting to: " + std::string(redirect));
+#endif
+
+		// Clear out saved headers and body
+		response.headers.clear();
+		response.body.clear();
+
+		// Set the new URL and clear the temp variable
+		request.url = redirect;
+		redirect = "";
+
+		goto resend;
 	}
 
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.code);
