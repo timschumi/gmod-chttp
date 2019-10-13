@@ -194,10 +194,6 @@ bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
 
 	curlAddHeaders(curl, request);
 
-#ifdef WINDOWS_BUILD
-	curl_easy_setopt(curl, CURLOPT_CAINFO, "curl-ca-bundle.crt");
-#endif
-
 	cres = curl_easy_perform(curl);
 
 	if (cres != CURLE_OK) {
@@ -315,6 +311,13 @@ exit:
 }
 
 GMOD_MODULE_OPEN() {
+#ifdef WINDOWS_BUILD
+	if (curl_global_sslset(CURLSSLBACKEND_SCHANNEL, NULL, NULL) != CURLSSLSET_OK) {
+		LOG("error: The WinSSL/schannel backend is not available!");
+		return 1;
+	}
+#endif
+
 	// Initialize curl
 	curl_global_init(CURL_GLOBAL_ALL);
 

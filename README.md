@@ -24,9 +24,8 @@ for dedicated servers.
     - `libcurl.dll`
     - `libssl-1_1.dll`
     - `libcrypto-1_1.dll`
-    - `curl-ca-bundle.crt`
 
-2. Put `libcurl.dll`, `libssl-1_1.dll`, `libcrypto-1_1.dll` and `curl-ca-bundle.crt` into the Garry's Mod
+2. Put `libcurl.dll`, `libssl-1_1.dll`, and `libcrypto-1_1.dll` into the Garry's Mod
    base directory.
 
 3. Put `gmsv_chttp_win32.dll` into `<base directory>\garrysmod\lua\bin\`. You may have to
@@ -53,7 +52,7 @@ In the use case where you want to use CHTTP instead of HTTP if it's available,
 use the following code snippet to load it:
 
 ```
-if pcall(require, "chttp") then
+if pcall(require, "chttp") and CHTTP ~= nil then
 	HTTP = CHTTP
 end
 ```
