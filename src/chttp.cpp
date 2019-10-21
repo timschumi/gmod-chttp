@@ -6,8 +6,6 @@
 #include "method.h"
 #include "lua.h"
 
-#define LOG(x) printMessage(LUA, x);
-
 using namespace GarrysMod;
 
 std::string buildUserAgent() {
