@@ -23,37 +23,10 @@ std::string buildUserAgent() {
 	return user;
 }
 
-void dumpRequest(Lua::ILuaBase *LUA, HTTPRequest request) {
-	LOG("Dumping request:");
-	LOG("url: " + request.url);
-	LOG("method: " + methodToString(request.method));
-	LOG("headers: [" + std::to_string(request.headers.size()) + "]");
-	for (auto const& e : request.headers) {
-		LOG("  " + e.first + ": " + e.second);
-	}
-	LOG("parameters: [" + std::to_string(request.parameters.size()) + "]");
-	for (auto const& e : request.parameters) {
-		LOG("  " + e.first + ": " + e.second);
-	}
-	LOG("body: " + request.body);
-	LOG("type: " + request.type);
-}
-
-void dumpResponse(Lua::ILuaBase *LUA, HTTPResponse response) {
-	LOG("Dumping response:");
-	LOG("code: " + std::to_string(response.code));
-	LOG("headers: [" + std::to_string(response.headers.size()) + "]");
-	for (auto const& e : response.headers) {
-		LOG("  " + e.first + ": " + e.second);
-	}
-	LOG("body: " + response.body);
-}
-
 void runFailedHandler(Lua::ILuaBase *LUA, HTTPRequest request, std::string reason) {
 	// The request doesn't have a failure handler attached,
-	// so just print the error in the log.
+	// so do nothing
 	if (!request.failed) {
-		printMessage(LUA, "[failed] reason: " + reason);
 		return;
 	}
 
@@ -69,12 +42,8 @@ void runFailedHandler(Lua::ILuaBase *LUA, HTTPRequest request, std::string reaso
 }
 
 void runSuccessHandler(Lua::ILuaBase *LUA, HTTPRequest request, HTTPResponse response) {
-	// If we don't have a success handler defined, just dump it to the console
+	// If we don't have a success handler defined, just do nothing
 	if (!request.success) {
-		LOG("No success handler defined!");
-#ifdef DEBUG_BUILD
-		dumpResponse(LUA, response);
-#endif
 		return;
 	}
 
@@ -201,10 +170,6 @@ resend:
 
 	curl_easy_getinfo(curl, CURLINFO_REDIRECT_URL, &redirect);
 	if (redirect) {
-#ifdef DEBUG_BUILD
-		LOG("Redirecting to: " + std::string(redirect));
-#endif
-
 		// Clear out saved headers and body
 		response.headers.clear();
 		response.body.clear();
@@ -312,10 +277,6 @@ LUA_FUNCTION(CHTTP) {
 		request.body = LUA->GetString(-1);
 	}
 	LUA->Pop();
-
-#ifdef DEBUG_BUILD
-	dumpRequest(LUA, request);
-#endif
 
 	ret = processRequest(LUA, request);
 
