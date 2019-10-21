@@ -49,11 +49,11 @@ void dumpResponse(Lua::ILuaBase *LUA, HTTPResponse response) {
 	LOG("body: " + response.body);
 }
 
-void requestFailed(Lua::ILuaBase *LUA, HTTPRequest request, std::string reason) {
+void runFailedHandler(Lua::ILuaBase *LUA, HTTPRequest request, std::string reason) {
 	// The request doesn't have a failure handler attached,
 	// so just print the error in the log.
 	if (!request.failed) {
-		printMessage(LUA, "[requestFailed] reason: " + reason);
+		printMessage(LUA, "[failed] reason: " + reason);
 		return;
 	}
 
@@ -68,7 +68,7 @@ void requestFailed(Lua::ILuaBase *LUA, HTTPRequest request, std::string reason) 
 	LUA->Call(1, 0);
 }
 
-void requestSuccess(Lua::ILuaBase *LUA, HTTPRequest request, HTTPResponse response) {
+void runSuccessHandler(Lua::ILuaBase *LUA, HTTPRequest request, HTTPResponse response) {
 	// If we don't have a success handler defined, just dump it to the console
 	if (!request.success) {
 		LOG("No success handler defined!");
@@ -159,7 +159,7 @@ bool processRequest(Lua::ILuaBase *LUA, HTTPRequest request) {
 	curl = curl_easy_init();
 
 	if (!curl) {
-		requestFailed(LUA, request, "Failed to init curl struct!");
+		runFailedHandler(LUA, request, "Failed to init curl struct!");
 		ret = false;
 		goto cleanup;
 	}
@@ -194,7 +194,7 @@ resend:
 	cres = curl_easy_perform(curl);
 
 	if (cres != CURLE_OK) {
-		requestFailed(LUA, request, curl_easy_strerror(cres));
+		runFailedHandler(LUA, request, curl_easy_strerror(cres));
 		ret = false;
 		goto cleanup;
 	}
@@ -218,7 +218,7 @@ resend:
 
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.code);
 
-	requestSuccess(LUA, request, response);
+	runSuccessHandler(LUA, request, response);
 
 cleanup:
 	if (curl)
@@ -258,7 +258,7 @@ LUA_FUNCTION(CHTTP) {
 		request.method = METHOD_GET;
 	}
 	if (request.method == METHOD_NOSUPP) {
-		requestFailed(LUA, request, "Unsupported request method: " + std::string(LUA->GetString(-1)));
+		runFailedHandler(LUA, request, "Unsupported request method: " + std::string(LUA->GetString(-1)));
 		ret = false;
 		goto exit;
 	}
@@ -269,7 +269,7 @@ LUA_FUNCTION(CHTTP) {
 	if (LUA->IsType(-1, Lua::Type::STRING)) {
 		request.url = LUA->GetString(-1);
 	} else {
-		requestFailed(LUA, request, "invalid url");
+		runFailedHandler(LUA, request, "invalid url");
 		ret = false;
 		goto exit;
 	}
