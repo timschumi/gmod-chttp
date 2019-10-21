@@ -23,7 +23,7 @@ std::string buildUserAgent() {
 	return user;
 }
 
-void dumpRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
+void dumpRequest(Lua::ILuaBase *LUA, HTTPRequest request) {
 	LOG("Dumping request:");
 	LOG("url: " + request.url);
 	LOG("method: " + methodToString(request.method));
@@ -49,7 +49,7 @@ void dumpResponse(Lua::ILuaBase *LUA, HTTPResponse response) {
 	LOG("body: " + response.body);
 }
 
-void requestFailed(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request, std::string reason) {
+void requestFailed(Lua::ILuaBase *LUA, HTTPRequest request, std::string reason) {
 	// The request doesn't have a failure handler attached,
 	// so just print the error in the log.
 	if (!request.failed) {
@@ -148,7 +148,7 @@ size_t curl_headermap_append(char *contents, size_t size, size_t nmemb, std::map
 	return size * nmemb;
 }
 
-bool processRequest(GarrysMod::Lua::ILuaBase *LUA, HTTPRequest request) {
+bool processRequest(Lua::ILuaBase *LUA, HTTPRequest request) {
 	CURL *curl;
 	CURLcode cres;
 	bool ret = true;

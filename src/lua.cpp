@@ -1,7 +1,7 @@
 #include "lua.h"
 
 // Builds a LUA table from a map and leaves it on the stack
-void mapToLuaTable(GarrysMod::Lua::ILuaBase *LUA, std::map<std::string, std::string> map) {
+void mapToLuaTable(Lua::ILuaBase *LUA, std::map<std::string, std::string> map) {
 	// Create a new table on the stack
 	LUA->CreateTable();
 
@@ -19,7 +19,7 @@ void mapToLuaTable(GarrysMod::Lua::ILuaBase *LUA, std::map<std::string, std::str
 
 // Transfers values from a LUA Table on the stack (at the given offset)
 // into a map that will be the return value.
-std::map<std::string, std::string> mapFromLuaTable(GarrysMod::Lua::ILuaBase *LUA, int index) {
+std::map<std::string, std::string> mapFromLuaTable(Lua::ILuaBase *LUA, int index) {
 	std::map<std::string, std::string> map;
 
 	// Query the first entry (we're querying by key, nil = 1st)
@@ -30,7 +30,7 @@ std::map<std::string, std::string> mapFromLuaTable(GarrysMod::Lua::ILuaBase *LUA
 	// key will now be top-2 and value will be top-1
 	while (LUA->Next(index - 1) != 0) {
 		// Only store things with String keys
-		if (LUA->IsType(-2, GarrysMod::Lua::Type::STRING))
+		if (LUA->IsType(-2, Lua::Type::STRING))
 			map[LUA->GetString(-2)] = LUA->GetString(-1);
 
 		// Pop value from the stack, key is needed for next iteration
@@ -40,9 +40,9 @@ std::map<std::string, std::string> mapFromLuaTable(GarrysMod::Lua::ILuaBase *LUA
 	return map;
 }
 
-void printMessage(GarrysMod::Lua::ILuaBase *LUA, std::string message) {
+void printMessage(Lua::ILuaBase *LUA, std::string message) {
 	// Push global table to the stack to work on it
-	LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
+	LUA->PushSpecial(Lua::SPECIAL_GLOB);
 
 	// Gets the print function and stores it at the top of the stack (top = -1)
 	LUA->GetField(-1, "print");
