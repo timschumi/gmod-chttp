@@ -34,7 +34,7 @@ solution "chttp"
 		targetextension ".dll"
 		targetsuffix ( target_suffixes[os.target()] )
 		includedirs { "curl/include/", "gmod-module-base/include/" }
-		files { "src/**.cpp", "src/**.h" }
+		files { "src/*.cpp", "src/*.h", "src/"..os.target().."/*.cpp", "src/"..os.target().."/*.h" }
 		if os.target() == "windows" then
 		    defines { "WINDOWS_BUILD" }
 		    libdirs {"curl/lib"}
