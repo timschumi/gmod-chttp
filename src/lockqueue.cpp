@@ -18,3 +18,14 @@ T LockableQueue<T>::pop() {
 
 	return element;
 }
+
+template <class T>
+size_t LockableQueue<T>::size() {
+	std::lock_guard<std::mutex> lock(mutex);
+	return queue.size();
+}
+
+template <class T>
+bool LockableQueue<T>::empty() {
+	return this->size() == 0;
+}

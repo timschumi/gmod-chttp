@@ -9,4 +9,6 @@ class LockableQueue {
 public:
 	void push(T element);
 	T pop();
+	size_t size();
+	bool empty();
 };
