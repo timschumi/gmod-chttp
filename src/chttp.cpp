@@ -123,7 +123,7 @@ bool processRequest(Lua::ILuaBase *LUA, HTTPRequest request) {
 	bool ret = true;
 	HTTPResponse response = HTTPResponse();
 	std::string postbody = "";
-	char* redirect = "";
+	const char* redirect = "";
 
 	curl = curl_easy_init();
 
