@@ -1,3 +1,6 @@
+#ifndef _HTTP_H
+#define _HTTP_H
+
 #include <map>
 #include <GarrysMod/Lua/LuaBase.h>
 
@@ -42,3 +45,5 @@ struct HTTPResponse {
 
 std::string buildParameters(HTTPRequest request);
 std::string buildUrl(HTTPRequest request);
+
+#endif

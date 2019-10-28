@@ -1,10 +1,9 @@
 #include <string>
 #include <curl/curl.h>
-#include "GarrysMod/Lua/Interface.h"
 #include "chttp.h"
-#include "http.h"
 #include "method.h"
 #include "lua.h"
+#include "threading.h"
 
 using namespace GarrysMod;
 
@@ -112,7 +111,7 @@ size_t curl_headermap_append(char *contents, size_t size, size_t nmemb, std::map
 	return size * nmemb;
 }
 
-bool processRequest(Lua::ILuaBase *LUA, HTTPRequest request) {
+bool processRequest(HTTPRequest request) {
 	CURL *curl;
 	CURLcode cres;
 	bool ret = true;
@@ -123,7 +122,7 @@ bool processRequest(Lua::ILuaBase *LUA, HTTPRequest request) {
 	curl = curl_easy_init();
 
 	if (!curl) {
-		runFailedHandler(LUA, request.failed, "Failed to init curl struct!");
+		failed.push({request.failed, "Failed to init curl struct!"});
 		ret = false;
 		goto cleanup;
 	}
@@ -158,7 +157,7 @@ resend:
 	cres = curl_easy_perform(curl);
 
 	if (cres != CURLE_OK) {
-		runFailedHandler(LUA, request.failed, curl_easy_strerror(cres));
+		failed.push({request.failed, curl_easy_strerror(cres)});
 		ret = false;
 		goto cleanup;
 	}
@@ -178,7 +177,7 @@ resend:
 
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.code);
 
-	runSuccessHandler(LUA, request.success, response);
+	success.push({request.success, response});
 
 cleanup:
 	if (curl)
@@ -273,7 +272,7 @@ LUA_FUNCTION(CHTTP) {
 	}
 	LUA->Pop();
 
-	ret = processRequest(LUA, request);
+	ret = scheduleRequest(request);
 
 exit:
 	LUA->PushBool(ret); // Push result to the stack
@@ -303,6 +302,22 @@ GMOD_MODULE_OPEN() {
 	// the second item from the top (key) and adds them to the table
 	// at the stack offset mentioned in the parameter (again, -1 is the top)
 	LUA->SetTable(-3);
+
+
+	// Get the hook.Add method
+	LUA->GetField(-1, "hook");
+	LUA->GetField(-1, "Add");
+
+	// Push the new hook data
+	LUA->PushString("Think");
+	LUA->PushString("__chttpThinkHook");
+	LUA->PushCFunction(threadingDoThink);
+
+	// Add the hook
+	LUA->Call(3, 0);
+
+	// Pop the "hook" table
+	LUA->Pop();
 
 	// Pop the global table from the stack again
 	LUA->Pop();
