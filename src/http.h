@@ -1,6 +1,7 @@
 #ifndef _HTTP_H
 #define _HTTP_H
 
+#include <string>
 #include <map>
 #include <GarrysMod/Lua/LuaBase.h>
 
