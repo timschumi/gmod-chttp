@@ -32,7 +32,7 @@ for dedicated servers.
 
 ### Linux
 
-1. Install libcurl and its dependencies. If you can't install libcurl and/or
+1. Install libcurl (32-bit) and its dependencies. If you can't install libcurl and/or
    the dependencies in a way that they end up in the library search path,
    they need to be copied to the Garry's Mod base directory.
 
