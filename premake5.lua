@@ -1,4 +1,4 @@
-local target_suffixes = {
+local target_suffixes_86 = {
 	bsd       = "_linux",
 	linux     = "_linux",
 	solaris   = "_linux",
@@ -6,9 +6,16 @@ local target_suffixes = {
 	macosx    = "_osx"  ,
 }
 
+local target_suffixes_64 = {
+	bsd       = "_linux64",
+	linux     = "_linux64",
+	solaris   = "_linux64",
+	windows   = "_win64",
+	macosx    = "_osx64",
+}
+
 solution "chttp"
 	language		"C++"
-	architecture	"x86"
 	location		"project"
 
 	--
@@ -17,6 +24,7 @@ solution "chttp"
 	staticruntime "On"
 
 	configurations { "Debug", "Release" }
+	platforms { "x86", "x64" }
 
 	configuration "Debug"
 		defines { "DEBUG_BUILD" }
@@ -27,11 +35,18 @@ solution "chttp"
 		defines { "RELEASE_BUILD" }
 		optimize	"On"		-- Optimize the build output for size and speed
 
+	filter "platforms:x86"
+		architecture "x86"
+		targetsuffix ( target_suffixes_86[os.target()] )
+
+	filter "platforms:x64"
+		architecture "x86_64"
+		targetsuffix ( target_suffixes_64[os.target()] )
+
 	project "chttp"
 		kind	"SharedLib"
 		targetprefix "gmsv_"
 		targetextension ".dll"
-		targetsuffix ( target_suffixes[os.target()] )
 		includedirs { "curl/include/", "gmod-module-base/include/" }
 		files { "src/*.cpp", "src/*.h", "src/"..os.target().."/*.cpp", "src/"..os.target().."/*.h" }
 		if os.target() == "windows" then
