@@ -52,7 +52,10 @@ solution "chttp"
 		if os.target() == "windows" then
 		    defines { "WINDOWS_BUILD" }
 		    libdirs {"curl/lib"}
-		    links {"libcurl"}
+			filter "platforms:x64"
+				links {"libcurl-x64"}
+			filter "platforms:x86"
+				links {"libcurl"}
 		else
 		    links {"curl"}
 		end
