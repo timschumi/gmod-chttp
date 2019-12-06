@@ -16,7 +16,7 @@ The "base directory" is the directory where the main executable lives.
 This is usually `hl2.exe`/`hl2_linux` for clients or `srcds.exe`/`srcds_run`
 for dedicated servers.
 
-### Windows
+### Windows (32-bit)
 
 1. Download the following files from the [releases page](https://github.com/timschumi/gmod-chttp/releases):
     - `gmsv_chttp_win32.dll`
@@ -30,7 +30,21 @@ for dedicated servers.
 3. Put `gmsv_chttp_win32.dll` into `<base directory>\garrysmod\lua\bin\`. You may have to
    create the `bin` directory if it doesn't exist.
 
-### Linux
+### Windows (64-bit, for the GMod x64 beta)
+
+1. Download the following files from the [releases page](https://github.com/timschumi/gmod-chttp/releases):
+    - `gmsv_chttp_win64.dll`
+    - `libcurl-x64.dll`
+    - `libssl-1_1-x64.dll`
+    - `libcrypto-1_1-x64.dll`
+
+2. Put `libcurl-x64.dll`, `libssl-1_1-x64.dll`, and `libcrypto-1_1-x64.dll` into the Garry's Mod
+   base directory.
+
+3. Put `gmsv_chttp_win64.dll` into `<base directory>\garrysmod\lua\bin\`. You may have to
+   create the `bin` directory if it doesn't exist.
+
+### Linux (32-bit and 64-bit)
 
 1. Install libcurl (32-bit if you are using the 32-bit build, 64-bit if you are
    using the 64-bit build) and its dependencies. If you can't install libcurl and/or
