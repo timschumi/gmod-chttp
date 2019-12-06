@@ -32,11 +32,13 @@ for dedicated servers.
 
 ### Linux
 
-1. Install libcurl (32-bit) and its dependencies. If you can't install libcurl and/or
+1. Install libcurl (32-bit if you are using the 32-bit build, 64-bit if you are
+   using the 64-bit build) and its dependencies. If you can't install libcurl and/or
    the dependencies in a way that they end up in the library search path,
    they need to be copied to the Garry's Mod base directory.
 
-2. Download `gmsv_chttp_linux.dll` (yes, dll) from the [releases page](https://github.com/timschumi/gmod-chttp/releases)
+2. Download either `gmsv_chttp_linux.dll` (yes, dll) or `gmsv_chttp_linux64.dll` (if you
+   are using the x64 GMod beta) from the [releases page](https://github.com/timschumi/gmod-chttp/releases)
    and put it into `<base directory>/garrysmod/lua/bin/`. You may have to
    create the `bin` directory if it doesn't exist.
 
