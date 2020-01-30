@@ -13,10 +13,14 @@ omitting the request body on DELETE requests).
 ## Installation
 
 The "base directory" is the directory where the main executable lives.
-This is usually `hl2.exe`/`hl2_linux` for clients or `srcds.exe`/`srcds_run`
+This is usually `hl2.exe`/`hl2.sh` for clients or `srcds.exe`/`srcds_run`
 for dedicated servers.
 
-### Windows (32-bit)
+Attention has to be paid to whether you are using the x86 or x64
+version of the game/server. Servers are usually x86, clients are x64 by
+default (unless changed by joining the appropriate beta).
+
+### Windows (x86)
 
 1. Download the following files from the [releases page](https://github.com/timschumi/gmod-chttp/releases):
     - `gmsv_chttp_win32.dll`
@@ -30,7 +34,7 @@ for dedicated servers.
 3. Put `gmsv_chttp_win32.dll` into `<base directory>\garrysmod\lua\bin\`. You may have to
    create the `bin` directory if it doesn't exist.
 
-### Windows (64-bit, for the GMod x64 beta)
+### Windows (x64)
 
 1. Download the following files from the [releases page](https://github.com/timschumi/gmod-chttp/releases):
     - `gmsv_chttp_win64.dll`
@@ -44,15 +48,14 @@ for dedicated servers.
 3. Put `gmsv_chttp_win64.dll` into `<base directory>\garrysmod\lua\bin\`. You may have to
    create the `bin` directory if it doesn't exist.
 
-### Linux (32-bit and 64-bit)
+### Linux (x86/x64)
 
-1. Install libcurl (32-bit if you are using the 32-bit build, 64-bit if you are
-   using the 64-bit build) and its dependencies. If you can't install libcurl and/or
-   the dependencies in a way that they end up in the library search path,
-   they need to be copied to the Garry's Mod base directory.
+1. Install libcurl (make sure that it's the correct x86/x64 version!) and its dependencies.
+   If you can't install libcurl and/or the dependencies in a way that they end up in the
+   library search path, they need to be copied to the Garry's Mod base directory.
 
-2. Download either `gmsv_chttp_linux.dll` (yes, dll) or `gmsv_chttp_linux64.dll` (if you
-   are using the x64 GMod beta) from the [releases page](https://github.com/timschumi/gmod-chttp/releases)
+2. Download either `gmsv_chttp_linux.dll` (yes, dll) or `gmsv_chttp_linux64.dll` (first for x86,
+   second for x64) from the [releases page](https://github.com/timschumi/gmod-chttp/releases)
    and put it into `<base directory>/garrysmod/lua/bin/`. You may have to
    create the `bin` directory if it doesn't exist.
 
