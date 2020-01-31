@@ -3,13 +3,17 @@ solution "chttp"
 	location		"project"
 
 	staticruntime	"On"		-- Statically link the C-Runtime to reduce dependencies needed to run our module
-	optimize	"On"		-- Optimize the build output for size and speed
 
 	configurations { "Debug", "Release" }
 	platforms { "linux64", "linux32", "win64", "win32" }
 
-	configuration "Debug"
+	filter "configurations:Debug"
 		symbols		"On"		-- Generate debugging information
+		optimize	"Off"
+
+	filter "configurations:Release"
+		symbols		"Off"
+		optimize	"On"
 
 	filter "platforms:win*"
 		system "windows"
