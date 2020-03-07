@@ -30,7 +30,7 @@ std::map<std::string, std::string> mapFromLuaTable(Lua::ILuaBase *LUA, int index
 	// key will now be top-2 and value will be top-1
 	while (LUA->Next(index - 1) != 0) {
 		// Only store things with String keys
-		if (LUA->IsType(-2, Lua::Type::STRING))
+		if (LUA->IsType(-2, Lua::Type::String))
 			map[LUA->GetString(-2)] = LUA->GetString(-1);
 
 		// Pop value from the stack, key is needed for next iteration

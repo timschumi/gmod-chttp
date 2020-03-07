@@ -195,7 +195,7 @@ LUA_FUNCTION(CHTTP) {
 	HTTPRequest request = HTTPRequest();
 	bool ret;
 
-	if (!LUA->IsType(1, Lua::Type::TABLE)) {
+	if (!LUA->IsType(1, Lua::Type::Table)) {
 		LOG("No HTTPRequest table set.");
 		ret = false;
 		goto exit;
@@ -203,7 +203,7 @@ LUA_FUNCTION(CHTTP) {
 
 	// Fetch failed handler
 	LUA->GetField(1, "failed");
-	if (LUA->IsType(-1, Lua::Type::FUNCTION)) {
+	if (LUA->IsType(-1, Lua::Type::Function)) {
 		request.failed = LUA->ReferenceCreate();
 	} else {
 		LUA->Pop();
@@ -211,7 +211,7 @@ LUA_FUNCTION(CHTTP) {
 
 	// Fetch method
 	LUA->GetField(1, "method");
-	if (LUA->IsType(-1, Lua::Type::STRING)) {
+	if (LUA->IsType(-1, Lua::Type::String)) {
 		request.method = methodFromString(LUA->GetString(-1));
 	} else {
 		request.method = METHOD_GET;
@@ -225,7 +225,7 @@ LUA_FUNCTION(CHTTP) {
 
 	// Fetch url
 	LUA->GetField(1, "url");
-	if (LUA->IsType(-1, Lua::Type::STRING)) {
+	if (LUA->IsType(-1, Lua::Type::String)) {
 		request.url = LUA->GetString(-1);
 	} else {
 		runFailedHandler(LUA, request.failed, "invalid url");
@@ -236,7 +236,7 @@ LUA_FUNCTION(CHTTP) {
 
 	// Fetch success handler
 	LUA->GetField(1, "success");
-	if (LUA->IsType(-1, Lua::Type::FUNCTION)) {
+	if (LUA->IsType(-1, Lua::Type::Function)) {
 		request.success = LUA->ReferenceCreate();
 	} else {
 		LUA->Pop();
@@ -244,21 +244,21 @@ LUA_FUNCTION(CHTTP) {
 
 	// Fetch headers
 	LUA->GetField(1, "headers");
-	if (LUA->IsType(-1, Lua::Type::TABLE)) {
+	if (LUA->IsType(-1, Lua::Type::Table)) {
 		request.headers = mapFromLuaTable(LUA, -1);
 	}
 	LUA->Pop();
 
 	// Fetch parameters
 	LUA->GetField(1, "parameters");
-	if (LUA->IsType(-1, Lua::Type::TABLE)) {
+	if (LUA->IsType(-1, Lua::Type::Table)) {
 		request.parameters = mapFromLuaTable(LUA, -1);
 	}
 	LUA->Pop();
 
 	// Fetch type
 	LUA->GetField(1, "type");
-	if (LUA->IsType(-1, Lua::Type::STRING)) {
+	if (LUA->IsType(-1, Lua::Type::String)) {
 		request.type = LUA->GetString(-1);
 	} else {
 		request.type = "text/plain; charset=utf-8";
@@ -267,7 +267,7 @@ LUA_FUNCTION(CHTTP) {
 
 	// Fetch body
 	LUA->GetField(1, "body");
-	if (LUA->IsType(-1, Lua::Type::STRING)) {
+	if (LUA->IsType(-1, Lua::Type::String)) {
 		request.body = LUA->GetString(-1);
 	}
 	LUA->Pop();
