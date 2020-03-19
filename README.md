@@ -74,3 +74,49 @@ if pcall(require, "chttp") and CHTTP ~= nil then
 	HTTP = CHTTP
 end
 ```
+
+## Building
+
+### Linux (x86)
+
+```
+# Generate build files with cmake
+cmake -DCMAKE_TOOLCHAIN_FILE=toolchain-linux32.cmake /path/to/gmod-chttp
+
+# Build with make
+make
+```
+
+### Linux (x64)
+
+```
+# Generate build files with cmake
+cmake -DCMAKE_TOOLCHAIN_FILE=toolchain-linux64.cmake /path/to/gmod-chttp
+
+# Build with make
+make
+```
+
+### Windows (x86)
+
+This has to be run in a Visual Studio developer console.
+
+```
+# Generate build files with cmake
+cmake -A Win32 /path/to/gmod-chttp
+
+# Build with msbuild
+msbuild gmod-chttp.sln
+```
+
+### Windows (x64)
+
+This has to be run in a Visual Studio developer console.
+
+```
+# Generate build files with cmake
+cmake -A x64 /path/to/gmod-chttp
+
+# Build with msbuild
+msbuild gmod-chttp.sln
+```
