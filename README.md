@@ -61,6 +61,9 @@ default (unless changed by joining the appropriate beta).
 
 ## Usage
 
+This is only required for developers who want to use CHTTP in their scripts.
+A normal end user doesn't need any of this.
+
 The module is loaded by running `require("chttp")` in the LUA console or in
 a script. It will provide a `CHTTP()` method that is called in the same way
 as the original HTTP-Method. For more information, please refer to the
