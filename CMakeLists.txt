@@ -29,10 +29,11 @@ target_include_directories(chttp PRIVATE curl/include)
 
 # Link against libcurl
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	target_link_directories(chttp PRIVATE curl/lib)
 	if(${CMAKE_SYSTEM_NAME} MATCHES "x64")
-		target_link_libraries(chttp curl-x64)
+		target_link_libraries(chttp libcurl-x64)
 	else()
-		target_link_libraries(chttp curl)
+		target_link_libraries(chttp libcurl)
 	endif()
 else()
 	target_link_libraries(chttp curl)
