@@ -20,6 +20,10 @@ add_subdirectory(src)
 # Link against the GMod API
 target_link_libraries(chttp gmod-module-base)
 
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	add_definitions(-DWINDOWS_BUILD)
+endif()
+
 # Link against libcurl
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	if(${CMAKE_SYSTEM_NAME} MATCHES "x64")
