@@ -1,0 +1,13 @@
+add_library(curl-phony INTERFACE)
+target_include_directories(curl-phony INTERFACE include)
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	target_link_directories(curl-phony INTERFACE lib)
+	if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "x64")
+		target_link_libraries(curl-phony INTERFACE libcurl-x64)
+	else()
+		target_link_libraries(curl-phony INTERFACE libcurl)
+	endif()
+else()
+	target_link_libraries(curl-phony INTERFACE curl)
+endif()
