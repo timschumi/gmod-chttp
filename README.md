@@ -103,7 +103,7 @@ This has to be run in a Visual Studio developer console.
 
 ```
 # Generate build files with cmake
-cmake -A Win32 /path/to/gmod-chttp
+cmake -DCMAKE_TOOLCHAIN_FILE=toolchain-win32.cmake /path/to/gmod-chttp
 
 # Build with msbuild
 msbuild gmod-chttp.sln
@@ -115,7 +115,7 @@ This has to be run in a Visual Studio developer console.
 
 ```
 # Generate build files with cmake
-cmake -A x64 /path/to/gmod-chttp
+cmake -DCMAKE_TOOLCHAIN_FILE=toolchain-win64.cmake /path/to/gmod-chttp
 
 # Build with msbuild
 msbuild gmod-chttp.sln
