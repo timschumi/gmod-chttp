@@ -24,6 +24,9 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	add_definitions(-DWINDOWS_BUILD)
 endif()
 
+# Add the curl include directory
+target_include_directories(chttp PRIVATE curl/include)
+
 # Link against libcurl
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	if(${CMAKE_SYSTEM_NAME} MATCHES "x64")
