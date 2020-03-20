@@ -2,3 +2,6 @@
 	path = gmod-module-base
 	url = https://github.com/Facepunch/gmod-module-base
 	branch = development
+[submodule "gmod-common-curl"]
+	path = gmod-common-curl
+	url = https://github.com/timschumi/gmod-common-curl
