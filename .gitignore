@@ -1,2 +1,4 @@
 out/
+cmake-build-*/
 .vs/
+.idea/
