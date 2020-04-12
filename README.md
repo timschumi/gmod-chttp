@@ -59,6 +59,11 @@ unless manually changed by joining the appropriate beta.
    and put it into `<base directory>/garrysmod/lua/bin/`. You may have to
    create the `bin` directory if it doesn't exist.
 
+If you are using Debian 9 or anything Debian 9 based (like Ubuntu 19.xx or earlier),
+and you can't get the normal file to work, try using the file suffixed with `-deb9`
+(you will have to remove the `-deb9` suffix before use). In future versions, the
+default file should be compatible with Debian 9 based systems.
+
 ## Usage
 
 This is only required for developers who want to use CHTTP in their scripts.
