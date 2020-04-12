@@ -17,8 +17,8 @@ This is usually `hl2.exe`/`hl2.sh` for clients or `srcds.exe`/`srcds_run`
 for dedicated servers.
 
 Attention has to be paid to whether you are using the x86 or x64
-version of the game/server. Servers are usually x86, clients are x64 by
-default (unless changed by joining the appropriate beta).
+version of the game/server. Servers and clients are both x86 by default,
+unless manually changed by joining the appropriate beta.
 
 ### Windows (x86)
 
