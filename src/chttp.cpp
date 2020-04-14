@@ -187,7 +187,7 @@ cleanup:
 }
 
 /*
- * See https://wiki.garrysmod.com/page/Global/HTTP for documentation.
+ * See https://wiki.facepunch.com/gmod/Global.HTTP for documentation.
  * The function takes a single table argument, based off the HTTPRequest structure.
  * It returns a boolean whether a request was sent or not.
  */

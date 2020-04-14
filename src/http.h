@@ -6,7 +6,7 @@
 #include <GarrysMod/Lua/LuaBase.h>
 
 // Modeled after GMod's HTTPRequest structure
-// https://wiki.garrysmod.com/page/Structures/HTTPRequest
+// https://wiki.facepunch.com/gmod/Structures/HTTPRequest
 struct HTTPRequest {
 	// Handler for failed requests. args: (string) reason
 	// This is a reference to the function on the stack
