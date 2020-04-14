@@ -72,7 +72,7 @@ A normal end user doesn't need any of this.
 The module is loaded by running `require("chttp")` in the LUA console or in
 a script. It will provide a `CHTTP()` method that is called in the same way
 as the original HTTP-Method. For more information, please refer to the
-[Garry's Mod documentation](https://wiki.garrysmod.com/page/Global/HTTP).
+[Garry's Mod documentation](https://wiki.facepunch.com/gmod/Global.HTTP).
 
 In the use case where you want to use CHTTP instead of HTTP if it's available,
 use the following code snippet to load it:
