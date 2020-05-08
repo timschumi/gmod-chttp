@@ -12,57 +12,21 @@ omitting the request body on DELETE requests).
 
 ## Installation
 
-The "base directory" is the directory where the main executable lives.
-This is usually `hl2.exe`/`hl2.sh` for clients or `srcds.exe`/`srcds_run`
-for dedicated servers.
+The only thing required to install the library is to download the
+appropriate file from the [releases page](https://github.com/timschumi/gmod-chttp/releases) and
+putting it into the `<game or server directory>/garrysmod/lua/bin/` directory.
+(The `bin` directory might not exist and should be created manually.)
 
 Attention has to be paid to whether you are using the x86 or x64
 version of the game/server. Servers and clients are both x86 by default,
 unless manually changed by joining the appropriate beta.
 
-### Windows (x86)
+Contrary to earlier releases, installing libcurl and its dependencies
+ISN'T required anymore, since those are now included in the library itself.
 
-1. Download the following files from the [releases page](https://github.com/timschumi/gmod-chttp/releases):
-    - `gmsv_chttp_win32.dll`
-    - `libcurl.dll`
-    - `libssl-1_1.dll`
-    - `libcrypto-1_1.dll`
-
-2. Put `libcurl.dll`, `libssl-1_1.dll`, and `libcrypto-1_1.dll` into the Garry's Mod
-   base directory.
-
-3. Put `gmsv_chttp_win32.dll` into `<base directory>\garrysmod\lua\bin\`. You may have to
-   create the `bin` directory if it doesn't exist.
-
-### Windows (x64)
-
-1. Download the following files from the [releases page](https://github.com/timschumi/gmod-chttp/releases):
-    - `gmsv_chttp_win64.dll`
-    - `libcurl-x64.dll`
-    - `libssl-1_1-x64.dll`
-    - `libcrypto-1_1-x64.dll`
-
-2. Put `libcurl-x64.dll`, `libssl-1_1-x64.dll`, and `libcrypto-1_1-x64.dll` into the Garry's Mod
-   base directory.
-
-3. Put `gmsv_chttp_win64.dll` into `<base directory>\garrysmod\lua\bin\`. You may have to
-   create the `bin` directory if it doesn't exist.
-
-### Linux (x86/x64)
-
-1. Install libcurl (make sure that it's the correct x86/x64 version!) and its dependencies.
-   If you can't install libcurl and/or the dependencies in a way that they end up in the
-   library search path, they need to be copied to the Garry's Mod base directory.
-
-2. Download either `gmsv_chttp_linux.dll` (yes, dll) or `gmsv_chttp_linux64.dll` (first for x86,
-   second for x64) from the [releases page](https://github.com/timschumi/gmod-chttp/releases)
-   and put it into `<base directory>/garrysmod/lua/bin/`. You may have to
-   create the `bin` directory if it doesn't exist.
-
-If you are using Debian 9 or anything Debian 9 based (like Ubuntu 19.xx or earlier),
-and you can't get the normal file to work, try using the file suffixed with `-deb9`
-(you will have to remove the `-deb9` suffix before use). In future versions, the
-default file should be compatible with Debian 9 based systems.
+Also, all Linux libraries are now compiled on Debian 9 for compatibility
+reasons, so there is no longer a seperate compatibility version of the
+library.
 
 ## Usage
 
