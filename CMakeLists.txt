@@ -19,6 +19,11 @@ target_link_libraries(chttp gmod-module-base)
 # Link against curl
 target_link_libraries(chttp curl-phony)
 
+# Set linker script for Linux
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	target_link_options(chttp PRIVATE "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/chttp-linux.exp")
+endif()
+
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	add_definitions(-DWINDOWS_BUILD)
 endif()
