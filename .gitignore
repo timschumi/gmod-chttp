@@ -1,4 +1,6 @@
 out/
+dist/
 cmake-build-*/
 .vs/
 .idea/
+.vagrant/
