@@ -29,8 +29,8 @@ std::map<std::string, std::string> mapFromLuaTable(Lua::ILuaBase *LUA, int index
 	// the key-value pair that follows that to the stack.
 	// key will now be top-2 and value will be top-1
 	while (LUA->Next(index - 1) != 0) {
-		// Only store things with String keys
-		if (LUA->IsType(-2, Lua::Type::String))
+		// Only store things with String keys and String values
+		if (LUA->IsType(-2, Lua::Type::String) && LUA->IsType(-1, Lua::Type::String))
 			map[LUA->GetString(-2)] = LUA->GetString(-1);
 
 		// Pop value from the stack, key is needed for next iteration
