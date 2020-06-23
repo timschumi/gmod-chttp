@@ -19,5 +19,8 @@ bool startThread() {
 	if (thread_exists)
 		return true;
 
-	return pthread_create(&thread, nullptr, threadFunc, nullptr) == 0;
+	if (pthread_create(&thread, nullptr, threadFunc, nullptr))
+		return false;
+
+	return pthread_detach(thread) == 0;
 }
