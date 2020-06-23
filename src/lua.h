@@ -4,8 +4,8 @@
 
 using namespace GarrysMod;
 
-#define LOG(x) printMessage(LUA, x);
+#define LOG(x) printMessage(LUA, x)
 
-void mapToLuaTable(Lua::ILuaBase *LUA, std::map<std::string, std::string> map);
+void mapToLuaTable(Lua::ILuaBase *LUA, const std::map<std::string, std::string>& map);
 std::map<std::string, std::string> mapFromLuaTable(Lua::ILuaBase *LUA, int index);
-void printMessage(Lua::ILuaBase *LUA, std::string message);
+void printMessage(Lua::ILuaBase *LUA, const std::string& message);

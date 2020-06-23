@@ -6,8 +6,8 @@ HANDLE hThread;
 DWORD dwThreadId;
 
 DWORD WINAPI threadFunc(LPVOID data) {
-	while (!requests.empty()) {
-		HTTPRequest request = requests.pop();
+	while (!getRequestQueue().empty()) {
+		HTTPRequest request = getRequestQueue().pop();
 		processRequest(request);
 	}
 	return 0;
@@ -21,8 +21,5 @@ bool startThread() {
 
 	hThread = CreateThread(NULL, 0, threadFunc, NULL, 0, &dwThreadId);
 
-	if (hThread == NULL)
-		return false;
-
-	return true;
+	return hThread != NULL;
 }

@@ -12,7 +12,7 @@ std::string getUserAgent() {
 	return (std::string) "curl/" + info->version + " gmod-chttp/" + CHTTP_VERSION;
 }
 
-void runFailedHandler(Lua::ILuaBase *LUA, int handler, std::string reason) {
+void runFailedHandler(Lua::ILuaBase *LUA, int handler, const std::string& reason) {
 	if (!handler)
 		return;
 
@@ -27,7 +27,7 @@ void runFailedHandler(Lua::ILuaBase *LUA, int handler, std::string reason) {
 	LUA->Call(1, 0);
 }
 
-void runSuccessHandler(Lua::ILuaBase *LUA, int handler, HTTPResponse response) {
+void runSuccessHandler(Lua::ILuaBase *LUA, int handler, const HTTPResponse& response) {
 	if (!handler)
 		return;
 
@@ -36,7 +36,7 @@ void runSuccessHandler(Lua::ILuaBase *LUA, int handler, HTTPResponse response) {
 	LUA->ReferenceFree(handler);
 
 	// Push the arguments
-	LUA->PushNumber(response.code);
+	LUA->PushNumber((double) response.code);
 	LUA->PushString(response.body.c_str());
 	mapToLuaTable(LUA, response.headers);
 
@@ -44,8 +44,8 @@ void runSuccessHandler(Lua::ILuaBase *LUA, int handler, HTTPResponse response) {
 	LUA->Call(3, 0);
 }
 
-void curlAddHeaders(CURL *curl, HTTPRequest request) {
-	struct curl_slist *headers = NULL;
+void curlAddHeaders(CURL *curl, const HTTPRequest& request) {
+	struct curl_slist *headers = nullptr;
 
 	// Check if we have to add the default User-Agent
 	if (request.headers.count("User-Agent") == 0)
@@ -79,6 +79,8 @@ void curlSetMethod(CURL *curl, int method) {
 	case METHOD_OPTIONS:
 		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, methodToString(method).c_str());
 		break;
+	default:
+		break;
 	}
 }
 
@@ -92,7 +94,7 @@ size_t curl_string_append(char *contents, size_t size, size_t nmemb, std::string
 size_t curl_headermap_append(char *contents, size_t size, size_t nmemb, std::map<std::string, std::string> *userp) {
 	std::string header(contents, size * nmemb);
 
-	std::size_t found = header.find_first_of(":");
+	std::size_t found = header.find_first_of(':');
 
 	if (found != std::string::npos) {
 		(*userp)[header.substr(0, found)] = header.substr(found + 2, header.length() - found - 4);
@@ -106,13 +108,13 @@ bool processRequest(HTTPRequest request) {
 	CURLcode cres;
 	bool ret = true;
 	HTTPResponse response = HTTPResponse();
-	std::string postbody = "";
-	const char* redirect = "";
+	std::string postbody;
+	const char* redirect;
 
 	curl = curl_easy_init();
 
 	if (!curl) {
-		failed.push({request.failed, "Failed to init curl struct!"});
+		getFailQueue().push({request.failed, "Failed to init curl struct!"});
 		ret = false;
 		goto cleanup;
 	}
@@ -121,7 +123,7 @@ bool processRequest(HTTPRequest request) {
 
 	if (isLikePost(request.method)) {
 		// Do we have a request body?
-		if (request.body.size() != 0) {
+		if (!request.body.empty()) {
 			postbody = request.body;
 		} else {
 			postbody = buildParameters(request);
@@ -147,7 +149,7 @@ resend:
 	cres = curl_easy_perform(curl);
 
 	if (cres != CURLE_OK) {
-		failed.push({request.failed, curl_easy_strerror(cres)});
+		getFailQueue().push({request.failed, curl_easy_strerror(cres)});
 		ret = false;
 		goto cleanup;
 	}
@@ -167,7 +169,7 @@ resend:
 
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.code);
 
-	success.push({request.success, response});
+	getSuccessQueue().push({request.success, response});
 
 cleanup:
 	if (curl)

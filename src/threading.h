@@ -15,9 +15,9 @@ struct FailedQueueData {
 };
 
 // Different queues for different things
-extern LockableQueue<HTTPRequest> requests;
-extern LockableQueue<FailedQueueData> failed;
-extern LockableQueue<SuccessQueueData> success;
+LockableQueue<HTTPRequest>& getRequestQueue();
+LockableQueue<FailedQueueData>& getFailQueue();
+LockableQueue<SuccessQueueData>& getSuccessQueue();
 
 // Implemented by LUA_FUNCTION(threadingDoThink)
 int threadingDoThink(lua_State *L);

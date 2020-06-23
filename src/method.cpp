@@ -2,20 +2,20 @@
 #include "method.h"
 
 // Turns a string method into an int
-int methodFromString(std::string method) {
-	if (method.compare("GET") == 0)
+int methodFromString(const std::string& method) {
+	if (method == "GET")
 		return METHOD_GET;
-	if (method.compare("POST") == 0)
+	if (method == "POST")
 		return METHOD_POST;
-	if (method.compare("HEAD") == 0)
+	if (method == "HEAD")
 		return METHOD_HEAD;
-	if (method.compare("PUT") == 0)
+	if (method == "PUT")
 		return METHOD_PUT;
-	if (method.compare("DELETE") == 0)
+	if (method == "DELETE")
 		return METHOD_DELETE;
-	if (method.compare("PATCH") == 0)
+	if (method == "PATCH")
 		return METHOD_PATCH;
-	if (method.compare("OPTIONS") == 0)
+	if (method == "OPTIONS")
 		return METHOD_OPTIONS;
 
 	return METHOD_NOSUPP;

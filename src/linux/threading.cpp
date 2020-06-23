@@ -7,20 +7,17 @@ bool thread_exists = false;
 
 void* threadFunc(void *data) {
 	thread_exists = true;
-	while (!requests.empty()) {
-		HTTPRequest request = requests.pop();
+	while (!getRequestQueue().empty()) {
+		HTTPRequest request = getRequestQueue().pop();
 		processRequest(request);
 	}
 	thread_exists = false;
-	pthread_exit(NULL);
+	pthread_exit(nullptr);
 }
 
 bool startThread() {
 	if (thread_exists)
 		return true;
 
-	if (pthread_create(&thread, NULL, threadFunc, NULL))
-		return false;
-
-	return true;
+	return pthread_create(&thread, nullptr, threadFunc, nullptr) == 0;
 }

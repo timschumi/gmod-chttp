@@ -1,15 +1,28 @@
 #include <GarrysMod/Lua/Interface.h>
+
+#include <utility>
 #include "chttp.h"
 #include "threading.h"
 
 using namespace GarrysMod;
 
-LockableQueue<HTTPRequest> requests;
-LockableQueue<FailedQueueData> failed;
-LockableQueue<SuccessQueueData> success;
+LockableQueue<HTTPRequest>& getRequestQueue() {
+	static LockableQueue<HTTPRequest> requests;
+	return requests;
+}
+
+LockableQueue<FailedQueueData>& getFailQueue() {
+	static LockableQueue<FailedQueueData> failed;
+	return failed;
+}
+
+LockableQueue<SuccessQueueData>& getSuccessQueue() {
+	static LockableQueue<SuccessQueueData> success;
+	return success;
+}
 
 bool scheduleRequest(HTTPRequest request) {
-	requests.push(request);
+	getRequestQueue().push(std::move(request));
 
 	return startThread();
 }
@@ -17,13 +30,13 @@ bool scheduleRequest(HTTPRequest request) {
 LUA_FUNCTION(threadingDoThink) {
 	FailedQueueData failed_data;
 	SuccessQueueData success_data;
-	while (!failed.empty()) {
-		failed_data = failed.pop();
+	while (!getFailQueue().empty()) {
+		failed_data = getFailQueue().pop();
 		runFailedHandler(LUA, failed_data.handler, failed_data.reason);
 	}
 
-	while (!success.empty()) {
-		success_data = success.pop();
+	while (!getSuccessQueue().empty()) {
+		success_data = getSuccessQueue().pop();
 		runSuccessHandler(LUA, success_data.handler, success_data.response);
 	}
 

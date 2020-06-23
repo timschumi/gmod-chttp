@@ -1,7 +1,7 @@
 #include "lua.h"
 
 // Builds a LUA table from a map and leaves it on the stack
-void mapToLuaTable(Lua::ILuaBase *LUA, std::map<std::string, std::string> map) {
+void mapToLuaTable(Lua::ILuaBase *LUA, const std::map<std::string, std::string>& map) {
 	// Create a new table on the stack
 	LUA->CreateTable();
 
@@ -40,7 +40,7 @@ std::map<std::string, std::string> mapFromLuaTable(Lua::ILuaBase *LUA, int index
 	return map;
 }
 
-void printMessage(Lua::ILuaBase *LUA, std::string message) {
+void printMessage(Lua::ILuaBase *LUA, const std::string& message) {
 	// Push global table to the stack to work on it
 	LUA->PushSpecial(Lua::SPECIAL_GLOB);
 
