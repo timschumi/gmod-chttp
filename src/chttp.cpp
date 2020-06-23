@@ -143,9 +143,9 @@ bool processRequest(HTTPRequest request) {
 
 	curlAddHeaders(curl, request);
 
-resend:
 	curl_easy_setopt(curl, CURLOPT_URL, buildUrl(request).c_str());
 
+resend:
 	cres = curl_easy_perform(curl);
 
 	if (cres != CURLE_OK) {
@@ -161,7 +161,7 @@ resend:
 		response.body.clear();
 
 		// Set the new URL and clear the temp variable
-		request.url = redirect;
+		curl_easy_setopt(curl, CURLOPT_URL, redirect);
 		redirect = "";
 
 		goto resend;
