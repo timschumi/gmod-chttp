@@ -1,7 +1,7 @@
 #include "GarrysMod/Lua/Interface.h"
 #include "http.h"
 
-#define CHTTP_VERSION "1.3.1"
+#define CHTTP_VERSION "1.3.2"
 
 bool processRequest(const HTTPRequest& request);
 void runFailedHandler(GarrysMod::Lua::ILuaBase *LUA, int handler, const std::string& reason);
