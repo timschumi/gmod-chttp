@@ -103,7 +103,7 @@ size_t curl_headermap_append(char *contents, size_t size, size_t nmemb, std::map
 	return size * nmemb;
 }
 
-bool processRequest(HTTPRequest request) {
+bool processRequest(const HTTPRequest& request) {
 	CURL *curl;
 	CURLcode cres;
 	bool ret = true;
@@ -273,7 +273,7 @@ exit:
 
 GMOD_MODULE_OPEN() {
 #ifdef WINDOWS_BUILD
-	if (curl_global_sslset(CURLSSLBACKEND_SCHANNEL, NULL, NULL) != CURLSSLSET_OK) {
+	if (curl_global_sslset(CURLSSLBACKEND_SCHANNEL, nullptr, nullptr) != CURLSSLSET_OK) {
 		LOG("error: The WinSSL/schannel backend is not available!");
 		return 1;
 	}

@@ -19,7 +19,7 @@ bool startThread() {
 	if (GetExitCodeThread(hThread, &exitCode) && exitCode == STILL_ACTIVE)
 		return true;
 
-	hThread = CreateThread(NULL, 0, threadFunc, NULL, 0, &dwThreadId);
+	hThread = CreateThread(nullptr, 0, threadFunc, nullptr, 0, &dwThreadId);
 
-	return hThread != NULL;
+	return hThread != nullptr;
 }
