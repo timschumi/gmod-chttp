@@ -44,19 +44,19 @@ void runSuccessHandler(Lua::ILuaBase *LUA, int handler, const HTTPResponse& resp
 	LUA->Call(3, 0);
 }
 
-void curlAddHeaders(CURL *curl, const HTTPRequest& request) {
+void curlAddHeaders(CURL *curl, HTTPRequest *request) {
 	struct curl_slist *headers = nullptr;
 
 	// Check if we have to add the default User-Agent
-	if (request.headers.count("User-Agent") == 0)
+	if (request->headers.count("User-Agent") == 0)
 		headers = curl_slist_append(headers, ("User-Agent: " + getUserAgent()).c_str());
 
 	// Add the Content-Type header if not already set
-	if (request.headers.count("Content-Type") == 0)
-		headers = curl_slist_append(headers, ("Content-Type: " + request.type).c_str());
+	if (request->headers.count("Content-Type") == 0)
+		headers = curl_slist_append(headers, ("Content-Type: " + request->type).c_str());
 
 	// Add all the headers from the request struct
-	for (auto const& e : request.headers)
+	for (auto const& e : request->headers)
 		headers = curl_slist_append(headers, (e.first + ": " + e.second).c_str());
 
 	// Add the header list to the curl struct
@@ -103,7 +103,7 @@ size_t curl_headermap_append(char *contents, size_t size, size_t nmemb, std::map
 	return size * nmemb;
 }
 
-bool processRequest(const HTTPRequest& request) {
+bool processRequest(HTTPRequest *request) {
 	CURL *curl;
 	CURLcode cres;
 	bool ret = true;
@@ -114,17 +114,17 @@ bool processRequest(const HTTPRequest& request) {
 	curl = curl_easy_init();
 
 	if (!curl) {
-		getFailQueue().push({request.failed, "Failed to init curl struct!"});
+		getFailQueue().push({request->failed, "Failed to init curl struct!"});
 		ret = false;
 		goto cleanup;
 	}
 
-	curlSetMethod(curl, request.method);
+	curlSetMethod(curl, request->method);
 
-	if (isLikePost(request.method)) {
+	if (isLikePost(request->method)) {
 		// Do we have a request body?
-		if (!request.body.empty()) {
-			postbody = request.body;
+		if (!request->body.empty()) {
+			postbody = request->body;
 		} else {
 			postbody = buildParameters(request);
 		}
@@ -149,7 +149,7 @@ resend:
 	cres = curl_easy_perform(curl);
 
 	if (cres != CURLE_OK) {
-		getFailQueue().push({request.failed, curl_easy_strerror(cres)});
+		getFailQueue().push({request->failed, curl_easy_strerror(cres)});
 		ret = false;
 		goto cleanup;
 	}
@@ -169,7 +169,7 @@ resend:
 
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.code);
 
-	getSuccessQueue().push({request.success, response});
+	getSuccessQueue().push({request->success, response});
 
 cleanup:
 	if (curl)
@@ -184,7 +184,7 @@ cleanup:
  * It returns a boolean whether a request was sent or not.
  */
 LUA_FUNCTION(CHTTP) {
-	HTTPRequest request = HTTPRequest();
+	auto *request = new HTTPRequest();
 	bool ret;
 
 	if (!LUA->IsType(1, Lua::Type::Table)) {
@@ -196,7 +196,7 @@ LUA_FUNCTION(CHTTP) {
 	// Fetch failed handler
 	LUA->GetField(1, "failed");
 	if (LUA->IsType(-1, Lua::Type::Function)) {
-		request.failed = LUA->ReferenceCreate();
+		request->failed = LUA->ReferenceCreate();
 	} else {
 		LUA->Pop();
 	}
@@ -204,12 +204,12 @@ LUA_FUNCTION(CHTTP) {
 	// Fetch method
 	LUA->GetField(1, "method");
 	if (LUA->IsType(-1, Lua::Type::String)) {
-		request.method = methodFromString(LUA->GetString(-1));
+		request->method = methodFromString(LUA->GetString(-1));
 	} else {
-		request.method = METHOD_GET;
+		request->method = METHOD_GET;
 	}
-	if (request.method == METHOD_NOSUPP) {
-		runFailedHandler(LUA, request.failed, "Unsupported request method: " + std::string(LUA->GetString(-1)));
+	if (request->method == METHOD_NOSUPP) {
+		runFailedHandler(LUA, request->failed, "Unsupported request method: " + std::string(LUA->GetString(-1)));
 		ret = false;
 		goto exit;
 	}
@@ -218,9 +218,9 @@ LUA_FUNCTION(CHTTP) {
 	// Fetch url
 	LUA->GetField(1, "url");
 	if (LUA->IsType(-1, Lua::Type::String)) {
-		request.url = LUA->GetString(-1);
+		request->url = LUA->GetString(-1);
 	} else {
-		runFailedHandler(LUA, request.failed, "invalid url");
+		runFailedHandler(LUA, request->failed, "invalid url");
 		ret = false;
 		goto exit;
 	}
@@ -229,7 +229,7 @@ LUA_FUNCTION(CHTTP) {
 	// Fetch success handler
 	LUA->GetField(1, "success");
 	if (LUA->IsType(-1, Lua::Type::Function)) {
-		request.success = LUA->ReferenceCreate();
+		request->success = LUA->ReferenceCreate();
 	} else {
 		LUA->Pop();
 	}
@@ -237,30 +237,30 @@ LUA_FUNCTION(CHTTP) {
 	// Fetch headers
 	LUA->GetField(1, "headers");
 	if (LUA->IsType(-1, Lua::Type::Table)) {
-		request.headers = mapFromLuaTable(LUA, -1);
+		request->headers = mapFromLuaTable(LUA, -1);
 	}
 	LUA->Pop();
 
 	// Fetch parameters
 	LUA->GetField(1, "parameters");
 	if (LUA->IsType(-1, Lua::Type::Table)) {
-		request.parameters = mapFromLuaTable(LUA, -1);
+		request->parameters = mapFromLuaTable(LUA, -1);
 	}
 	LUA->Pop();
 
 	// Fetch type
 	LUA->GetField(1, "type");
 	if (LUA->IsType(-1, Lua::Type::String)) {
-		request.type = LUA->GetString(-1);
+		request->type = LUA->GetString(-1);
 	} else {
-		request.type = "text/plain; charset=utf-8";
+		request->type = "text/plain; charset=utf-8";
 	}
 	LUA->Pop();
 
 	// Fetch body
 	LUA->GetField(1, "body");
 	if (LUA->IsType(-1, Lua::Type::String)) {
-		request.body = LUA->GetString(-1);
+		request->body = LUA->GetString(-1);
 	}
 	LUA->Pop();
 

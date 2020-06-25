@@ -6,8 +6,8 @@
 
 using namespace GarrysMod;
 
-LockableQueue<HTTPRequest>& getRequestQueue() {
-	static LockableQueue<HTTPRequest> requests;
+LockableQueue<HTTPRequest*>& getRequestQueue() {
+	static LockableQueue<HTTPRequest*> requests;
 	return requests;
 }
 
@@ -21,8 +21,8 @@ LockableQueue<SuccessQueueData>& getSuccessQueue() {
 	return success;
 }
 
-bool scheduleRequest(HTTPRequest request) {
-	getRequestQueue().push(std::move(request));
+bool scheduleRequest(HTTPRequest *request) {
+	getRequestQueue().push(request);
 
 	return startThread();
 }

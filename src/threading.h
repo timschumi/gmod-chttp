@@ -15,14 +15,14 @@ struct FailedQueueData {
 };
 
 // Different queues for different things
-LockableQueue<HTTPRequest>& getRequestQueue();
+LockableQueue<HTTPRequest*>& getRequestQueue();
 LockableQueue<FailedQueueData>& getFailQueue();
 LockableQueue<SuccessQueueData>& getSuccessQueue();
 
 // Implemented by LUA_FUNCTION(threadingDoThink)
 int threadingDoThink(lua_State *L);
 
-bool scheduleRequest(HTTPRequest request);
+bool scheduleRequest(HTTPRequest *request);
 
 // The following functions should be implemented by
 // the target-specific threading code
