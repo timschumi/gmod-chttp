@@ -20,6 +20,10 @@ bool startThread() {
 	if (GetExitCodeThread(hThread, &exitCode) && exitCode == STILL_ACTIVE)
 		return true;
 
+	// Free old thread
+	if (hThread && !CloseHandle(hThread))
+		return false;
+
 	hThread = CreateThread(nullptr, 0, threadFunc, nullptr, 0, &dwThreadId);
 
 	return hThread != nullptr;
