@@ -8,7 +8,8 @@ bool thread_exists = false;
 void* threadFunc(void *data) {
 	thread_exists = true;
 	while (!getRequestQueue().empty()) {
-		HTTPRequest *request = getRequestQueue().pop();
+		HTTPRequest *request = getRequestQueue().front();
+		getRequestQueue().pop();
 		processRequest(request);
 		delete request;
 	}

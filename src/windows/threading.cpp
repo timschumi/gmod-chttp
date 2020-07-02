@@ -7,7 +7,8 @@ DWORD dwThreadId;
 
 DWORD WINAPI threadFunc(LPVOID data) {
 	while (!getRequestQueue().empty()) {
-		HTTPRequest *request = getRequestQueue().pop();
+		HTTPRequest *request = getRequestQueue().front();
+		getRequestQueue().pop();
 		processRequest(request);
 		delete request;
 	}

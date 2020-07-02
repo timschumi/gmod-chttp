@@ -1,6 +1,6 @@
+#include <queue>
 #include <GarrysMod/Lua/Interface.h>
 #include "http.h"
-#include "lockqueue.h"
 
 // Data on the success queue
 struct SuccessQueueData {
@@ -15,9 +15,9 @@ struct FailedQueueData {
 };
 
 // Different queues for different things
-LockableQueue<HTTPRequest*>& getRequestQueue();
-LockableQueue<FailedQueueData>& getFailQueue();
-LockableQueue<SuccessQueueData>& getSuccessQueue();
+std::queue<HTTPRequest*>& getRequestQueue();
+std::queue<FailedQueueData>& getFailQueue();
+std::queue<SuccessQueueData>& getSuccessQueue();
 
 // Implemented by LUA_FUNCTION(threadingDoThink)
 int threadingDoThink(lua_State *L);
