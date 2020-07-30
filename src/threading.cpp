@@ -42,6 +42,7 @@ LUA_FUNCTION(threadingDoThink) {
 		success_data = getSuccessQueue().front();
 		getSuccessQueue().pop();
 		runSuccessHandler(LUA, success_data.handler, success_data.response);
+		delete success_data.response;
 	}
 
 	return 0;

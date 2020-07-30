@@ -27,7 +27,7 @@ void runFailedHandler(Lua::ILuaBase *LUA, int handler, const std::string& reason
 	LUA->Call(1, 0);
 }
 
-void runSuccessHandler(Lua::ILuaBase *LUA, int handler, const HTTPResponse& response) {
+void runSuccessHandler(Lua::ILuaBase *LUA, int handler, HTTPResponse *response) {
 	if (!handler)
 		return;
 
@@ -36,9 +36,9 @@ void runSuccessHandler(Lua::ILuaBase *LUA, int handler, const HTTPResponse& resp
 	LUA->ReferenceFree(handler);
 
 	// Push the arguments
-	LUA->PushNumber((double) response.code);
-	LUA->PushString(response.body.c_str());
-	mapToLuaTable(LUA, response.headers);
+	LUA->PushNumber((double) response->code);
+	LUA->PushString(response->body.c_str());
+	mapToLuaTable(LUA, response->headers);
 
 	// Call the success handler with three arguments
 	LUA->Call(3, 0);
@@ -107,7 +107,7 @@ bool processRequest(HTTPRequest *request) {
 	CURL *curl;
 	CURLcode cres;
 	bool ret = true;
-	HTTPResponse response = HTTPResponse();
+	HTTPResponse *response = new HTTPResponse();
 	std::string postbody;
 	const char* redirect;
 
@@ -134,11 +134,11 @@ bool processRequest(HTTPRequest *request) {
 	}
 
 	// Set up saving the response body
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response.body);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response->body);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_string_append);
 
 	// Set up saving the headers
-	curl_easy_setopt(curl, CURLOPT_HEADERDATA, &response.headers);
+	curl_easy_setopt(curl, CURLOPT_HEADERDATA, &response->headers);
 	curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, curl_headermap_append);
 
 	curlAddHeaders(curl, request);
@@ -157,8 +157,8 @@ resend:
 	curl_easy_getinfo(curl, CURLINFO_REDIRECT_URL, &redirect);
 	if (redirect) {
 		// Clear out saved headers and body
-		response.headers.clear();
-		response.body.clear();
+		response->headers.clear();
+		response->body.clear();
 
 		// Set the new URL and clear the temp variable
 		curl_easy_setopt(curl, CURLOPT_URL, redirect);
@@ -167,11 +167,16 @@ resend:
 		goto resend;
 	}
 
-	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.code);
+	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response->code);
 
 	getSuccessQueue().push({request->success, response});
 
 cleanup:
+	// Clear out the HTTPResponse if we don't need it
+	if (!ret) {
+		delete response;
+	}
+
 	if (curl)
 		curl_easy_cleanup(curl);
 

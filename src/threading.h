@@ -5,7 +5,7 @@
 // Data on the success queue
 struct SuccessQueueData {
 	int handler;
-	HTTPResponse response;
+	HTTPResponse *response;
 };
 
 // Data on the success queue

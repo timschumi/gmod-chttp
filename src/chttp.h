@@ -5,4 +5,4 @@
 
 bool processRequest(HTTPRequest *request);
 void runFailedHandler(GarrysMod::Lua::ILuaBase *LUA, int handler, const std::string& reason);
-void runSuccessHandler(GarrysMod::Lua::ILuaBase *LUA, int handler, const HTTPResponse& response);
+void runSuccessHandler(GarrysMod::Lua::ILuaBase *LUA, int handler, HTTPResponse *response);
