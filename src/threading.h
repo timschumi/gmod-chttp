@@ -24,6 +24,4 @@ int threadingDoThink(lua_State *L);
 
 bool scheduleRequest(HTTPRequest *request);
 
-// The following functions should be implemented by
-// the target-specific threading code
-extern bool startThread();
+bool startThread();
