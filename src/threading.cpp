@@ -30,19 +30,17 @@ bool scheduleRequest(HTTPRequest *request) {
 }
 
 LUA_FUNCTION(threadingDoThink) {
-	FailedQueueData failed_data;
-	SuccessQueueData success_data;
 	while (!getFailQueue().empty()) {
-		failed_data = getFailQueue().front();
+		FailedQueueData data = getFailQueue().front();
 		getFailQueue().pop();
-		runFailedHandler(LUA, failed_data.handler, failed_data.reason);
+		runFailedHandler(LUA, data.handler, data.reason);
 	}
 
 	while (!getSuccessQueue().empty()) {
-		success_data = getSuccessQueue().front();
+		SuccessQueueData data = getSuccessQueue().front();
 		getSuccessQueue().pop();
-		runSuccessHandler(LUA, success_data.handler, success_data.response);
-		delete success_data.response;
+		runSuccessHandler(LUA, data.handler, data.response);
+		delete data.response;
 	}
 
 	return 0;
