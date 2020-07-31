@@ -195,6 +195,7 @@ LUA_FUNCTION(CHTTP) {
 	if (!LUA->IsType(1, Lua::Type::Table)) {
 		LOG("No HTTPRequest table set.");
 		ret = false;
+		delete request;
 		goto exit;
 	}
 
@@ -216,6 +217,7 @@ LUA_FUNCTION(CHTTP) {
 	if (request->method == METHOD_NOSUPP) {
 		runFailedHandler(LUA, request->failed, "Unsupported request method: " + std::string(LUA->GetString(-1)));
 		ret = false;
+		delete request;
 		goto exit;
 	}
 	LUA->Pop();
@@ -227,6 +229,7 @@ LUA_FUNCTION(CHTTP) {
 	} else {
 		runFailedHandler(LUA, request->failed, "invalid url");
 		ret = false;
+		delete request;
 		goto exit;
 	}
 	LUA->Pop();
