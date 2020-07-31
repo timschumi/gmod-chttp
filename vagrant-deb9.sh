@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 echo "deb http://ftp.us.debian.org/debian/ stretch-backports main" >> /etc/apt/sources.list
 echo "deb http://ftp.us.debian.org/debian/ stretch-backports-sloppy main" >> /etc/apt/sources.list
