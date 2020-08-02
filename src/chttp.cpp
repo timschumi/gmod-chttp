@@ -13,35 +13,35 @@ std::string getUserAgent() {
 }
 
 void runFailedHandler(Lua::ILuaBase *LUA, int successHandler, int failHandler, const std::string& reason) {
+	if(successHandler)
+		LUA->ReferenceFree(successHandler);
+	
 	if(!failHandler) {
-		goto failedCleanup;
 		return;
 	}
 
 	// Push fail handler to stack and free our ref
 	LUA->ReferencePush(failHandler);
+	LUA->ReferenceFree(failHandler);	
 
 	// Push the argument
 	LUA->PushString(reason.c_str());
 
 	// Call the fail handler with one argument
 	LUA->Call(1, 0);
-
-	LUA->ReferenceFree(failHandler);
-
-failedCleanup:
-	if(successHandler)
-		LUA->ReferenceFree(successHandler);
 }
 
 void runSuccessHandler(Lua::ILuaBase *LUA, int successHandler, int failHandler, const HTTPResponse *response) {
+	if(failHandler)
+		LUA->ReferenceFree(failHandler);
+	
 	if(!successHandler) {
-		goto successCleanup;
 		return;
 	}
 
 	// Push success handler to stack and free our ref
 	LUA->ReferencePush(successHandler);
+	LUA->ReferenceFree(successHandler);
 
 	// Push the arguments
 	LUA->PushNumber((double) response->code);
@@ -50,12 +50,6 @@ void runSuccessHandler(Lua::ILuaBase *LUA, int successHandler, int failHandler, 
 
 	// Call the success handler with three arguments
 	LUA->Call(3, 0);
-	
-	LUA->ReferenceFree(successHandler);
-
-successCleanup:
-	if(failHandler)
-		LUA->ReferenceFree(failHandler);
 }
 
 void curlAddHeaders(CURL *curl, HTTPRequest *request) {
@@ -209,7 +203,6 @@ LUA_FUNCTION(CHTTP) {
 	if (!LUA->IsType(1, Lua::Type::Table)) {
 		LOG("No HTTPRequest table set.");
 		ret = false;
-		delete request;
 		goto exit;
 	}
 
@@ -231,7 +224,6 @@ LUA_FUNCTION(CHTTP) {
 	if (request->method == METHOD_NOSUPP) {
 		runFailedHandler(LUA, request->success, request->failed, "Unsupported request method: " + std::string(LUA->GetString(-1)));
 		ret = false;
-		delete request;
 		goto exit;
 	}
 	LUA->Pop();
@@ -243,7 +235,6 @@ LUA_FUNCTION(CHTTP) {
 	} else {
 		runFailedHandler(LUA, request->success, request->failed, "invalid url");
 		ret = false;
-		delete request;
 		goto exit;
 	}
 	LUA->Pop();
@@ -289,6 +280,9 @@ LUA_FUNCTION(CHTTP) {
 	ret = scheduleRequest(request);
 
 exit:
+	if(!ret)
+		delete request;
+
 	LUA->PushBool(ret); // Push result to the stack
 	return 1; // We are returning a single value
 }
