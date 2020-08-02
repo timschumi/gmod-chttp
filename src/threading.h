@@ -4,13 +4,15 @@
 
 // Data on the success queue
 struct SuccessQueueData {
-	int handler;
+	int SuccessHandler;
+	int FailHandler;
 	HTTPResponse *response;
 };
 
 // Data on the success queue
 struct FailedQueueData {
-	int handler;
+	int SuccessHandler;
+	int FailHandler;
 	std::string reason;
 };
 
