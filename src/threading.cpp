@@ -33,13 +33,13 @@ LUA_FUNCTION(threadingDoThink) {
 	while (!getFailQueue().empty()) {
 		FailedQueueData data = getFailQueue().front();
 		getFailQueue().pop();
-		runFailedHandler(LUA, data.handler, data.reason);
+		runFailedHandler(LUA, data.SuccessHandler, data.FailHandler, data.reason);
 	}
 
 	while (!getSuccessQueue().empty()) {
 		SuccessQueueData data = getSuccessQueue().front();
 		getSuccessQueue().pop();
-		runSuccessHandler(LUA, data.handler, data.response);
+		runSuccessHandler(LUA, data.SuccessHandler, data.FailHandler, data.response);
 		delete data.response;
 	}
 

@@ -7,6 +7,6 @@
 #define METHOD_PATCH	6
 #define METHOD_OPTIONS	7
 
-int methodFromString(const std::string& method);
+int methodFromString(std::string method);
 std::string methodToString(int method);
 bool isLikePost(int method);

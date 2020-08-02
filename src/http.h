@@ -10,11 +10,11 @@
 struct HTTPRequest {
 	// Handler for failed requests. args: (string) reason
 	// This is a reference to the function on the stack
-	int failed;
+	int failed = 0;
 
 	// Handler for successful requests. args: (number) code, (string) body, (table) headers
 	// This is a reference to the function on the stack
-	int success;
+	int success = 0;
 
 	// Request method (GET = 1, POST = 2, etc.)
 	// See method.{h,c} for details.

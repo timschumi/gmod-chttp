@@ -1,8 +1,12 @@
 #include <string>
+#include <cctype>
 #include "method.h"
 
 // Turns a string method into an int
-int methodFromString(const std::string& method) {
+int methodFromString(std::string method) {
+	for(auto& c : method) {
+		c = std::toupper(c);
+	}
 	if (method == "GET")
 		return METHOD_GET;
 	if (method == "POST")
