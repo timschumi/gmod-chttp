@@ -1,5 +1,3 @@
-#include <GarrysMod/Lua/Interface.h>
-
 #include <utility>
 #include <thread>
 
@@ -27,23 +25,6 @@ bool scheduleRequest(HTTPRequest *request) {
 	getRequestQueue().push(request);
 
 	return startThread();
-}
-
-LUA_FUNCTION(threadingDoThink) {
-	while (!getFailQueue().empty()) {
-		FailedQueueData data = getFailQueue().front();
-		getFailQueue().pop();
-		runFailedHandler(LUA, data.SuccessHandler, data.FailHandler, data.reason);
-	}
-
-	while (!getSuccessQueue().empty()) {
-		SuccessQueueData data = getSuccessQueue().front();
-		getSuccessQueue().pop();
-		runSuccessHandler(LUA, data.SuccessHandler, data.FailHandler, data.response);
-		delete data.response;
-	}
-
-	return 0;
 }
 
 // Actual threads

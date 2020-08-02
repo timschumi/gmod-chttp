@@ -287,6 +287,23 @@ exit:
 	return 1; // We are returning a single value
 }
 
+LUA_FUNCTION(threadingDoThink) {
+	while (!getFailQueue().empty()) {
+		FailedQueueData data = getFailQueue().front();
+		getFailQueue().pop();
+		runFailedHandler(LUA, data.SuccessHandler, data.FailHandler, data.reason);
+	}
+
+	while (!getSuccessQueue().empty()) {
+		SuccessQueueData data = getSuccessQueue().front();
+		getSuccessQueue().pop();
+		runSuccessHandler(LUA, data.SuccessHandler, data.FailHandler, data.response);
+		delete data.response;
+	}
+
+	return 0;
+}
+
 GMOD_MODULE_OPEN() {
 #ifdef WINDOWS_BUILD
 	if (curl_global_sslset(CURLSSLBACKEND_SCHANNEL, nullptr, nullptr) != CURLSSLSET_OK) {

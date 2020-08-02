@@ -1,5 +1,4 @@
 #include <queue>
-#include <GarrysMod/Lua/Interface.h>
 #include "http.h"
 
 // Data on the success queue
@@ -20,9 +19,6 @@ struct FailedQueueData {
 std::queue<HTTPRequest*>& getRequestQueue();
 std::queue<FailedQueueData>& getFailQueue();
 std::queue<SuccessQueueData>& getSuccessQueue();
-
-// Implemented by LUA_FUNCTION(threadingDoThink)
-int threadingDoThink(lua_State *L);
 
 bool scheduleRequest(HTTPRequest *request);
 
