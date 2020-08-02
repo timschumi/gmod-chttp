@@ -15,14 +15,14 @@ std::string getUserAgent() {
 void runFailedHandler(Lua::ILuaBase *LUA, int successHandler, int failHandler, const std::string& reason) {
 	if(successHandler)
 		LUA->ReferenceFree(successHandler);
-	
+
 	if(!failHandler) {
 		return;
 	}
 
 	// Push fail handler to stack and free our ref
 	LUA->ReferencePush(failHandler);
-	LUA->ReferenceFree(failHandler);	
+	LUA->ReferenceFree(failHandler);
 
 	// Push the argument
 	LUA->PushString(reason.c_str());
@@ -34,7 +34,7 @@ void runFailedHandler(Lua::ILuaBase *LUA, int successHandler, int failHandler, c
 void runSuccessHandler(Lua::ILuaBase *LUA, int successHandler, int failHandler, const HTTPResponse *response) {
 	if(failHandler)
 		LUA->ReferenceFree(failHandler);
-	
+
 	if(!successHandler) {
 		return;
 	}
