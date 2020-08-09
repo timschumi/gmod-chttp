@@ -4,7 +4,6 @@
 #include "GarrysMod/Lua/Interface.h"
 
 #include "chttp.h"
-#include "method.h"
 #include "lua.h"
 #include "threading.h"
 
@@ -32,21 +31,21 @@ void curlAddHeaders(CURL *curl, HTTPRequest *request) {
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 }
 
-void curlSetMethod(CURL *curl, int method) {
-	if (isLikePost(method))
+void curlSetMethod(CURL *curl, HTTPMethod method) {
+	if (method.isLikePost())
 		curl_easy_setopt(curl, CURLOPT_POST, 1L);
 
 	// METHOD_GET and METHOD_POST are not listed here,
 	// since they don't require any specific setup
 	switch (method) {
-	case METHOD_HEAD:
+	case HTTPMethod::HEAD:
 		curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
 		break;
-	case METHOD_PUT:
-	case METHOD_DELETE:
-	case METHOD_PATCH:
-	case METHOD_OPTIONS:
-		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, methodToString(method).c_str());
+	case HTTPMethod::PUT:
+	case HTTPMethod::DELETE:
+	case HTTPMethod::PATCH:
+	case HTTPMethod::OPTIONS:
+		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method.toString().c_str());
 		break;
 	default:
 		break;
@@ -90,7 +89,7 @@ bool processRequest(HTTPRequest *request) {
 
 	curlSetMethod(curl, request->method);
 
-	if (isLikePost(request->method)) {
+	if (request->method.isLikePost()) {
 		// Do we have a request body?
 		if (!request->body.empty()) {
 			postbody = request->body;
@@ -178,11 +177,11 @@ LUA_FUNCTION(CHTTP) {
 	// Fetch method
 	LUA->GetField(1, "method");
 	if (LUA->IsType(-1, GarrysMod::Lua::Type::String)) {
-		request->method = methodFromString(LUA->GetString(-1));
+		request->method = HTTPMethod::fromString(LUA->GetString(-1));
 	} else {
-		request->method = METHOD_GET;
+		request->method = HTTPMethod::GET;
 	}
-	if (request->method == METHOD_NOSUPP) {
+	if (request->method == HTTPMethod::INVALID) {
 		getResultQueue().push(new FailedQueueData(request->success, request->failed, "Unsupported request method: " + std::string(LUA->GetString(-1))));
 		ret = false;
 		goto exit;

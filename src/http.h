@@ -4,6 +4,8 @@
 #include <string>
 #include <map>
 
+#include "HTTPMethod.h"
+
 // Modeled after GMod's HTTPRequest structure
 // https://wiki.facepunch.com/gmod/Structures/HTTPRequest
 struct HTTPRequest {
@@ -17,7 +19,7 @@ struct HTTPRequest {
 
 	// Request method (GET = 1, POST = 2, etc.)
 	// See method.{h,c} for details.
-	int method;
+	HTTPMethod method;
 
 	// Well, what could that be?
 	std::string url;
