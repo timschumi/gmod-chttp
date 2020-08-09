@@ -5,14 +5,12 @@
 #include "lua.h"
 #include "threading.h"
 
-using namespace GarrysMod;
-
 std::string getUserAgent() {
 	curl_version_info_data *info = curl_version_info(CURLVERSION_NOW);
 	return (std::string) "curl/" + info->version + " gmod-chttp/" + CHTTP_VERSION;
 }
 
-void runFailedHandler(Lua::ILuaBase *LUA, int successHandler, int failHandler, const std::string& reason) {
+void runFailedHandler(GarrysMod::Lua::ILuaBase *LUA, int successHandler, int failHandler, const std::string& reason) {
 	if(successHandler)
 		LUA->ReferenceFree(successHandler);
 
@@ -31,7 +29,7 @@ void runFailedHandler(Lua::ILuaBase *LUA, int successHandler, int failHandler, c
 	LUA->Call(1, 0);
 }
 
-void runSuccessHandler(Lua::ILuaBase *LUA, int successHandler, int failHandler, const HTTPResponse *response) {
+void runSuccessHandler(GarrysMod::Lua::ILuaBase *LUA, int successHandler, int failHandler, const HTTPResponse *response) {
 	if(failHandler)
 		LUA->ReferenceFree(failHandler);
 
@@ -200,7 +198,7 @@ LUA_FUNCTION(CHTTP) {
 	auto *request = new HTTPRequest();
 	bool ret;
 
-	if (!LUA->IsType(1, Lua::Type::Table)) {
+	if (!LUA->IsType(1, GarrysMod::Lua::Type::Table)) {
 		LOG("No HTTPRequest table set.");
 		ret = false;
 		goto exit;
@@ -208,7 +206,7 @@ LUA_FUNCTION(CHTTP) {
 
 	// Fetch failed handler
 	LUA->GetField(1, "failed");
-	if (LUA->IsType(-1, Lua::Type::Function)) {
+	if (LUA->IsType(-1, GarrysMod::Lua::Type::Function)) {
 		request->failed = LUA->ReferenceCreate();
 	} else {
 		LUA->Pop();
@@ -216,7 +214,7 @@ LUA_FUNCTION(CHTTP) {
 
 	// Fetch method
 	LUA->GetField(1, "method");
-	if (LUA->IsType(-1, Lua::Type::String)) {
+	if (LUA->IsType(-1, GarrysMod::Lua::Type::String)) {
 		request->method = methodFromString(LUA->GetString(-1));
 	} else {
 		request->method = METHOD_GET;
@@ -230,7 +228,7 @@ LUA_FUNCTION(CHTTP) {
 
 	// Fetch url
 	LUA->GetField(1, "url");
-	if (LUA->IsType(-1, Lua::Type::String)) {
+	if (LUA->IsType(-1, GarrysMod::Lua::Type::String)) {
 		request->url = LUA->GetString(-1);
 	} else {
 		runFailedHandler(LUA, request->success, request->failed, "invalid url");
@@ -241,7 +239,7 @@ LUA_FUNCTION(CHTTP) {
 
 	// Fetch success handler
 	LUA->GetField(1, "success");
-	if (LUA->IsType(-1, Lua::Type::Function)) {
+	if (LUA->IsType(-1, GarrysMod::Lua::Type::Function)) {
 		request->success = LUA->ReferenceCreate();
 	} else {
 		LUA->Pop();
@@ -249,21 +247,21 @@ LUA_FUNCTION(CHTTP) {
 
 	// Fetch headers
 	LUA->GetField(1, "headers");
-	if (LUA->IsType(-1, Lua::Type::Table)) {
+	if (LUA->IsType(-1, GarrysMod::Lua::Type::Table)) {
 		request->headers = mapFromLuaTable(LUA, -1);
 	}
 	LUA->Pop();
 
 	// Fetch parameters
 	LUA->GetField(1, "parameters");
-	if (LUA->IsType(-1, Lua::Type::Table)) {
+	if (LUA->IsType(-1, GarrysMod::Lua::Type::Table)) {
 		request->parameters = mapFromLuaTable(LUA, -1);
 	}
 	LUA->Pop();
 
 	// Fetch type
 	LUA->GetField(1, "type");
-	if (LUA->IsType(-1, Lua::Type::String)) {
+	if (LUA->IsType(-1, GarrysMod::Lua::Type::String)) {
 		request->type = LUA->GetString(-1);
 	} else {
 		request->type = "text/plain; charset=utf-8";
@@ -272,7 +270,7 @@ LUA_FUNCTION(CHTTP) {
 
 	// Fetch body
 	LUA->GetField(1, "body");
-	if (LUA->IsType(-1, Lua::Type::String)) {
+	if (LUA->IsType(-1, GarrysMod::Lua::Type::String)) {
 		request->body = LUA->GetString(-1);
 	}
 	LUA->Pop();
@@ -316,7 +314,7 @@ GMOD_MODULE_OPEN() {
 	curl_global_init(CURL_GLOBAL_ALL);
 
 	// We are working on the global table today
-	LUA->PushSpecial(Lua::SPECIAL_GLOB);
+	LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
 
 	// Push the function mapping (first is the key/function name,
 	// second is the value/actual function)

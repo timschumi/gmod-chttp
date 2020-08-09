@@ -4,8 +4,6 @@
 #include "chttp.h"
 #include "threading.h"
 
-using namespace GarrysMod;
-
 std::queue<HTTPRequest*>& getRequestQueue() {
 	static std::queue<HTTPRequest*> requests;
 	return requests;
