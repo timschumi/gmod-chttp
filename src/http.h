@@ -3,7 +3,6 @@
 
 #include <string>
 #include <map>
-#include <GarrysMod/Lua/LuaBase.h>
 
 // Modeled after GMod's HTTPRequest structure
 // https://wiki.facepunch.com/gmod/Structures/HTTPRequest

@@ -1,5 +1,8 @@
 #include <string>
 #include <curl/curl.h>
+
+#include "GarrysMod/Lua/Interface.h"
+
 #include "chttp.h"
 #include "method.h"
 #include "lua.h"

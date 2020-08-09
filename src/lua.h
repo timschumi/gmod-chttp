@@ -1,6 +1,7 @@
 #include <string>
 #include <map>
-#include <GarrysMod/Lua/Interface.h>
+
+#include "GarrysMod/Lua/Interface.h"
 
 #define LOG(x) printMessage(LUA, x)
 
