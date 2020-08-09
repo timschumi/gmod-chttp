@@ -13,46 +13,6 @@ std::string getUserAgent() {
 	return (std::string) "curl/" + info->version + " gmod-chttp/" + CHTTP_VERSION;
 }
 
-void runFailedHandler(GarrysMod::Lua::ILuaBase *LUA, int successHandler, int failHandler, const std::string& reason) {
-	if(successHandler)
-		LUA->ReferenceFree(successHandler);
-
-	if(!failHandler) {
-		return;
-	}
-
-	// Push fail handler to stack and free our ref
-	LUA->ReferencePush(failHandler);
-	LUA->ReferenceFree(failHandler);
-
-	// Push the argument
-	LUA->PushString(reason.c_str());
-
-	// Call the fail handler with one argument
-	LUA->Call(1, 0);
-}
-
-void runSuccessHandler(GarrysMod::Lua::ILuaBase *LUA, int successHandler, int failHandler, const HTTPResponse *response) {
-	if(failHandler)
-		LUA->ReferenceFree(failHandler);
-
-	if(!successHandler) {
-		return;
-	}
-
-	// Push success handler to stack and free our ref
-	LUA->ReferencePush(successHandler);
-	LUA->ReferenceFree(successHandler);
-
-	// Push the arguments
-	LUA->PushNumber((double) response->code);
-	LUA->PushString(response->body.c_str());
-	mapToLuaTable(LUA, response->headers);
-
-	// Call the success handler with three arguments
-	LUA->Call(3, 0);
-}
-
 void curlAddHeaders(CURL *curl, HTTPRequest *request) {
 	struct curl_slist *headers = nullptr;
 
@@ -123,7 +83,7 @@ bool processRequest(HTTPRequest *request) {
 	curl = curl_easy_init();
 
 	if (!curl) {
-		getFailQueue().push({request->success, request->failed, "Failed to init curl struct!"});
+		getFailQueue().push(new FailedQueueData(request->success, request->failed, "Failed to init curl struct!"));
 		ret = false;
 		goto cleanup;
 	}
@@ -158,7 +118,7 @@ resend:
 	cres = curl_easy_perform(curl);
 
 	if (cres != CURLE_OK) {
-		getFailQueue().push({request->success, request->failed, curl_easy_strerror(cres)});
+		getFailQueue().push(new FailedQueueData(request->success, request->failed, curl_easy_strerror(cres)));
 		ret = false;
 		goto cleanup;
 	}
@@ -178,7 +138,7 @@ resend:
 
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response->code);
 
-	getSuccessQueue().push({request->success, request->failed, response});
+	getSuccessQueue().push(new SuccessQueueData(request->success, request->failed, response));
 
 cleanup:
 	// Clear out the HTTPResponse if we don't need it
@@ -223,7 +183,7 @@ LUA_FUNCTION(CHTTP) {
 		request->method = METHOD_GET;
 	}
 	if (request->method == METHOD_NOSUPP) {
-		runFailedHandler(LUA, request->success, request->failed, "Unsupported request method: " + std::string(LUA->GetString(-1)));
+		getFailQueue().push(new FailedQueueData(request->success, request->failed, "Unsupported request method: " + std::string(LUA->GetString(-1))));
 		ret = false;
 		goto exit;
 	}
@@ -234,7 +194,7 @@ LUA_FUNCTION(CHTTP) {
 	if (LUA->IsType(-1, GarrysMod::Lua::Type::String)) {
 		request->url = LUA->GetString(-1);
 	} else {
-		runFailedHandler(LUA, request->success, request->failed, "invalid url");
+		getFailQueue().push(new FailedQueueData(request->success, request->failed, "invalid url"));
 		ret = false;
 		goto exit;
 	}
@@ -290,16 +250,17 @@ exit:
 
 LUA_FUNCTION(threadingDoThink) {
 	while (!getFailQueue().empty()) {
-		FailedQueueData data = getFailQueue().front();
+		FailedQueueData* data = getFailQueue().front();
 		getFailQueue().pop();
-		runFailedHandler(LUA, data.SuccessHandler, data.FailHandler, data.reason);
+		data->run(LUA);
+		delete data;
 	}
 
 	while (!getSuccessQueue().empty()) {
-		SuccessQueueData data = getSuccessQueue().front();
+		SuccessQueueData* data = getSuccessQueue().front();
 		getSuccessQueue().pop();
-		runSuccessHandler(LUA, data.SuccessHandler, data.FailHandler, data.response);
-		delete data.response;
+		data->run(LUA);
+		delete data;
 	}
 
 	return 0;
