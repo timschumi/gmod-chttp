@@ -83,7 +83,7 @@ bool processRequest(HTTPRequest *request) {
 	curl = curl_easy_init();
 
 	if (!curl) {
-		getFailQueue().push(new FailedQueueData(request->success, request->failed, "Failed to init curl struct!"));
+		getResultQueue().push(new FailedQueueData(request->success, request->failed, "Failed to init curl struct!"));
 		ret = false;
 		goto cleanup;
 	}
@@ -118,7 +118,7 @@ resend:
 	cres = curl_easy_perform(curl);
 
 	if (cres != CURLE_OK) {
-		getFailQueue().push(new FailedQueueData(request->success, request->failed, curl_easy_strerror(cres)));
+		getResultQueue().push(new FailedQueueData(request->success, request->failed, curl_easy_strerror(cres)));
 		ret = false;
 		goto cleanup;
 	}
@@ -138,7 +138,7 @@ resend:
 
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response->code);
 
-	getSuccessQueue().push(new SuccessQueueData(request->success, request->failed, response));
+	getResultQueue().push(new SuccessQueueData(request->success, request->failed, response));
 
 cleanup:
 	// Clear out the HTTPResponse if we don't need it
@@ -183,7 +183,7 @@ LUA_FUNCTION(CHTTP) {
 		request->method = METHOD_GET;
 	}
 	if (request->method == METHOD_NOSUPP) {
-		getFailQueue().push(new FailedQueueData(request->success, request->failed, "Unsupported request method: " + std::string(LUA->GetString(-1))));
+		getResultQueue().push(new FailedQueueData(request->success, request->failed, "Unsupported request method: " + std::string(LUA->GetString(-1))));
 		ret = false;
 		goto exit;
 	}
@@ -194,7 +194,7 @@ LUA_FUNCTION(CHTTP) {
 	if (LUA->IsType(-1, GarrysMod::Lua::Type::String)) {
 		request->url = LUA->GetString(-1);
 	} else {
-		getFailQueue().push(new FailedQueueData(request->success, request->failed, "invalid url"));
+		getResultQueue().push(new FailedQueueData(request->success, request->failed, "invalid url"));
 		ret = false;
 		goto exit;
 	}
@@ -249,16 +249,9 @@ exit:
 }
 
 LUA_FUNCTION(threadingDoThink) {
-	while (!getFailQueue().empty()) {
-		FailedQueueData* data = getFailQueue().front();
-		getFailQueue().pop();
-		data->run(LUA);
-		delete data;
-	}
-
-	while (!getSuccessQueue().empty()) {
-		SuccessQueueData* data = getSuccessQueue().front();
-		getSuccessQueue().pop();
+	while (!getResultQueue().empty()) {
+		ResultQueueData* data = getResultQueue().front();
+		getResultQueue().pop();
 		data->run(LUA);
 		delete data;
 	}

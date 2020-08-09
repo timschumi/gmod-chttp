@@ -8,14 +8,9 @@ std::queue<HTTPRequest*>& getRequestQueue() {
 	return requests;
 }
 
-std::queue<FailedQueueData*>& getFailQueue() {
-	static std::queue<FailedQueueData*> failed;
+std::queue<ResultQueueData*>& getResultQueue() {
+	static std::queue<ResultQueueData*> failed;
 	return failed;
-}
-
-std::queue<SuccessQueueData*>& getSuccessQueue() {
-	static std::queue<SuccessQueueData*> success;
-	return success;
 }
 
 bool scheduleRequest(HTTPRequest *request) {

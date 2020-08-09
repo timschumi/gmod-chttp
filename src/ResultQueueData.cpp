@@ -2,6 +2,9 @@
 
 #include "lua.h"
 
+// TODO: Complain if SuccessHandler/FailedHandler has not been freed
+ResultQueueData::~ResultQueueData() = default;
+
 SuccessQueueData::SuccessQueueData(int SuccessHandler, int FailHandler, HTTPResponse *response) {
 	this->SuccessHandler = SuccessHandler;
 	this->FailHandler = FailHandler;
