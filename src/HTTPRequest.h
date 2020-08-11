@@ -1,5 +1,5 @@
-#ifndef _HTTP_H
-#define _HTTP_H
+#ifndef GMOD_CHTTP_HTTPREQUEST_H
+#define GMOD_CHTTP_HTTPREQUEST_H
 
 #include <string>
 #include <map>
@@ -8,7 +8,8 @@
 
 // Modeled after GMod's HTTPRequest structure
 // https://wiki.facepunch.com/gmod/Structures/HTTPRequest
-struct HTTPRequest {
+class HTTPRequest {
+public:
 	// Handler for failed requests. args: (string) reason
 	// This is a reference to the function on the stack
 	int failed = 0;
@@ -17,8 +18,7 @@ struct HTTPRequest {
 	// This is a reference to the function on the stack
 	int success = 0;
 
-	// Request method (GET = 1, POST = 2, etc.)
-	// See method.{h,c} for details.
+	// Request method for the request
 	HTTPMethod method;
 
 	// Well, what could that be?
@@ -35,9 +35,9 @@ struct HTTPRequest {
 
 	// Content-Type string for the request body.
 	std::string type;
-};
 
-std::string buildParameters(HTTPRequest *request);
-std::string buildUrl(HTTPRequest *request);
+	std::string buildQueryString();
+	std::string buildURL();
+};
 
 #endif

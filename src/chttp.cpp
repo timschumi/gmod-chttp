@@ -94,7 +94,7 @@ bool processRequest(HTTPRequest *request) {
 		if (!request->body.empty()) {
 			postbody = request->body;
 		} else {
-			postbody = buildParameters(request);
+			postbody = request->buildQueryString();
 		}
 
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, postbody.size());
@@ -111,7 +111,7 @@ bool processRequest(HTTPRequest *request) {
 
 	curlAddHeaders(curl, request);
 
-	curl_easy_setopt(curl, CURLOPT_URL, buildUrl(request).c_str());
+	curl_easy_setopt(curl, CURLOPT_URL, request->buildURL().c_str());
 
 resend:
 	cres = curl_easy_perform(curl);

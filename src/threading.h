@@ -2,7 +2,7 @@
 
 #include "GarrysMod/Lua/Interface.h"
 
-#include "http.h"
+#include "HTTPRequest.h"
 #include "ResultQueueData.h"
 
 // Different queues for different things
