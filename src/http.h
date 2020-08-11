@@ -37,14 +37,6 @@ struct HTTPRequest {
 	std::string type;
 };
 
-// Not really modeled after anything specific
-// These are just the values that we need for the success handler.
-struct HTTPResponse {
-	long code;
-	std::string body;
-	std::map<std::string, std::string> headers;
-};
-
 std::string buildParameters(HTTPRequest *request);
 std::string buildUrl(HTTPRequest *request);
 

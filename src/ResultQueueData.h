@@ -1,8 +1,15 @@
 #include <string>
+#include <map>
 
 #include "GarrysMod/Lua/Interface.h"
 
-#include "http.h"
+// Not really modeled after anything specific
+// These are just the values that we need for the success handler.
+struct HTTPResponse {
+	long code;
+	std::string body;
+	std::map<std::string, std::string> headers;
+};
 
 class ResultQueueData {
 protected:
