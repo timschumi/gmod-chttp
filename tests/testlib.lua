@@ -11,27 +11,36 @@ function failed(msg)
 end
 
 function assertEquals(message, expected, actual)
+    info("Test: " .. message .. "\n")
+
     if expected == actual then
+        success("Successful.\n\n")
         return
     end
 
-    failed(message .. "\n")
     failed("expected: " .. expected .. "\n")
     failed("actual: " .. actual .. "\n")
+    MsgC("\n")
 end
 
 function assertTrue(message, actual)
+    info("Test: " .. message .. "\n")
+
     if actual then
+        success("Successful.\n\n")
         return
     end
 
-    failed("Test failed: " .. message .. "\n")
+    failed("Failed.\n\n")
 end
 
 function assertFalse(message, actual)
+    info("Test: " .. message .. "\n")
+
     if actual then
+        success("Successful.\n\n")
         return
     end
 
-    failed("Test failed: " .. message .. "\n")
+    failed("Failed.\n\n")
 end
