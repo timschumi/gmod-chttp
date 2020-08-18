@@ -62,7 +62,7 @@ bool processRequest(HTTPRequest *request) {
 	CURL *curl;
 	CURLcode cres;
 	bool ret = true;
-	HTTPResponse *response = new HTTPResponse();
+	auto *response = new SuccessQueueData(request->success, request->failed);
 	std::string postbody;
 	const char* redirect;
 
@@ -124,10 +124,10 @@ resend:
 
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response->code);
 
-	getResultQueue().push(new SuccessQueueData(request->success, request->failed, response));
+	getResultQueue().push(response);
 
 cleanup:
-	// Clear out the HTTPResponse if we don't need it
+	// Clear out the SuccessQueueData if we don't need it
 	if (!ret) {
 		delete response;
 	}

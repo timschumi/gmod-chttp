@@ -5,14 +5,9 @@
 // TODO: Complain if SuccessHandler/FailedHandler has not been freed
 ResultQueueData::~ResultQueueData() = default;
 
-SuccessQueueData::SuccessQueueData(int SuccessHandler, int FailHandler, HTTPResponse *response) {
+SuccessQueueData::SuccessQueueData(int SuccessHandler, int FailHandler) {
 	this->SuccessHandler = SuccessHandler;
 	this->FailHandler = FailHandler;
-	this->response = response;
-}
-
-SuccessQueueData::~SuccessQueueData() {
-	delete this->response;
 }
 
 void SuccessQueueData::run(GarrysMod::Lua::ILuaBase *LUA) {
@@ -28,9 +23,9 @@ void SuccessQueueData::run(GarrysMod::Lua::ILuaBase *LUA) {
 	LUA->ReferenceFree(this->SuccessHandler);
 
 	// Push the arguments
-	LUA->PushNumber((double) response->code);
-	LUA->PushString(response->body.c_str());
-	mapToLuaTable(LUA, response->headers);
+	LUA->PushNumber(this->code);
+	LUA->PushString(this->body.c_str());
+	mapToLuaTable(LUA, this->headers);
 
 	// Call the success handler with three arguments
 	LUA->Call(3, 0);

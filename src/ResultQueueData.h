@@ -3,14 +3,6 @@
 
 #include "GarrysMod/Lua/Interface.h"
 
-// Not really modeled after anything specific
-// These are just the values that we need for the success handler.
-struct HTTPResponse {
-	long code;
-	std::string body;
-	std::map<std::string, std::string> headers;
-};
-
 class ResultQueueData {
 protected:
 	int SuccessHandler;
@@ -22,11 +14,12 @@ public:
 
 // Data on the success queue
 class SuccessQueueData : public ResultQueueData {
-private:
-	HTTPResponse *response;
 public:
-	SuccessQueueData(int SuccessHandler, int FailHandler, HTTPResponse *response);
-	~SuccessQueueData() override;
+	long code = 0;
+	std::string body;
+	std::map<std::string, std::string> headers;
+public:
+	SuccessQueueData(int SuccessHandler, int FailHandler);
 	void run(GarrysMod::Lua::ILuaBase *LUA) override;
 };
 
