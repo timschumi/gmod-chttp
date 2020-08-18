@@ -5,6 +5,7 @@
 HTTPRequest::HTTPRequest() {
 	curl_version_info_data *info = curl_version_info(CURLVERSION_NOW);
 	this->headers["User-Agent"] = (std::string) "curl/" + info->version + " gmod-chttp/1.3.2";
+	this->headers["Content-Type"] = "text/plain; charset=utf-8";
 }
 
 std::string HTTPRequest::buildQueryString() {

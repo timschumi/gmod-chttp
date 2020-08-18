@@ -33,9 +33,6 @@ public:
 	// Request body for POST-like requests (overwrites parameters)
 	std::string body;
 
-	// Content-Type string for the request body.
-	std::string type = "text/plain; charset=utf-8";
-
 	HTTPRequest();
 	std::string buildQueryString();
 	std::string buildURL();

@@ -10,10 +10,6 @@
 void curlAddHeaders(CURL *curl, HTTPRequest *request) {
 	struct curl_slist *headers = nullptr;
 
-	// Add the Content-Type header if not already set
-	if (request->headers.count("Content-Type") == 0)
-		headers = curl_slist_append(headers, ("Content-Type: " + request->type).c_str());
-
 	// Add all the headers from the request struct
 	for (auto const& e : request->headers)
 		headers = curl_slist_append(headers, (e.first + ": " + e.second).c_str());
@@ -213,7 +209,7 @@ LUA_FUNCTION(CHTTP) {
 	// Fetch type
 	LUA->GetField(1, "type");
 	if (LUA->IsType(-1, GarrysMod::Lua::Type::String)) {
-		request->type = LUA->GetString(-1);
+		request->headers["Content-Type"] = LUA->GetString(-1);
 	}
 	LUA->Pop();
 
