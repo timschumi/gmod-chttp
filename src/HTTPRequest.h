@@ -19,7 +19,7 @@ public:
 	int success = 0;
 
 	// Request method for the request
-	HTTPMethod method;
+	HTTPMethod method = HTTPMethod::GET;
 
 	// Well, what could that be?
 	std::string url;
@@ -34,7 +34,7 @@ public:
 	std::string body;
 
 	// Content-Type string for the request body.
-	std::string type;
+	std::string type = "text/plain; charset=utf-8";
 
 	std::string buildQueryString();
 	std::string buildURL();

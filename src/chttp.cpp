@@ -178,8 +178,6 @@ LUA_FUNCTION(CHTTP) {
 	LUA->GetField(1, "method");
 	if (LUA->IsType(-1, GarrysMod::Lua::Type::String)) {
 		request->method = HTTPMethod::fromString(LUA->GetString(-1));
-	} else {
-		request->method = HTTPMethod::GET;
 	}
 	if (request->method == HTTPMethod::INVALID) {
 		getResultQueue().push(new FailedQueueData(request->success, request->failed, "Unsupported request method: " + std::string(LUA->GetString(-1))));
@@ -225,8 +223,6 @@ LUA_FUNCTION(CHTTP) {
 	LUA->GetField(1, "type");
 	if (LUA->IsType(-1, GarrysMod::Lua::Type::String)) {
 		request->type = LUA->GetString(-1);
-	} else {
-		request->type = "text/plain; charset=utf-8";
 	}
 	LUA->Pop();
 
