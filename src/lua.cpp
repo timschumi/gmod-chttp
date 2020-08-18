@@ -18,10 +18,8 @@ void mapToLuaTable(GarrysMod::Lua::ILuaBase *LUA, const std::map<std::string, st
 }
 
 // Transfers values from a LUA Table on the stack (at the given offset)
-// into a map that will be the return value.
-std::map<std::string, std::string> mapFromLuaTable(GarrysMod::Lua::ILuaBase *LUA, int index) {
-	std::map<std::string, std::string> map;
-
+// into the given map.
+void luaTableToMap(GarrysMod::Lua::ILuaBase *LUA, int index, std::map<std::string, std::string>& map) {
 	// Query the first entry (we're querying by key, nil = 1st)
 	LUA->PushNil();
 
@@ -36,8 +34,6 @@ std::map<std::string, std::string> mapFromLuaTable(GarrysMod::Lua::ILuaBase *LUA
 		// Pop value from the stack, key is needed for next iteration
 		LUA->Pop();
 	}
-
-	return map;
 }
 
 void printMessage(GarrysMod::Lua::ILuaBase *LUA, const std::string& message) {

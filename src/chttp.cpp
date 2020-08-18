@@ -208,14 +208,14 @@ LUA_FUNCTION(CHTTP) {
 	// Fetch headers
 	LUA->GetField(1, "headers");
 	if (LUA->IsType(-1, GarrysMod::Lua::Type::Table)) {
-		request->headers = mapFromLuaTable(LUA, -1);
+		luaTableToMap(LUA, -1, request->headers);
 	}
 	LUA->Pop();
 
 	// Fetch parameters
 	LUA->GetField(1, "parameters");
 	if (LUA->IsType(-1, GarrysMod::Lua::Type::Table)) {
-		request->parameters = mapFromLuaTable(LUA, -1);
+		luaTableToMap(LUA, -1, request->parameters);
 	}
 	LUA->Pop();
 
