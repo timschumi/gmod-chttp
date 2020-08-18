@@ -1,4 +1,11 @@
+#include <curl/curl.h>
+
 #include "HTTPRequest.h"
+
+HTTPRequest::HTTPRequest() {
+	curl_version_info_data *info = curl_version_info(CURLVERSION_NOW);
+	this->headers["User-Agent"] = (std::string) "curl/" + info->version + " gmod-chttp/1.3.2";
+}
 
 std::string HTTPRequest::buildQueryString() {
 	std::string params;

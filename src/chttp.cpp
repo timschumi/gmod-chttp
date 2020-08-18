@@ -7,17 +7,8 @@
 #include "lua.h"
 #include "threading.h"
 
-std::string getUserAgent() {
-	curl_version_info_data *info = curl_version_info(CURLVERSION_NOW);
-	return (std::string) "curl/" + info->version + " gmod-chttp/" + CHTTP_VERSION;
-}
-
 void curlAddHeaders(CURL *curl, HTTPRequest *request) {
 	struct curl_slist *headers = nullptr;
-
-	// Check if we have to add the default User-Agent
-	if (request->headers.count("User-Agent") == 0)
-		headers = curl_slist_append(headers, ("User-Agent: " + getUserAgent()).c_str());
 
 	// Add the Content-Type header if not already set
 	if (request->headers.count("Content-Type") == 0)
