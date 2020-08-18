@@ -149,7 +149,7 @@ LUA_FUNCTION(CHTTP) {
 	}
 
 	auto *request = new HTTPRequest();
-	bool ret;
+	std::string failreason;
 
 	// Fetch failed handler
 	LUA->GetField(1, "failed");
@@ -164,20 +164,18 @@ LUA_FUNCTION(CHTTP) {
 	if (LUA->IsType(-1, GarrysMod::Lua::Type::String)) {
 		request->method = HTTPMethod::fromString(LUA->GetString(-1));
 	}
+	LUA->Pop();
 	if (request->method == HTTPMethod::INVALID) {
-		getResultQueue().push(new FailedQueueData(request->success, request->failed, "Unsupported request method: " + std::string(LUA->GetString(-1))));
-		ret = false;
+		failreason = "Unsupported request method: " + std::string(LUA->GetString(-1));
 		goto exit;
 	}
-	LUA->Pop();
 
 	// Fetch url
 	LUA->GetField(1, "url");
 	if (LUA->IsType(-1, GarrysMod::Lua::Type::String)) {
 		request->url = LUA->GetString(-1);
 	} else {
-		getResultQueue().push(new FailedQueueData(request->success, request->failed, "invalid url"));
-		ret = false;
+		failreason = "invalid url";
 		goto exit;
 	}
 	LUA->Pop();
@@ -218,13 +216,23 @@ LUA_FUNCTION(CHTTP) {
 	}
 	LUA->Pop();
 
-	ret = scheduleRequest(request);
+	scheduleRequest(request);
 
 exit:
-	if(!ret)
-		delete request;
+	if (!failreason.empty()) {
+		if (request->failed) {
+			// Run the fail handler
+			LUA->ReferencePush(request->failed);
+			LUA->ReferenceFree(request->failed);
 
-	LUA->PushBool(ret); // Push result to the stack
+			LUA->PushString(failreason.c_str());
+			LUA->Call(1, 0);
+		}
+
+		delete request;
+	}
+
+	LUA->PushBool(true); // Push result to the stack
 	return 1; // We are returning a single value
 }
 
