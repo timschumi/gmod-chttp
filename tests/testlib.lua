@@ -44,3 +44,12 @@ function assertFalse(message, actual)
 
     failed("Failed.\n\n")
 end
+
+function dumpResponse(code, body, headers)
+    print("Code: " .. code .."\n")
+
+    print("Body:")
+    print(body)
+
+    PrintTable(headers)
+end
