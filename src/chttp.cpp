@@ -144,14 +144,12 @@ cleanup:
  * It returns a boolean whether a request was sent or not.
  */
 LUA_FUNCTION(CHTTP) {
+	if (!LUA->IsType(1, GarrysMod::Lua::Type::Table)) {
+		return 0;
+	}
+
 	auto *request = new HTTPRequest();
 	bool ret;
-
-	if (!LUA->IsType(1, GarrysMod::Lua::Type::Table)) {
-		LOG("No HTTPRequest table set.");
-		ret = false;
-		goto exit;
-	}
 
 	// Fetch failed handler
 	LUA->GetField(1, "failed");
