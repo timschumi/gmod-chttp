@@ -106,8 +106,7 @@ exit:
 
 LUA_FUNCTION(threadingDoThink) {
 	while (!getResultQueue().empty()) {
-		ResultQueueData* data = getResultQueue().front();
-		getResultQueue().pop();
+		ResultQueueData* data = getResultQueue().pop();
 		data->run(LUA);
 		delete data;
 	}

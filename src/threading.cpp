@@ -2,13 +2,13 @@
 
 #include "threading.h"
 
-std::queue<HTTPRequest*>& getRequestQueue() {
-	static std::queue<HTTPRequest*> requests;
+LockableQueue<HTTPRequest*>& getRequestQueue() {
+	static LockableQueue<HTTPRequest*> requests;
 	return requests;
 }
 
-std::queue<ResultQueueData*>& getResultQueue() {
-	static std::queue<ResultQueueData*> failed;
+LockableQueue<ResultQueueData*>& getResultQueue() {
+	static LockableQueue<ResultQueueData*> failed;
 	return failed;
 }
 
@@ -24,8 +24,7 @@ bool thread_exists = false;
 void threadFunc() {
 	thread_exists = true;
 	while (!getRequestQueue().empty()) {
-		HTTPRequest *request = getRequestQueue().front();
-		getRequestQueue().pop();
+		HTTPRequest *request = getRequestQueue().pop();
 		request->run();
 		delete request;
 	}
