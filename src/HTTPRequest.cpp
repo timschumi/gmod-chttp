@@ -51,13 +51,13 @@ void curlSetMethod(CURL *curl, HTTPMethod method) {
 	// METHOD_GET and METHOD_POST are not listed here,
 	// since they don't require any specific setup
 	switch (method) {
-		case HTTPMethod::HEAD:
+		case HTTPMethod::M_HEAD:
 			curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
 			break;
-		case HTTPMethod::PUT:
-		case HTTPMethod::DELETE:
-		case HTTPMethod::PATCH:
-		case HTTPMethod::OPTIONS:
+		case HTTPMethod::M_PUT:
+		case HTTPMethod::M_DELETE:
+		case HTTPMethod::M_PATCH:
+		case HTTPMethod::M_OPTIONS:
 			curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method.toString().c_str());
 			break;
 		default:

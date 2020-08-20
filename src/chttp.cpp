@@ -33,7 +33,7 @@ LUA_FUNCTION(CHTTP) {
 		request->method = HTTPMethod::fromString(LUA->GetString(-1));
 	}
 	LUA->Pop();
-	if (request->method == HTTPMethod::INVALID) {
+	if (request->method == HTTPMethod::M_INVALID) {
 		failreason = "Unsupported request method: " + std::string(LUA->GetString(-1));
 		goto exit;
 	}

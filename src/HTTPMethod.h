@@ -3,14 +3,14 @@
 class HTTPMethod {
 public:
 	enum Method {
-		INVALID = 0,
-		GET,
-		HEAD,
-		POST,
-		PUT,
-		DELETE,
-		OPTIONS,
-		PATCH,
+		M_INVALID = 0,
+		M_GET,
+		M_HEAD,
+		M_POST,
+		M_PUT,
+		M_DELETE,
+		M_OPTIONS,
+		M_PATCH,
 	};
 
 	HTTPMethod() = default;

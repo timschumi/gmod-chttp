@@ -19,7 +19,7 @@ public:
 	int success = 0;
 
 	// Request method for the request
-	HTTPMethod method = HTTPMethod::GET;
+	HTTPMethod method = HTTPMethod::M_GET;
 
 	// Well, what could that be?
 	std::string url;
