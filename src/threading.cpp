@@ -1,6 +1,5 @@
 #include <thread>
 
-#include "chttp.h"
 #include "threading.h"
 
 std::queue<HTTPRequest*>& getRequestQueue() {
@@ -27,7 +26,7 @@ void threadFunc() {
 	while (!getRequestQueue().empty()) {
 		HTTPRequest *request = getRequestQueue().front();
 		getRequestQueue().pop();
-		processRequest(request);
+		request->run();
 		delete request;
 	}
 	thread_exists = false;

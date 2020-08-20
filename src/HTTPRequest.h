@@ -36,6 +36,7 @@ public:
 	HTTPRequest();
 	std::string buildQueryString();
 	std::string buildURL();
+	bool run();
 };
 
 #endif
