@@ -11,8 +11,6 @@ class LockableQueue {
 public:
 	void push(T element);
 	T pop(bool block = false);
-	size_t size();
-	bool empty();
 };
 
 template <class T>
@@ -41,15 +39,4 @@ T LockableQueue<T>::pop(bool block) {
 
 	lock.unlock();
 	return element;
-}
-
-template <class T>
-size_t LockableQueue<T>::size() {
-	std::lock_guard<std::mutex> lock(mutex);
-	return queue.size();
-}
-
-template <class T>
-bool LockableQueue<T>::empty() {
-	return this->size() == 0;
 }
