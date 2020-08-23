@@ -84,7 +84,7 @@ LUA_FUNCTION(CHTTP) {
 	}
 	LUA->Pop();
 
-	scheduleRequest(request);
+	getRequestQueue().push(request);
 
 exit:
 	if (!failreason.empty()) {
@@ -161,12 +161,18 @@ GMOD_MODULE_OPEN() {
 	// Pop the global table from the stack again
 	LUA->Pop();
 
+	// Start the background thread
+	getBackgroundThread();
+
 	return 0;
 }
 
 GMOD_MODULE_CLOSE() {
 	// HACK: Terminate the background thread
 	getRequestQueue().push(nullptr);
+
+	// Synchronize with the main thread
+	getBackgroundThread().join();
 
 	// Cleanup curl
 	curl_global_cleanup();

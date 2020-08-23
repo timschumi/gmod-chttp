@@ -1,3 +1,5 @@
+#include <thread>
+
 #include "GarrysMod/Lua/Interface.h"
 
 #include "HTTPRequest.h"
@@ -8,6 +10,4 @@
 LockableQueue<HTTPRequest*>& getRequestQueue();
 LockableQueue<ResultQueueData*>& getResultQueue();
 
-bool scheduleRequest(HTTPRequest *request);
-
-bool startThread();
+std::thread& getBackgroundThread();
