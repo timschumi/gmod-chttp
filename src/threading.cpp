@@ -23,8 +23,12 @@ bool thread_exists = false;
 
 void threadFunc() {
 	thread_exists = true;
-	while (!getRequestQueue().empty()) {
+	while (true) {
 		HTTPRequest *request = getRequestQueue().pop();
+
+		if (request == nullptr)
+			break;
+
 		request->run();
 		delete request;
 	}

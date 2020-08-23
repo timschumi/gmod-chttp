@@ -33,6 +33,9 @@ T LockableQueue<T>::pop(bool block) {
 		this->cond.wait(lock, [this] { return !queue.empty(); });
 	}
 
+	if (queue.empty())
+		return nullptr;
+
 	T element = queue.front();
 	queue.pop();
 
