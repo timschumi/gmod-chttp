@@ -165,6 +165,9 @@ GMOD_MODULE_OPEN() {
 }
 
 GMOD_MODULE_CLOSE() {
+	// HACK: Terminate the background thread
+	getRequestQueue().push(nullptr);
+
 	// Cleanup curl
 	curl_global_cleanup();
 

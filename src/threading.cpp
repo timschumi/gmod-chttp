@@ -24,7 +24,7 @@ bool thread_exists = false;
 void threadFunc() {
 	thread_exists = true;
 	while (true) {
-		HTTPRequest *request = getRequestQueue().pop();
+		HTTPRequest *request = getRequestQueue().pop(true);
 
 		if (request == nullptr)
 			break;
