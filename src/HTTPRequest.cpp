@@ -85,20 +85,18 @@ size_t curl_headermap_append(char *contents, size_t size, size_t nmemb, std::map
 }
 
 bool HTTPRequest::run() {
-	CURL *curl;
+	CURL *curl = curl_easy_init();
+
+	if (!curl) {
+		getResultQueue().push(new FailedQueueData(this->success, this->failed, "Failed to init curl struct!"));
+		return false;
+	}
+
 	CURLcode cres;
 	bool ret = true;
 	auto *response = new SuccessQueueData(this->success, this->failed);
 	std::string postbody;
 	const char* redirect;
-
-	curl = curl_easy_init();
-
-	if (!curl) {
-		getResultQueue().push(new FailedQueueData(this->success, this->failed, "Failed to init curl struct!"));
-		ret = false;
-		goto cleanup;
-	}
 
 	curlSetMethod(curl, this->method);
 
@@ -158,8 +156,7 @@ cleanup:
 		delete response;
 	}
 
-	if (curl)
-		curl_easy_cleanup(curl);
+	curl_easy_cleanup(curl);
 
 	return ret;
 }
