@@ -18,6 +18,8 @@ void LockableQueue<T>::push(T element) {
 	std::unique_lock<std::mutex> lock(mutex);
 
 	queue.push(element);
+
+	// Unlock manually so that cond doesn't immediately wait again.
 	lock.unlock();
 
 	this->cond.notify_one();
@@ -37,6 +39,5 @@ T LockableQueue<T>::pop(bool block) {
 	T element = queue.front();
 	queue.pop();
 
-	lock.unlock();
 	return element;
 }
