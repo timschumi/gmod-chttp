@@ -58,6 +58,7 @@ void curlSetMethod(CURL *curl, HTTPMethod method) {
 		case HTTPMethod::M_DELETE:
 		case HTTPMethod::M_PATCH:
 		case HTTPMethod::M_OPTIONS:
+		case HTTPMethod::M_INVALID:
 			curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method.toString().c_str());
 			break;
 		default:
