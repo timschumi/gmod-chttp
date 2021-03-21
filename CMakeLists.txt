@@ -29,3 +29,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 endif()
 
 set_gmod_suffix_prefix(chttp)
+
+if("${MORE_STATIC_LINKS}" AND ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	target_link_options(chttp PRIVATE "-static-libstdc++" "-static-libgcc")
+endif()

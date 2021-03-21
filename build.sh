@@ -34,11 +34,20 @@ for i in "${@:3}"; do
 	"verbose")
 		build_verbose=1
 		;;
+	"static")
+		build_static=1
+		;;
 	*)
 		echo "Unknown argument: '$i'" >&2
 		exit 1
 	esac
 done
+
+if [ "$build_static" = "1" ]; then
+	DIST_FILE="${DIST_FILE}-static"
+	BUILD_DIR="${BUILD_DIR}-static"
+	cmake_args+=("-DMORE_STATIC_LINKS:BOOL=ON")
+fi
 
 if [ "$build_verbose" = "1" ]; then
 	cmake_args+=("-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON")
