@@ -17,16 +17,22 @@ appropriate file from the [releases page](https://github.com/timschumi/gmod-chtt
 putting it into the `<game or server directory>/garrysmod/lua/bin/` directory.
 (The `bin` directory might not exist and should be created manually.)
 
-Attention has to be paid to whether you are using the x86 or x64
-version of the game/server. Servers and clients are both x86 by default,
-unless manually changed by joining the appropriate beta.
+Attention has to be paid to whether you are using the 32-bit or 64-bit
+version of the game/server. **Servers and clients are both 32-bit by default,
+unless manually changed by joining the appropriate beta.**
 
-Contrary to earlier releases, installing libcurl and its dependencies
-ISN'T required anymore, since those are now included in the library itself.
+There are two other variations of the libraries, `-dbg` (with debugging symbols
+included) and `-static` (includes even less dynamically linked dependencies),
+as well as a combination of both.
 
-Also, all Linux libraries are now compiled on Debian 9 for compatibility
-reasons, so there is no longer a seperate compatibility version of the
-library.
+Unless you are bug-hunting (in the case of `-dbg`) or are having issues with
+loading the library due to dependencies (in the case of `-static`), you probably
+shouldn't use either of those (except when instructed to do so).
+
+Please note that when using the library variants that have a suffix (`-dbg`, `-static`, ...),
+that suffix has to be removed to match the expected library name.
+**The game will not find the library unless its exact name is `gmsv_chttp_<arch>.dll`,
+where `<arch>` is one of the following: `linux`, `linux64`, `win32`, `win64`.**
 
 ## Usage
 
