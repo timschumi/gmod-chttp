@@ -1,7 +1,19 @@
 #include <curl/curl.h>
+#include <unistd.h>
 
 #include "HTTPRequest.h"
 #include "threading.h"
+
+// Taken from the curl configure script
+static const char *capaths[] = {
+	"/etc/ssl/certs/ca-certificates.crt",		// Debian
+	"/etc/pki/tls/certs/ca-bundle.crt",		// Redhat and Mandriva
+	"/usr/share/ssl/certs/ca-bundle.crt",		// Old Redhat
+	"/usr/local/share/certs/ca-root-nss.crt",	// FreeBSD
+	"/etc/ssl/cert.pem",				// OpenBSD, FreeBSD
+};
+
+static const char *cabundle = NULL;
 
 HTTPRequest::HTTPRequest() {
 	curl_version_info_data *info = curl_version_info(CURLVERSION_NOW);
@@ -66,6 +78,17 @@ void curlSetMethod(CURL *curl, HTTPMethod method) {
 	}
 }
 
+#ifndef WINDOWS_BUILD
+const char *findCABundle() {
+	for (int i = 0; i < sizeof(capaths) / sizeof(capaths[0]); i++) {
+		if (access(capaths[i], R_OK) == 0)
+			return capaths[i];
+	}
+
+	return NULL;
+}
+#endif
+
 // Write callback for appending to an std::string
 size_t curl_string_append(char *contents, size_t size, size_t nmemb, std::string *userp) {
 	userp->append(contents, size * nmemb);
@@ -98,6 +121,15 @@ bool HTTPRequest::run() {
 	auto *response = new SuccessQueueData(this->success, this->failed);
 	std::string postbody;
 	const char* redirect;
+
+#ifndef WINDOWS_BUILD
+	// Find the CA bundle if not already cached
+	if (!cabundle)
+		cabundle = findCABundle();
+
+	// Set the CA path
+	curl_easy_setopt(curl, CURLOPT_CAINFO, cabundle);
+#endif
 
 	curlSetMethod(curl, this->method);
 
