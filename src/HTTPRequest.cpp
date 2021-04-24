@@ -6,14 +6,14 @@
 
 // Taken from the curl configure script
 static const char *capaths[] = {
-	"/etc/ssl/certs/ca-certificates.crt",		// Debian
-	"/etc/pki/tls/certs/ca-bundle.crt",		// Redhat and Mandriva
-	"/usr/share/ssl/certs/ca-bundle.crt",		// Old Redhat
-	"/usr/local/share/certs/ca-root-nss.crt",	// FreeBSD
-	"/etc/ssl/cert.pem",				// OpenBSD, FreeBSD
+	"/etc/ssl/certs/ca-certificates.crt",       // Debian
+	"/etc/pki/tls/certs/ca-bundle.crt",         // Redhat and Mandriva
+	"/usr/share/ssl/certs/ca-bundle.crt",       // Old Redhat
+	"/usr/local/share/certs/ca-root-nss.crt",   // FreeBSD
+	"/etc/ssl/cert.pem",                        // OpenBSD, FreeBSD
 };
 
-static const char *cabundle = NULL;
+static const char *cabundle = nullptr;
 
 HTTPRequest::HTTPRequest() {
 	curl_version_info_data *info = curl_version_info(CURLVERSION_NOW);
@@ -80,12 +80,12 @@ void curlSetMethod(CURL *curl, HTTPMethod method) {
 
 #ifndef WINDOWS_BUILD
 const char *findCABundle() {
-	for (int i = 0; i < sizeof(capaths) / sizeof(capaths[0]); i++) {
-		if (access(capaths[i], R_OK) == 0)
-			return capaths[i];
+	for (auto & capath : capaths) {
+		if (access(capath, R_OK) == 0)
+			return capath;
 	}
 
-	return NULL;
+	return nullptr;
 }
 #endif
 
