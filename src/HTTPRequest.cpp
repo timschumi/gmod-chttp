@@ -134,6 +134,9 @@ bool HTTPRequest::run() {
 	curl_easy_setopt(curl, CURLOPT_CAINFO, cabundle);
 #endif
 
+	// Override the source interface if set
+	curl_easy_setopt(curl, CURLOPT_INTERFACE, getenv("CHTTP_INTERFACE"));
+
 	curlSetMethod(curl, this->method);
 
 	if (this->method.isLikePost()) {

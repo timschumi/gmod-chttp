@@ -64,6 +64,24 @@ itself. Instead, whatever value is provided will be
 [passed to libcurl as-is](https://curl.se/libcurl/c/CURLOPT_CAINFO.html) and no
 other checks will be made by CHTTP to verify that the provided value is valid.
 
+### Source Interface
+
+**Warning:** This should not be your go-to solution for fixing routing issues. Manually
+setting the source interface can introduce weird issues if not done correctly, and the
+operating system is usually better at figuring out where traffic should go anyways.
+Go fix your routes.
+
+Usually, CHTTP will route your requests through the interface that is chosen by your
+operating system. In case the wrong interface is chosen and you can't fix your routing
+table so that traffic is sent through the correct interface by default, you can
+force CHTTP to pick a specific interface instead through the use of the
+environment variable `CHTTP_INTERFACE`.
+
+Setting this will override the interface using the variable contents for each request.
+The value is passed to libcurl as-is and is not checked for validity by CHTTP,
+so make sure to review the documentation for
+[libcurl's CURLOPT_INTERFACE option](https://curl.se/libcurl/c/CURLOPT_INTERFACE.html).
+
 ## Usage
 
 This is only required for developers who want to use CHTTP in their scripts.
