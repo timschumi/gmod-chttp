@@ -80,6 +80,9 @@ void curlSetMethod(CURL *curl, HTTPMethod method) {
 
 #ifndef WINDOWS_BUILD
 const char *findCABundle() {
+	if (auto capath = getenv("CHTTP_CAINFO"))
+		return capath;
+
 	for (auto & capath : capaths) {
 		if (access(capath, R_OK) == 0)
 			return capath;

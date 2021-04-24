@@ -34,6 +34,36 @@ that suffix has to be removed to match the expected library name.
 **The game will not find the library unless its exact name is `gmsv_chttp_<arch>.dll`,
 where `<arch>` is one of the following: `linux`, `linux64`, `win32`, `win64`.**
 
+## Configuration
+
+### CA bundle
+
+**Warning:** This section only applies to the Linux library. The Windows variant
+uses the native SSL backend inside Windows (also known as "Schannel" or "WinSSL")
+and as a result relies on the built-in certificate store.
+
+Due to differences across various Linux distributions CHTTP will search for an
+accessible CA bundle in the following locations (in this order) when the first
+request is made:
+
+* `/etc/ssl/certs/ca-certificates.crt` (Debian)
+* `/etc/pki/tls/certs/ca-bundle.crt` (Red Hat and Mandriva)
+* `/usr/share/ssl/certs/ca-bundle.crt` (Older Red Hat)
+* `/usr/local/share/certs/ca-root-nss.crt` (FreeBSD)
+* `/etc/ssl/cert.pem` (OpenBSD, FreeBSD)
+
+Most paths in this list should also apply to their respective derivatives, for example
+Ubuntu as a Debian-derivative and Fedora/CentOS being based on Red Hat Enterprise Linux.
+
+In case you are still having issues related to the CA bundle (for example receiving the
+error `Problem with the SSL CA cert (path? access rights?)`) you can override the chosen
+path through the environment variable `CHTTP_CAINFO`.
+
+As long as this environment variable is set, CHTTP will not search for the CA bundle
+itself. Instead, whatever value is provided will be
+[passed to libcurl as-is](https://curl.se/libcurl/c/CURLOPT_CAINFO.html) and no
+other checks will be made by CHTTP to verify that the provided value is valid.
+
 ## Usage
 
 This is only required for developers who want to use CHTTP in their scripts.
