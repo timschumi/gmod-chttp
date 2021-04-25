@@ -5,11 +5,11 @@
 
 ResultQueueData::~ResultQueueData() {
 	if (this->SuccessHandler) {
-		Logger::msg("~ResultQueueData: success handler has not been freed!");
+		Logger::warn("~ResultQueueData: success handler has not been freed!");
 	}
 
 	if (this->FailHandler) {
-		Logger::msg("~ResultQueueData: fail handler has not been freed!");
+		Logger::warn("~ResultQueueData: fail handler has not been freed!");
 	}
 }
 
