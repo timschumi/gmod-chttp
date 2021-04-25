@@ -1,7 +1,7 @@
 #include <vector>
 #include "Logger.h"
 
-#ifdef WINDOWS_BUILD
+#ifdef _WIN32
 #include <libloaderapi.h>
 #else
 #include <dlfcn.h>
@@ -9,7 +9,7 @@
 
 
 static void *getExport(const std::string& library, const std::string& symbol) {
-#ifdef WINDOWS_BUILD
+#ifdef _WIN32
 	HMODULE handle = GetModuleHandle((library + ".dll").c_str());
 	return reinterpret_cast<void *>(GetProcAddress(handle, symbol.c_str()));
 #else

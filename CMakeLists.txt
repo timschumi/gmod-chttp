@@ -24,10 +24,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	target_link_options(chttp PRIVATE "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/chttp-linux.exp")
 endif()
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-	add_definitions(-DWINDOWS_BUILD)
-endif()
-
 set_gmod_suffix_prefix(chttp)
 
 if("${MORE_STATIC_LINKS}" AND ${CMAKE_SYSTEM_NAME} MATCHES "Linux")

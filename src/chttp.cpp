@@ -117,7 +117,7 @@ LUA_FUNCTION(threadingDoThink) {
 }
 
 GMOD_MODULE_OPEN() {
-#ifdef WINDOWS_BUILD
+#ifdef _WIN32
 	if (curl_global_sslset(CURLSSLBACKEND_SCHANNEL, nullptr, nullptr) != CURLSSLSET_OK) {
 		LOG("error: The WinSSL/schannel backend is not available!");
 		return 1;

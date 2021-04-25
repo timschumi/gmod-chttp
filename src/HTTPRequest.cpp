@@ -78,7 +78,7 @@ void curlSetMethod(CURL *curl, HTTPMethod method) {
 	}
 }
 
-#ifndef WINDOWS_BUILD
+#ifdef __linux__
 const char *findCABundle() {
 	if (auto capath = getenv("CHTTP_CAINFO"))
 		return capath;
@@ -125,7 +125,7 @@ bool HTTPRequest::run() {
 	std::string postbody;
 	const char* redirect;
 
-#ifndef WINDOWS_BUILD
+#ifdef __linux__
 	// Find the CA bundle if not already cached
 	if (!cabundle)
 		cabundle = findCABundle();
