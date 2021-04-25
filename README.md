@@ -110,3 +110,13 @@ end
 
 You will now have a function called `my_http` that behaves like `HTTP()`/`CHTTP()`
 but automatically points to the correct implementation.
+
+### Additional log output
+
+CHTTP can provide additional information about what is going on internally, which
+at the moment includes messages when a request or redirect is processed and when
+invalid values in parameter or header tables are skipped.
+
+To receive those messages in the console the developer log level has to be set to
+a non-null value. This can be done by entering `developer 1` as a command, after
+which additional messages should start showing up.
