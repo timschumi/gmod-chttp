@@ -38,7 +38,7 @@ bool Logger::init() {
 	devmsg_func = reinterpret_cast<decltype(devmsg_func)>(getExport(tier0_name, "DevMsg"));
 	devwarn_func = reinterpret_cast<decltype(devwarn_func)>(getExport(tier0_name, "DevWarning"));
 
-	return msg_func;
+	return msg_func && warn_func && devmsg_func && devwarn_func;
 }
 
 std::string Logger::format(const std::string& fmt, std::va_list args) {
