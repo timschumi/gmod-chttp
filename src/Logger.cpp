@@ -24,10 +24,19 @@ decltype(Logger::devmsg_func) Logger::devmsg_func = nullptr;
 decltype(Logger::devwarn_func) Logger::devwarn_func = nullptr;
 
 bool Logger::init() {
-	msg_func = reinterpret_cast<decltype(msg_func)>(getExport("tier0", "Msg"));
-	warn_func = reinterpret_cast<decltype(warn_func)>(getExport("tier0", "Warning"));
-	devmsg_func = reinterpret_cast<decltype(devmsg_func)>(getExport("tier0", "DevMsg"));
-	devwarn_func = reinterpret_cast<decltype(devwarn_func)>(getExport("tier0", "DevWarning"));
+	std::string tier0_name = "tier0";
+
+#if defined(__linux__) && defined(__x86_64__)
+	// Check if tier0_client is already loaded.
+	// If so, it's likely that we want that instead of the "server" tier0.
+	if (dlopen("libtier0_client.so", RTLD_LAZY | RTLD_NOLOAD))
+		tier0_name = "tier0_client";
+#endif
+
+	msg_func = reinterpret_cast<decltype(msg_func)>(getExport(tier0_name, "Msg"));
+	warn_func = reinterpret_cast<decltype(warn_func)>(getExport(tier0_name, "Warning"));
+	devmsg_func = reinterpret_cast<decltype(devmsg_func)>(getExport(tier0_name, "DevMsg"));
+	devwarn_func = reinterpret_cast<decltype(devwarn_func)>(getExport(tier0_name, "DevWarning"));
 
 	return msg_func;
 }
