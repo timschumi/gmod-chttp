@@ -82,21 +82,31 @@ The value is passed to libcurl as-is and is not checked for validity by CHTTP,
 so make sure to review the documentation for
 [libcurl's CURLOPT_INTERFACE option](https://curl.se/libcurl/c/CURLOPT_INTERFACE.html).
 
-## Usage
+## Addon development
 
-This is only required for developers who want to use CHTTP in their scripts.
+This is only required for developers who want to use CHTTP in their addons.
 A normal end user doesn't need any of this.
+
+### Loading the module
 
 The module is loaded by running `require("chttp")` in the LUA console or in
 a script. It will provide a `CHTTP()` method that is called in the same way
 as the original HTTP-Method. For more information, please refer to the
 [Garry's Mod documentation](https://wiki.facepunch.com/gmod/Global.HTTP).
 
-In the use case where you want to use CHTTP instead of HTTP if it's available,
-use the following code snippet to load it:
+### Automatic fallback to HTTP
+
+If you want to use CHTTP when it's available and fall back to the built-in
+HTTP implementation otherwise you can use the following Lua snippet to load
+the library:
 
 ```
 if pcall(require, "chttp") and CHTTP ~= nil then
-	HTTP = CHTTP
+	my_http = CHTTP
+else
+	my_http = HTTP
 end
 ```
+
+You will now have a function called `my_http` that behaves like `HTTP()`/`CHTTP()`
+but automatically points to the correct implementation.
