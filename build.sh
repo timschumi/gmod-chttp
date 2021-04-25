@@ -10,8 +10,6 @@ fi
 # Ensure the output folder exists
 mkdir -p "${BASE_DIR}/dist"
 
-echo "Got args: $@"
-
 BUILD_TARGET="${1}"
 BUILD_TYPE="${2}"
 
