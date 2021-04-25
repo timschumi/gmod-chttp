@@ -117,13 +117,6 @@ LUA_FUNCTION(threadingDoThink) {
 }
 
 GMOD_MODULE_OPEN() {
-#ifdef _WIN32
-	if (curl_global_sslset(CURLSSLBACKEND_SCHANNEL, nullptr, nullptr) != CURLSSLSET_OK) {
-		LOG("error: The WinSSL/schannel backend is not available!");
-		return 1;
-	}
-#endif
-
 	// Set up logging
 	if (!Logger::init()) {
 		LOG("warning: Could not get all required logging functions. Some messages might not show.");
