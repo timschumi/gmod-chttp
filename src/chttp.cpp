@@ -3,6 +3,7 @@
 
 #include "GarrysMod/Lua/Interface.h"
 
+#include "Logger.h"
 #include "lua.h"
 #include "threading.h"
 
@@ -122,6 +123,11 @@ GMOD_MODULE_OPEN() {
 		return 1;
 	}
 #endif
+
+	// Set up logging
+	if (!Logger::init()) {
+		LOG("warning: Could not get all required logging functions. Some messages might not show.");
+	}
 
 	// Initialize curl
 	curl_global_init(CURL_GLOBAL_ALL);
