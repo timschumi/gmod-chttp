@@ -1,9 +1,17 @@
 #include "ResultQueueData.h"
 
 #include "lua.h"
+#include "Logger.h"
 
-// TODO: Complain if SuccessHandler/FailedHandler has not been freed
-ResultQueueData::~ResultQueueData() = default;
+ResultQueueData::~ResultQueueData() {
+	if (this->SuccessHandler) {
+		Logger::msg("~ResultQueueData: success handler has not been freed!");
+	}
+
+	if (this->FailHandler) {
+		Logger::msg("~ResultQueueData: fail handler has not been freed!");
+	}
+}
 
 void ResultQueueData::freeHandlers(GarrysMod::Lua::ILuaBase *LUA) {
 	if (this->SuccessHandler) {
