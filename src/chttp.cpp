@@ -119,7 +119,11 @@ LUA_FUNCTION(threadingDoThink) {
 GMOD_MODULE_OPEN() {
 	// Set up logging
 	if (!Logger::init()) {
-		LOG("warning: Could not get all required logging functions. Some messages might not show.");
+		LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
+		LUA->GetField(-1, "print");
+		LUA->PushString(("[chttp] Could not get all required logging functions. Some messages might not show."));
+		LUA->Call(1, 0);
+		LUA->Pop();
 	}
 
 	// Initialize curl
