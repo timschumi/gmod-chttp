@@ -108,6 +108,7 @@ LUA_FUNCTION(threadingDoThink) {
 			break;
 
 		data->run(LUA);
+		data->freeHandlers(LUA);
 		delete data;
 	}
 

@@ -192,6 +192,9 @@ resend:
 cleanup:
 	// Clear out the SuccessQueueData if we don't need it
 	if (!ret) {
+		// Remove references to handlers (still stored in FailedQueueData)
+		response->removeHandlers();
+
 		delete response;
 	}
 
