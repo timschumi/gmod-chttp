@@ -55,6 +55,7 @@ FailedQueueData::FailedQueueData(int SuccessHandler, int FailHandler, const std:
 
 void FailedQueueData::run(GarrysMod::Lua::ILuaBase *LUA) {
 	if (!this->FailHandler) {
+		Logger::warn("Request failed without a fail hander: '%s'", reason.c_str());
 		return;
 	}
 

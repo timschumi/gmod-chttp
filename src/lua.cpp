@@ -1,4 +1,5 @@
 #include "lua.h"
+#include "Logger.h"
 
 // Builds a LUA table from a map and leaves it on the stack
 void mapToLuaTable(GarrysMod::Lua::ILuaBase *LUA, const std::map<std::string, std::string>& map) {
@@ -27,10 +28,21 @@ void luaTableToMap(GarrysMod::Lua::ILuaBase *LUA, int index, std::map<std::strin
 	// the key-value pair that follows that to the stack.
 	// key will now be top-2 and value will be top-1
 	while (LUA->Next(index - 1) != 0) {
-		// Only store things with String keys and String values
-		if (LUA->IsType(-2, GarrysMod::Lua::Type::String) && LUA->IsType(-1, GarrysMod::Lua::Type::String))
-			map[LUA->GetString(-2)] = LUA->GetString(-1);
+		// Remove entries with non-string keys
+		if (!LUA->IsType(-2, GarrysMod::Lua::Type::String)) {
+			Logger::devwarn("Ignoring non-string key in table!");
+			goto next;
+		}
 
+		// Remove entries with non-string values
+		if (!LUA->IsType(-1, GarrysMod::Lua::Type::String)) {
+			Logger::devwarn("Ignoring non-string value in table for key '%s'!", LUA->GetString(-2));
+			goto next;
+		}
+
+		map[LUA->GetString(-2)] = LUA->GetString(-1);
+
+		next:
 		// Pop value from the stack, key is needed for next iteration
 		LUA->Pop();
 	}

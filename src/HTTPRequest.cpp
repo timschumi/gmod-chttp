@@ -3,6 +3,7 @@
 
 #include "HTTPRequest.h"
 #include "threading.h"
+#include "Logger.h"
 
 // Taken from the curl configure script
 static const char *capaths[] = {
@@ -14,6 +15,7 @@ static const char *capaths[] = {
 };
 
 static const char *cabundle = nullptr;
+static const char *src_if = nullptr;
 
 HTTPRequest::HTTPRequest() {
 	curl_version_info_data *info = curl_version_info(CURLVERSION_NOW);
@@ -80,14 +82,19 @@ void curlSetMethod(CURL *curl, HTTPMethod method) {
 
 #ifdef __linux__
 const char *findCABundle() {
-	if (auto capath = getenv("CHTTP_CAINFO"))
+	if (auto capath = getenv("CHTTP_CAINFO")) {
+		Logger::msg("Forcing CAINFO to '%s'", capath);
 		return capath;
-
-	for (auto & capath : capaths) {
-		if (access(capath, R_OK) == 0)
-			return capath;
 	}
 
+	for (auto & capath : capaths) {
+		if (access(capath, R_OK) == 0) {
+			Logger::msg("Found accessible CAINFO in '%s'", capath);
+			return capath;
+		}
+	}
+
+	Logger::warn("Found no suitable CAINFO!");
 	return nullptr;
 }
 #endif
@@ -134,8 +141,15 @@ bool HTTPRequest::run() {
 	curl_easy_setopt(curl, CURLOPT_CAINFO, cabundle);
 #endif
 
+	// Query the source interface from the environment variables
+	if (!src_if && (src_if = getenv("CHTTP_INTERFACE"))) {
+		Logger::msg("Forcing INTERFACE to '%s'", src_if);
+	}
+
 	// Override the source interface if set
-	curl_easy_setopt(curl, CURLOPT_INTERFACE, getenv("CHTTP_INTERFACE"));
+	if (src_if) {
+		curl_easy_setopt(curl, CURLOPT_INTERFACE, src_if);
+	}
 
 	curlSetMethod(curl, this->method);
 
@@ -161,7 +175,9 @@ bool HTTPRequest::run() {
 
 	curlAddHeaders(curl, this);
 
-	curl_easy_setopt(curl, CURLOPT_URL, this->buildURL().c_str());
+	std::string built_url = this->buildURL();
+	curl_easy_setopt(curl, CURLOPT_URL, built_url.c_str());
+	Logger::devmsg("Sending a request to '%s'...", built_url.c_str());
 
 resend:
 	cres = curl_easy_perform(curl);
@@ -180,6 +196,7 @@ resend:
 
 		// Set the new URL and clear the temp variable
 		curl_easy_setopt(curl, CURLOPT_URL, redirect);
+		Logger::devmsg("Redirecting to '%s'...", redirect);
 		redirect = "";
 
 		goto resend;
