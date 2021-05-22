@@ -9,7 +9,8 @@
 #include "LockableQueue.h"
 
 // Different queues for different things
-LockableQueue<std::shared_ptr<HTTPRequest>>& getRequestQueue();
-LockableQueue<std::shared_ptr<LuaTask>>& getLuaTaskQueue();
+LockableQueue<std::shared_ptr<HTTPRequest>> &getRequestQueue();
 
-std::thread& getBackgroundThread();
+LockableQueue<std::shared_ptr<LuaTask>> &getLuaTaskQueue();
+
+std::thread &getBackgroundThread();

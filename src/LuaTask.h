@@ -10,6 +10,7 @@
 class LuaTask {
 public:
 	virtual void run(GarrysMod::Lua::ILuaBase *LUA) = 0;
+
 	virtual ~LuaTask() = default;
 };
 
@@ -27,6 +28,7 @@ public:
 	std::map<std::string, std::string> headers;
 public:
 	explicit SuccessCallbackTask(std::shared_ptr<LuaReference> callback);
+
 	void run(GarrysMod::Lua::ILuaBase *LUA) override;
 };
 
@@ -35,5 +37,6 @@ private:
 	std::string reason;
 public:
 	FailCallbackTask(std::shared_ptr<LuaReference> callback, std::string reason);
+
 	void run(GarrysMod::Lua::ILuaBase *LUA) override;
 };

@@ -9,6 +9,7 @@ private:
 
 public:
 	explicit LuaReference(GarrysMod::Lua::ILuaBase *LUA);
+
 	~LuaReference();
 
 	void push(GarrysMod::Lua::ILuaBase *LUA) const;

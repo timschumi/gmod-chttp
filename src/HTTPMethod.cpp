@@ -34,7 +34,7 @@ std::string HTTPMethod::toString() {
 }
 
 HTTPMethod HTTPMethod::fromString(std::string method) {
-	for(auto& c : method) {
+	for (auto &c : method) {
 		c = std::toupper(c);
 	}
 

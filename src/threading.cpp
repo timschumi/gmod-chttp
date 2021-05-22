@@ -1,11 +1,11 @@
 #include "threading.h"
 
-LockableQueue<std::shared_ptr<HTTPRequest>>& getRequestQueue() {
+LockableQueue<std::shared_ptr<HTTPRequest>> &getRequestQueue() {
 	static LockableQueue<std::shared_ptr<HTTPRequest>> requests;
 	return requests;
 }
 
-LockableQueue<std::shared_ptr<LuaTask>>& getLuaTaskQueue() {
+LockableQueue<std::shared_ptr<LuaTask>> &getLuaTaskQueue() {
 	static LockableQueue<std::shared_ptr<LuaTask>> queue;
 	return queue;
 }
@@ -21,7 +21,7 @@ void threadFunc() {
 	}
 }
 
-std::thread& getBackgroundThread() {
+std::thread &getBackgroundThread() {
 	static std::thread thread(threadFunc);
 	return thread;
 }

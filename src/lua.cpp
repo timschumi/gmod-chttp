@@ -2,11 +2,11 @@
 #include "Logger.h"
 
 // Builds a LUA table from a map and leaves it on the stack
-void mapToLuaTable(GarrysMod::Lua::ILuaBase *LUA, const std::map<std::string, std::string>& map) {
+void mapToLuaTable(GarrysMod::Lua::ILuaBase *LUA, const std::map<std::string, std::string> &map) {
 	// Create a new table on the stack
 	LUA->CreateTable();
 
-	for (auto const& e : map) {
+	for (auto const &e : map) {
 		// Push key to stack
 		LUA->PushString(e.first.c_str());
 
@@ -20,7 +20,7 @@ void mapToLuaTable(GarrysMod::Lua::ILuaBase *LUA, const std::map<std::string, st
 
 // Transfers values from a LUA Table on the stack (at the given offset)
 // into the given map.
-void luaTableToMap(GarrysMod::Lua::ILuaBase *LUA, int index, std::map<std::string, std::string>& map) {
+void luaTableToMap(GarrysMod::Lua::ILuaBase *LUA, int index, std::map<std::string, std::string> &map) {
 	// Query the first entry (we're querying by key, nil = 1st)
 	LUA->PushNil();
 
@@ -42,7 +42,7 @@ void luaTableToMap(GarrysMod::Lua::ILuaBase *LUA, int index, std::map<std::strin
 
 		map[LUA->GetString(-2)] = LUA->GetString(-1);
 
-		next:
+next:
 		// Pop value from the stack, key is needed for next iteration
 		LUA->Pop();
 	}

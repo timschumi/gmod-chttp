@@ -4,7 +4,7 @@
 #include <mutex>
 #include <condition_variable>
 
-template <class T>
+template<class T>
 class LockableQueue {
 	std::queue<T> queue;
 	std::mutex mutex;
@@ -12,10 +12,11 @@ class LockableQueue {
 
 public:
 	void push(T element);
+
 	T pop(bool block = false);
 };
 
-template <class T>
+template<class T>
 void LockableQueue<T>::push(T element) {
 	std::unique_lock<std::mutex> lock(mutex);
 
@@ -27,7 +28,7 @@ void LockableQueue<T>::push(T element) {
 	this->cond.notify_one();
 }
 
-template <class T>
+template<class T>
 T LockableQueue<T>::pop(bool block) {
 	std::unique_lock<std::mutex> lock(mutex);
 

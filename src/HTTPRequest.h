@@ -33,7 +33,10 @@ public:
 	std::string body;
 
 	HTTPRequest();
+
 	std::string buildQueryString();
+
 	std::string buildURL();
+
 	bool run();
 };

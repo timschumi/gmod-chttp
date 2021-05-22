@@ -7,11 +7,11 @@
 
 // Taken from the curl configure script
 static const char *capaths[] = {
-	"/etc/ssl/certs/ca-certificates.crt",       // Debian
-	"/etc/pki/tls/certs/ca-bundle.crt",         // Redhat and Mandriva
-	"/usr/share/ssl/certs/ca-bundle.crt",       // Old Redhat
-	"/usr/local/share/certs/ca-root-nss.crt",   // FreeBSD
-	"/etc/ssl/cert.pem",                        // OpenBSD, FreeBSD
+		"/etc/ssl/certs/ca-certificates.crt",       // Debian
+		"/etc/pki/tls/certs/ca-bundle.crt",         // Redhat and Mandriva
+		"/usr/share/ssl/certs/ca-bundle.crt",       // Old Redhat
+		"/usr/local/share/certs/ca-root-nss.crt",   // FreeBSD
+		"/etc/ssl/cert.pem",                        // OpenBSD, FreeBSD
 };
 
 static const char *cabundle = nullptr;
@@ -26,7 +26,7 @@ HTTPRequest::HTTPRequest() {
 std::string HTTPRequest::buildQueryString() {
 	std::string params;
 
-	for (auto const& e : this->parameters) {
+	for (auto const &e : this->parameters) {
 		if (!params.empty())
 			params += "&";
 
@@ -51,7 +51,7 @@ void curlAddHeaders(CURL *curl, HTTPRequest *request) {
 	struct curl_slist *headers = nullptr;
 
 	// Add all the headers from the request struct
-	for (auto const& e : request->headers)
+	for (auto const &e : request->headers)
 		headers = curl_slist_append(headers, (e.first + ": " + e.second).c_str());
 
 	// Add the header list to the curl struct
@@ -81,13 +81,14 @@ void curlSetMethod(CURL *curl, HTTPMethod method) {
 }
 
 #ifdef __linux__
+
 const char *findCABundle() {
 	if (auto capath = getenv("CHTTP_CAINFO")) {
 		Logger::msg("Forcing CAINFO to '%s'", capath);
 		return capath;
 	}
 
-	for (auto & capath : capaths) {
+	for (auto &capath : capaths) {
 		if (access(capath, R_OK) == 0) {
 			Logger::msg("Found accessible CAINFO in '%s'", capath);
 			return capath;
@@ -97,6 +98,7 @@ const char *findCABundle() {
 	Logger::warn("Found no suitable CAINFO!");
 	return nullptr;
 }
+
 #endif
 
 // Write callback for appending to an std::string
@@ -130,7 +132,7 @@ bool HTTPRequest::run() {
 	bool ret = true;
 	auto response = std::make_shared<SuccessCallbackTask>(this->success);
 	std::string postbody;
-	const char* redirect;
+	const char *redirect;
 
 #ifdef __linux__
 	// Find the CA bundle if not already cached

@@ -16,6 +16,7 @@ public:
 	};
 
 	HTTPMethod() = default;
+
 	constexpr HTTPMethod(Method m) : method(m) {};
 
 	operator Method() const {
@@ -25,7 +26,9 @@ public:
 	explicit operator bool() = delete;
 
 	bool isLikePost();
+
 	std::string toString();
+
 	static HTTPMethod fromString(std::string method);
 
 private:

@@ -9,5 +9,6 @@ private:
 
 public:
 	explicit LuaReferenceFreeTask(int ref);
+
 	void run(GarrysMod::Lua::ILuaBase *LUA) override;
 };

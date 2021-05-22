@@ -4,11 +4,13 @@
 #ifdef _WIN32
 #include <libloaderapi.h>
 #else
+
 #include <dlfcn.h>
+
 #endif
 
 
-static void *getExport(const std::string& library, const std::string& symbol) {
+static void *getExport(const std::string &library, const std::string &symbol) {
 #ifdef _WIN32
 	HMODULE handle = GetModuleHandle((library + ".dll").c_str());
 	return reinterpret_cast<void *>(GetProcAddress(handle, symbol.c_str()));
@@ -41,7 +43,7 @@ bool Logger::init() {
 	return msg_func && warn_func && devmsg_func && devwarn_func;
 }
 
-std::string Logger::format(const std::string& fmt, std::va_list args) {
+std::string Logger::format(const std::string &fmt, std::va_list args) {
 	// Copy args list so that we can use it twice
 	std::va_list args_copy;
 	va_copy(args_copy, args);
