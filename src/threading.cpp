@@ -10,6 +10,11 @@ LockableQueue<std::shared_ptr<ResultQueueData>>& getResultQueue() {
 	return failed;
 }
 
+std::queue<int>& getReferenceFreeQueue() {
+	static std::queue<int> queue;
+	return queue;
+}
+
 void threadFunc() {
 	while (true) {
 		auto request = getRequestQueue().pop(true);

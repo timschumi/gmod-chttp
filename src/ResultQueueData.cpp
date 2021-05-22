@@ -2,32 +2,18 @@
 
 #include "lua.h"
 #include "Logger.h"
+#include "threading.h"
 
 ResultQueueData::~ResultQueueData() {
 	if (this->SuccessHandler) {
-		Logger::warn("~ResultQueueData: success handler has not been freed!");
-	}
-
-	if (this->FailHandler) {
-		Logger::warn("~ResultQueueData: fail handler has not been freed!");
-	}
-}
-
-void ResultQueueData::freeHandlers(GarrysMod::Lua::ILuaBase *LUA) {
-	if (this->SuccessHandler) {
-		LUA->ReferenceFree(this->SuccessHandler);
+		getReferenceFreeQueue().push(this->SuccessHandler);
 		this->SuccessHandler = 0;
 	}
 
 	if (this->FailHandler) {
-		LUA->ReferenceFree(this->FailHandler);
+		getReferenceFreeQueue().push(this->FailHandler);
 		this->FailHandler = 0;
 	}
-}
-
-void ResultQueueData::removeHandlers() {
-	this->SuccessHandler = 0;
-	this->FailHandler = 0;
 }
 
 SuccessQueueData::SuccessQueueData(int SuccessHandler, int FailHandler) {

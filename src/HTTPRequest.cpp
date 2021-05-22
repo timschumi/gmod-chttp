@@ -207,12 +207,6 @@ resend:
 	getResultQueue().push(response);
 
 cleanup:
-	// Clear out the SuccessQueueData if we don't need it
-	if (!ret) {
-		// Remove references to handlers (still stored in FailedQueueData)
-		response->removeHandlers();
-	}
-
 	curl_easy_cleanup(curl);
 
 	return ret;

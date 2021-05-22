@@ -107,7 +107,16 @@ LUA_FUNCTION(threadingDoThink) {
 			break;
 
 		data->run(LUA);
-		data->freeHandlers(LUA);
+	}
+
+	while (true) {
+		int ref = getReferenceFreeQueue().front();
+		getReferenceFreeQueue().pop();
+
+		if (ref == 0)
+			break;
+
+		LUA->ReferenceFree(ref);
 	}
 
 	return 0;

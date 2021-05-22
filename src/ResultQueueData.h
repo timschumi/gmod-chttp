@@ -12,8 +12,6 @@ protected:
 public:
 	virtual ~ResultQueueData();
 	virtual void run(GarrysMod::Lua::ILuaBase *LUA) = 0;
-	void freeHandlers(GarrysMod::Lua::ILuaBase *LUA);
-	void removeHandlers();
 };
 
 // Data on the success queue
