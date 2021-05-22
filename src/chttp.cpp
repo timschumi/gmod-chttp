@@ -23,7 +23,7 @@ LUA_FUNCTION(CHTTP) {
 	// Fetch failed handler
 	LUA->GetField(1, "failed");
 	if (LUA->IsType(-1, GarrysMod::Lua::Type::Function)) {
-		request->failed = LUA->ReferenceCreate();
+		request->failed = std::make_shared<LuaReference>(LUA);
 	} else {
 		LUA->Pop();
 	}
@@ -48,7 +48,7 @@ LUA_FUNCTION(CHTTP) {
 	// Fetch success handler
 	LUA->GetField(1, "success");
 	if (LUA->IsType(-1, GarrysMod::Lua::Type::Function)) {
-		request->success = LUA->ReferenceCreate();
+		request->success = std::make_shared<LuaReference>(LUA);
 	} else {
 		LUA->Pop();
 	}
@@ -85,14 +85,7 @@ LUA_FUNCTION(CHTTP) {
 
 exit:
 	if (!failreason.empty()) {
-		if (request->failed) {
-			// Run the fail handler
-			LUA->ReferencePush(request->failed);
-			LUA->ReferenceFree(request->failed);
-
-			LUA->PushString(failreason.c_str());
-			LUA->Call(1, 0);
-		}
+		getLuaTaskQueue().push(std::make_shared<FailCallbackTask>(request->failed, failreason));
 	}
 
 	LUA->PushBool(true); // Push result to the stack

@@ -2,8 +2,10 @@
 
 #include <string>
 #include <map>
+#include <memory>
 
 #include "GarrysMod/Lua/Interface.h"
+#include "LuaReference.h"
 
 class LuaTask {
 public:
@@ -13,28 +15,25 @@ public:
 
 class RequestCallbackTask : public LuaTask {
 protected:
-	int SuccessHandler;
-	int FailHandler;
+	std::shared_ptr<LuaReference> callback;
 public:
-	virtual ~RequestCallbackTask();
+	explicit RequestCallbackTask(std::shared_ptr<LuaReference> callback);
 };
 
-// Data on the success queue
 class SuccessCallbackTask : public RequestCallbackTask {
 public:
 	long code = 0;
 	std::string body;
 	std::map<std::string, std::string> headers;
 public:
-	SuccessCallbackTask(int SuccessHandler, int FailHandler);
+	explicit SuccessCallbackTask(std::shared_ptr<LuaReference> callback);
 	void run(GarrysMod::Lua::ILuaBase *LUA) override;
 };
 
-// Data on the success queue
 class FailCallbackTask : public RequestCallbackTask {
 private:
 	std::string reason;
 public:
-	FailCallbackTask(int SuccessHandler, int FailHandler, const std::string& reason);
+	FailCallbackTask(std::shared_ptr<LuaReference> callback, std::string reason);
 	void run(GarrysMod::Lua::ILuaBase *LUA) override;
 };

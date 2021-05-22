@@ -1,52 +1,41 @@
 #include "LuaTask.h"
 
+#include <utility>
+
 #include "lua.h"
 #include "Logger.h"
-#include "threading.h"
-#include "LuaReferenceFreeTask.h"
 
-RequestCallbackTask::~RequestCallbackTask() {
-	if (this->SuccessHandler) {
-		getLuaTaskQueue().push(std::make_shared<LuaReferenceFreeTask>(this->SuccessHandler));
-		this->SuccessHandler = 0;
-	}
-
-	if (this->FailHandler) {
-		getLuaTaskQueue().push(std::make_shared<LuaReferenceFreeTask>(this->FailHandler));
-		this->FailHandler = 0;
-	}
+RequestCallbackTask::RequestCallbackTask(std::shared_ptr<LuaReference> callback)
+		: callback(std::move(callback)) {
 }
 
-SuccessCallbackTask::SuccessCallbackTask(int SuccessHandler, int FailHandler) {
-	this->SuccessHandler = SuccessHandler;
-	this->FailHandler = FailHandler;
+SuccessCallbackTask::SuccessCallbackTask(std::shared_ptr<LuaReference> callback)
+		: RequestCallbackTask(std::move(callback)) {
 }
 
 void SuccessCallbackTask::run(GarrysMod::Lua::ILuaBase *LUA) {
-	if (!this->SuccessHandler) {
+	if (!this->callback) {
 		return;
 	}
 
-	LUA->ReferencePush(this->SuccessHandler);
+	callback->push(LUA);
 	LUA->PushNumber(this->code);
 	LUA->PushString(this->body.c_str());
 	mapToLuaTable(LUA, this->headers);
 	LUA->Call(3, 0);
 }
 
-FailCallbackTask::FailCallbackTask(int SuccessHandler, int FailHandler, const std::string& reason) {
-	this->SuccessHandler = SuccessHandler;
-	this->FailHandler = FailHandler;
-	this->reason = reason;
+FailCallbackTask::FailCallbackTask(std::shared_ptr<LuaReference> callback, std::string reason)
+		: RequestCallbackTask(std::move(callback)), reason(std::move(reason)) {
 }
 
 void FailCallbackTask::run(GarrysMod::Lua::ILuaBase *LUA) {
-	if (!this->FailHandler) {
+	if (!this->callback) {
 		Logger::warn("Request failed without a fail hander: '%s'", reason.c_str());
 		return;
 	}
 
-	LUA->ReferencePush(this->FailHandler);
+	callback->push(LUA);
 	LUA->PushString(reason.c_str());
 	LUA->Call(1, 0);
 }

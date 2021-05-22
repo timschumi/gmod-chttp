@@ -2,20 +2,20 @@
 
 #include <string>
 #include <map>
+#include <memory>
 
 #include "HTTPMethod.h"
+#include "LuaReference.h"
 
 // Modeled after GMod's HTTPRequest structure
 // https://wiki.facepunch.com/gmod/Structures/HTTPRequest
 class HTTPRequest {
 public:
 	// Handler for failed requests. args: (string) reason
-	// This is a reference to the function on the stack
-	int failed = 0;
+	std::shared_ptr<LuaReference> failed = nullptr;
 
 	// Handler for successful requests. args: (number) code, (string) body, (table) headers
-	// This is a reference to the function on the stack
-	int success = 0;
+	std::shared_ptr<LuaReference> success = nullptr;
 
 	// Request method for the request
 	HTTPMethod method = HTTPMethod::M_GET;
