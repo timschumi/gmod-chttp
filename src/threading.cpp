@@ -5,9 +5,9 @@ LockableQueue<std::shared_ptr<HTTPRequest>>& getRequestQueue() {
 	return requests;
 }
 
-LockableQueue<std::shared_ptr<ResultQueueData>>& getResultQueue() {
-	static LockableQueue<std::shared_ptr<ResultQueueData>> failed;
-	return failed;
+LockableQueue<std::shared_ptr<LuaTask>>& getLuaTaskQueue() {
+	static LockableQueue<std::shared_ptr<LuaTask>> queue;
+	return queue;
 }
 
 std::queue<int>& getReferenceFreeQueue() {

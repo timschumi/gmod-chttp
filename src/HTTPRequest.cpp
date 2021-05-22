@@ -122,7 +122,7 @@ bool HTTPRequest::run() {
 	CURL *curl = curl_easy_init();
 
 	if (!curl) {
-		getResultQueue().push(std::make_shared<FailedQueueData>(this->success, this->failed, "Failed to init curl struct!"));
+		getLuaTaskQueue().push(std::make_shared<FailedQueueData>(this->success, this->failed, "Failed to init curl struct!"));
 		return false;
 	}
 
@@ -183,7 +183,7 @@ resend:
 	cres = curl_easy_perform(curl);
 
 	if (cres != CURLE_OK) {
-		getResultQueue().push(std::make_shared<FailedQueueData>(this->success, this->failed, curl_easy_strerror(cres)));
+		getLuaTaskQueue().push(std::make_shared<FailedQueueData>(this->success, this->failed, curl_easy_strerror(cres)));
 		ret = false;
 		goto cleanup;
 	}
@@ -204,7 +204,7 @@ resend:
 
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response->code);
 
-	getResultQueue().push(response);
+	getLuaTaskQueue().push(response);
 
 cleanup:
 	curl_easy_cleanup(curl);

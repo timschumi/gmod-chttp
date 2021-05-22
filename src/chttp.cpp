@@ -101,7 +101,7 @@ exit:
 
 LUA_FUNCTION(threadingDoThink) {
 	while (true) {
-		auto data = getResultQueue().pop();
+		auto data = getLuaTaskQueue().pop();
 
 		if (data == nullptr)
 			break;

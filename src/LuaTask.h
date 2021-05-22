@@ -5,13 +5,17 @@
 
 #include "GarrysMod/Lua/Interface.h"
 
-class ResultQueueData {
+class LuaTask {
+public:
+	virtual void run(GarrysMod::Lua::ILuaBase *LUA) = 0;
+};
+
+class ResultQueueData : public LuaTask {
 protected:
 	int SuccessHandler;
 	int FailHandler;
 public:
 	virtual ~ResultQueueData();
-	virtual void run(GarrysMod::Lua::ILuaBase *LUA) = 0;
 };
 
 // Data on the success queue
