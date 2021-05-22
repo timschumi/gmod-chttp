@@ -8,6 +8,7 @@
 class LuaTask {
 public:
 	virtual void run(GarrysMod::Lua::ILuaBase *LUA) = 0;
+	virtual ~LuaTask() = default;
 };
 
 class RequestCallbackTask : public LuaTask {
