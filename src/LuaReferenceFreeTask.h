@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "LuaTask.h"
 
 class LuaReferenceFreeTask : public LuaTask {

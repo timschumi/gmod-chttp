@@ -9,7 +9,6 @@
 
 #endif
 
-
 static void *getExport(const std::string &library, const std::string &symbol) {
 #ifdef _WIN32
 	HMODULE handle = GetModuleHandle((library + ".dll").c_str());

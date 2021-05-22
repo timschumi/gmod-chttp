@@ -7,11 +7,11 @@
 
 // Taken from the curl configure script
 static const char *capaths[] = {
-		"/etc/ssl/certs/ca-certificates.crt",       // Debian
-		"/etc/pki/tls/certs/ca-bundle.crt",         // Redhat and Mandriva
-		"/usr/share/ssl/certs/ca-bundle.crt",       // Old Redhat
-		"/usr/local/share/certs/ca-root-nss.crt",   // FreeBSD
-		"/etc/ssl/cert.pem",                        // OpenBSD, FreeBSD
+	"/etc/ssl/certs/ca-certificates.crt",       // Debian
+	"/etc/pki/tls/certs/ca-bundle.crt",         // Redhat and Mandriva
+	"/usr/share/ssl/certs/ca-bundle.crt",       // Old Redhat
+	"/usr/local/share/certs/ca-root-nss.crt",   // FreeBSD
+	"/etc/ssl/cert.pem",                        // OpenBSD, FreeBSD
 };
 
 static const char *cabundle = nullptr;
@@ -65,18 +65,18 @@ void curlSetMethod(CURL *curl, HTTPMethod method) {
 	// METHOD_GET and METHOD_POST are not listed here,
 	// since they don't require any specific setup
 	switch (method) {
-		case HTTPMethod::M_HEAD:
-			curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
-			break;
-		case HTTPMethod::M_PUT:
-		case HTTPMethod::M_DELETE:
-		case HTTPMethod::M_PATCH:
-		case HTTPMethod::M_OPTIONS:
-		case HTTPMethod::M_INVALID:
-			curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method.toString().c_str());
-			break;
-		default:
-			break;
+	case HTTPMethod::M_HEAD:
+		curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
+		break;
+	case HTTPMethod::M_PUT:
+	case HTTPMethod::M_DELETE:
+	case HTTPMethod::M_PATCH:
+	case HTTPMethod::M_OPTIONS:
+	case HTTPMethod::M_INVALID:
+		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method.toString().c_str());
+		break;
+	default:
+		break;
 	}
 }
 

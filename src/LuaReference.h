@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <GarrysMod/Lua/Interface.h>
 
 class LuaReference {
