@@ -17,7 +17,7 @@ LUA_FUNCTION(CHTTP) {
 		return 0;
 	}
 
-	auto *request = new HTTPRequest();
+	auto request = std::make_shared<HTTPRequest>();
 	std::string failreason;
 
 	// Fetch failed handler
@@ -93,8 +93,6 @@ exit:
 			LUA->PushString(failreason.c_str());
 			LUA->Call(1, 0);
 		}
-
-		delete request;
 	}
 
 	LUA->PushBool(true); // Push result to the stack
@@ -103,14 +101,13 @@ exit:
 
 LUA_FUNCTION(threadingDoThink) {
 	while (true) {
-		ResultQueueData* data = getResultQueue().pop();
+		auto data = getResultQueue().pop();
 
 		if (data == nullptr)
 			break;
 
 		data->run(LUA);
 		data->freeHandlers(LUA);
-		delete data;
 	}
 
 	return 0;

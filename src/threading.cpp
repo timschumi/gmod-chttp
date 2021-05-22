@@ -1,24 +1,23 @@
 #include "threading.h"
 
-LockableQueue<HTTPRequest*>& getRequestQueue() {
-	static LockableQueue<HTTPRequest*> requests;
+LockableQueue<std::shared_ptr<HTTPRequest>>& getRequestQueue() {
+	static LockableQueue<std::shared_ptr<HTTPRequest>> requests;
 	return requests;
 }
 
-LockableQueue<ResultQueueData*>& getResultQueue() {
-	static LockableQueue<ResultQueueData*> failed;
+LockableQueue<std::shared_ptr<ResultQueueData>>& getResultQueue() {
+	static LockableQueue<std::shared_ptr<ResultQueueData>> failed;
 	return failed;
 }
 
 void threadFunc() {
 	while (true) {
-		HTTPRequest *request = getRequestQueue().pop(true);
+		auto request = getRequestQueue().pop(true);
 
 		if (request == nullptr)
 			break;
 
 		request->run();
-		delete request;
 	}
 }
 

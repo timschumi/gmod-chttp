@@ -122,13 +122,13 @@ bool HTTPRequest::run() {
 	CURL *curl = curl_easy_init();
 
 	if (!curl) {
-		getResultQueue().push(new FailedQueueData(this->success, this->failed, "Failed to init curl struct!"));
+		getResultQueue().push(std::make_shared<FailedQueueData>(this->success, this->failed, "Failed to init curl struct!"));
 		return false;
 	}
 
 	CURLcode cres;
 	bool ret = true;
-	auto *response = new SuccessQueueData(this->success, this->failed);
+	auto response = std::make_shared<SuccessQueueData>(this->success, this->failed);
 	std::string postbody;
 	const char* redirect;
 
@@ -183,7 +183,7 @@ resend:
 	cres = curl_easy_perform(curl);
 
 	if (cres != CURLE_OK) {
-		getResultQueue().push(new FailedQueueData(this->success, this->failed, curl_easy_strerror(cres)));
+		getResultQueue().push(std::make_shared<FailedQueueData>(this->success, this->failed, curl_easy_strerror(cres)));
 		ret = false;
 		goto cleanup;
 	}
@@ -211,8 +211,6 @@ cleanup:
 	if (!ret) {
 		// Remove references to handlers (still stored in FailedQueueData)
 		response->removeHandlers();
-
-		delete response;
 	}
 
 	curl_easy_cleanup(curl);

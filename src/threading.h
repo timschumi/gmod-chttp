@@ -7,7 +7,7 @@
 #include "LockableQueue.h"
 
 // Different queues for different things
-LockableQueue<HTTPRequest*>& getRequestQueue();
-LockableQueue<ResultQueueData*>& getResultQueue();
+LockableQueue<std::shared_ptr<HTTPRequest>>& getRequestQueue();
+LockableQueue<std::shared_ptr<ResultQueueData>>& getResultQueue();
 
 std::thread& getBackgroundThread();
