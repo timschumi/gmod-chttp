@@ -11,6 +11,5 @@
 // Different queues for different things
 LockableQueue<std::shared_ptr<HTTPRequest>>& getRequestQueue();
 LockableQueue<std::shared_ptr<LuaTask>>& getLuaTaskQueue();
-std::queue<int>& getReferenceFreeQueue();
 
 std::thread& getBackgroundThread();

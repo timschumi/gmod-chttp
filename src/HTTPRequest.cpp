@@ -122,13 +122,13 @@ bool HTTPRequest::run() {
 	CURL *curl = curl_easy_init();
 
 	if (!curl) {
-		getLuaTaskQueue().push(std::make_shared<FailedQueueData>(this->success, this->failed, "Failed to init curl struct!"));
+		getLuaTaskQueue().push(std::make_shared<FailCallbackTask>(this->success, this->failed, "Failed to init curl struct!"));
 		return false;
 	}
 
 	CURLcode cres;
 	bool ret = true;
-	auto response = std::make_shared<SuccessQueueData>(this->success, this->failed);
+	auto response = std::make_shared<SuccessCallbackTask>(this->success, this->failed);
 	std::string postbody;
 	const char* redirect;
 
@@ -183,7 +183,7 @@ resend:
 	cres = curl_easy_perform(curl);
 
 	if (cres != CURLE_OK) {
-		getLuaTaskQueue().push(std::make_shared<FailedQueueData>(this->success, this->failed, curl_easy_strerror(cres)));
+		getLuaTaskQueue().push(std::make_shared<FailCallbackTask>(this->success, this->failed, curl_easy_strerror(cres)));
 		ret = false;
 		goto cleanup;
 	}

@@ -10,30 +10,30 @@ public:
 	virtual void run(GarrysMod::Lua::ILuaBase *LUA) = 0;
 };
 
-class ResultQueueData : public LuaTask {
+class RequestCallbackTask : public LuaTask {
 protected:
 	int SuccessHandler;
 	int FailHandler;
 public:
-	virtual ~ResultQueueData();
+	virtual ~RequestCallbackTask();
 };
 
 // Data on the success queue
-class SuccessQueueData : public ResultQueueData {
+class SuccessCallbackTask : public RequestCallbackTask {
 public:
 	long code = 0;
 	std::string body;
 	std::map<std::string, std::string> headers;
 public:
-	SuccessQueueData(int SuccessHandler, int FailHandler);
+	SuccessCallbackTask(int SuccessHandler, int FailHandler);
 	void run(GarrysMod::Lua::ILuaBase *LUA) override;
 };
 
 // Data on the success queue
-class FailedQueueData : public ResultQueueData {
+class FailCallbackTask : public RequestCallbackTask {
 private:
 	std::string reason;
 public:
-	FailedQueueData(int SuccessHandler, int FailHandler, const std::string& reason);
+	FailCallbackTask(int SuccessHandler, int FailHandler, const std::string& reason);
 	void run(GarrysMod::Lua::ILuaBase *LUA) override;
 };

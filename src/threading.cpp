@@ -10,11 +10,6 @@ LockableQueue<std::shared_ptr<LuaTask>>& getLuaTaskQueue() {
 	return queue;
 }
 
-std::queue<int>& getReferenceFreeQueue() {
-	static std::queue<int> queue;
-	return queue;
-}
-
 void threadFunc() {
 	while (true) {
 		auto request = getRequestQueue().pop(true);
