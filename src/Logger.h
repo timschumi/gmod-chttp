@@ -1,5 +1,4 @@
-#ifndef GMOD_CHTTP_LOGGER_H
-#define GMOD_CHTTP_LOGGER_H
+#pragma once
 
 #include <cstdarg>
 #include <string>
@@ -21,6 +20,3 @@ private:
 	static void (*devmsg_func)(int, const char *, ...);
 	static void (*devwarn_func)(int, const char *, ...);
 };
-
-
-#endif

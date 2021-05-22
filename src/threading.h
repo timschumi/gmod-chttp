@@ -1,3 +1,5 @@
+#pragma once
+
 #include <thread>
 
 #include "GarrysMod/Lua/Interface.h"

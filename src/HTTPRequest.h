@@ -1,5 +1,4 @@
-#ifndef GMOD_CHTTP_HTTPREQUEST_H
-#define GMOD_CHTTP_HTTPREQUEST_H
+#pragma once
 
 #include <string>
 #include <map>
@@ -38,5 +37,3 @@ public:
 	std::string buildURL();
 	bool run();
 };
-
-#endif
