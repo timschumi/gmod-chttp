@@ -18,6 +18,14 @@ public:
 private:
 	static std::string format(const std::string &fmt, std::va_list args);
 
+	static void msg_Impl(std::string &str);
+
+	static void warn_Impl(std::string &str);
+
+	static void devmsg_Impl(std::string &str);
+
+	static void devwarn_Impl(std::string &str);
+
 	static void (*msg_func)(const char *, ...);
 
 	static void (*warn_func)(const char *, ...);

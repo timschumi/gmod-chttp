@@ -1,5 +1,5 @@
-#include <vector>
 #include "Logger.h"
+#include <vector>
 
 #ifdef _WIN32
 #include <libloaderapi.h>
@@ -58,42 +58,33 @@ std::string Logger::format(const std::string &fmt, std::va_list args) {
 	return std::string(data.data(), data.size());
 }
 
-void Logger::msg(std::string fmt, ...) {
-	std::va_list args;
-	va_start(args, fmt);
-	auto formatted_string = Logger::format(fmt, args);
-	va_end(args);
+#define FMT_WRAP(FUNC)                        \
+	void FUNC(std::string fmt, ...) {         \
+		std::va_list args;                    \
+		va_start(args, fmt);                  \
+		auto str = Logger::format(fmt, args); \
+		va_end(args);                         \
+                                              \
+		FUNC##_Impl(str);                     \
+	}                                         \
+	void FUNC##_Impl(std::string &str)
 
+FMT_WRAP(Logger::msg) {
 	if (Logger::msg_func)
-		Logger::msg_func("[chttp] %s\n", formatted_string.c_str());
+		Logger::msg_func("[chttp] %s\n", str.c_str());
 }
 
-void Logger::warn(std::string fmt, ...) {
-	std::va_list args;
-	va_start(args, fmt);
-	auto formatted_string = Logger::format(fmt, args);
-	va_end(args);
-
+FMT_WRAP(Logger::warn) {
 	if (Logger::warn_func)
-		Logger::warn_func("[chttp] %s\n", formatted_string.c_str());
+		Logger::warn_func("[chttp] %s\n", str.c_str());
 }
 
-void Logger::devmsg(std::string fmt, ...) {
-	std::va_list args;
-	va_start(args, fmt);
-	auto formatted_string = Logger::format(fmt, args);
-	va_end(args);
-
+FMT_WRAP(Logger::devmsg) {
 	if (Logger::devmsg_func)
-		Logger::devmsg_func(1, "[chttp] %s\n", formatted_string.c_str());
+		Logger::devmsg_func(1, "[chttp] %s\n", str.c_str());
 }
 
-void Logger::devwarn(std::string fmt, ...) {
-	std::va_list args;
-	va_start(args, fmt);
-	auto formatted_string = Logger::format(fmt, args);
-	va_end(args);
-
+FMT_WRAP(Logger::devwarn) {
 	if (Logger::devwarn_func)
-		Logger::devwarn_func(1, "[chttp] %s\n", formatted_string.c_str());
+		Logger::devwarn_func(1, "[chttp] %s\n", str.c_str());
 }
