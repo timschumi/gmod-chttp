@@ -1,5 +1,4 @@
 #include "Logger.h"
-#include <vector>
 
 #ifdef _WIN32
 #include <libloaderapi.h>
@@ -42,49 +41,51 @@ bool Logger::init() {
 	return msg_func && warn_func && devmsg_func && devwarn_func;
 }
 
-std::string Logger::format(const std::string &fmt, std::va_list args) {
+const char *Logger::format(const char *fmt, std::va_list args) {
 	// Copy args list so that we can use it twice
 	std::va_list args_copy;
 	va_copy(args_copy, args);
 
-	// Determine length of formatted string and create a vector for it
-	int length = std::vsnprintf(nullptr, 0, fmt.c_str(), args);
-	std::vector<char> data(length + 1);
+	// Determine length of formatted string and create a memory location for it
+	int length = std::vsnprintf(nullptr, 0, fmt, args);
+	char *data = new char[length + 1];
 
 	// Actually generate the string
-	std::vsnprintf(data.data(), data.size(), fmt.c_str(), args_copy);
+	std::vsnprintf(data, length + 1, fmt, args_copy);
 
 	va_end(args_copy);
-	return std::string(data.data(), data.size());
+	return data;
 }
 
 #define FMT_WRAP(FUNC)                        \
-	void FUNC(std::string fmt, ...) {         \
+	void FUNC(const char *fmt, ...) {         \
 		std::va_list args;                    \
 		va_start(args, fmt);                  \
 		auto str = Logger::format(fmt, args); \
 		va_end(args);                         \
                                               \
 		FUNC##_Impl(str);                     \
+                                              \
+		delete[] str;                         \
 	}                                         \
-	void FUNC##_Impl(std::string &str)
+	void FUNC##_Impl(const char *str)
 
 FMT_WRAP(Logger::msg) {
 	if (Logger::msg_func)
-		Logger::msg_func("[chttp] %s\n", str.c_str());
+		Logger::msg_func("[chttp] %s\n", str);
 }
 
 FMT_WRAP(Logger::warn) {
 	if (Logger::warn_func)
-		Logger::warn_func("[chttp] %s\n", str.c_str());
+		Logger::warn_func("[chttp] %s\n", str);
 }
 
 FMT_WRAP(Logger::devmsg) {
 	if (Logger::devmsg_func)
-		Logger::devmsg_func(1, "[chttp] %s\n", str.c_str());
+		Logger::devmsg_func(1, "[chttp] %s\n", str);
 }
 
 FMT_WRAP(Logger::devwarn) {
 	if (Logger::devwarn_func)
-		Logger::devwarn_func(1, "[chttp] %s\n", str.c_str());
+		Logger::devwarn_func(1, "[chttp] %s\n", str);
 }
