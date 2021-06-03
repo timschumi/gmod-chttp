@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(gmod-module-base/include)
-add_subdirectory(gmod-common-curl)
+add_subdirectory(curl-static-bin)
 
 add_library(chttp SHARED)
 

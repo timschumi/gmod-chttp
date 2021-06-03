@@ -1,6 +1,6 @@
 [submodule "gmod-module-base"]
 	path = gmod-module-base
 	url = https://github.com/timschumi/gmod-module-base
-[submodule "gmod-common-curl"]
-	path = gmod-common-curl
-	url = https://github.com/timschumi/gmod-common-curl
+[submodule "curl-static-bin"]
+	path = curl-static-bin
+	url = https://github.com/timschumi/curl-static-bin
