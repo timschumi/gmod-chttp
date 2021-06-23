@@ -77,7 +77,9 @@ LUA_FUNCTION(CHTTP) {
 	// Fetch body
 	LUA->GetField(1, "body");
 	if (LUA->IsType(-1, GarrysMod::Lua::Type::String)) {
-		request->body = LUA->GetString(-1);
+		unsigned int bodylen;
+		const char *body = LUA->GetString(-1, &bodylen);
+		request->body = std::string(body, bodylen);
 	}
 	LUA->Pop();
 
