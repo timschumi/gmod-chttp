@@ -20,7 +20,7 @@ void SuccessCallbackTask::run(GarrysMod::Lua::ILuaBase *LUA) {
 
 	callback->push(LUA);
 	LUA->PushNumber(this->code);
-	LUA->PushString(this->body.c_str());
+	LUA->PushString(this->body.c_str(), this->body.size());
 	mapToLuaTable(LUA, this->headers);
 	LUA->Call(3, 0);
 }
