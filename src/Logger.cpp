@@ -3,9 +3,7 @@
 #ifdef _WIN32
 #include <libloaderapi.h>
 #else
-
 #include <dlfcn.h>
-
 #endif
 
 static void *getExport(const std::string &library, const std::string &symbol) {
@@ -18,20 +16,41 @@ static void *getExport(const std::string &library, const std::string &symbol) {
 #endif
 }
 
+static bool isLibraryLoaded(const std::string &library) {
+#ifdef _WIN32
+	return GetModuleHandle((library + ".dll").c_str());
+#else
+	return dlopen(("lib" + library + ".so").c_str(), RTLD_LAZY | RTLD_NOLOAD);
+#endif
+}
+
 decltype(Logger::msg_func) Logger::msg_func = nullptr;
 decltype(Logger::warn_func) Logger::warn_func = nullptr;
 decltype(Logger::devmsg_func) Logger::devmsg_func = nullptr;
 decltype(Logger::devwarn_func) Logger::devwarn_func = nullptr;
 
 bool Logger::init() {
-	std::string tier0_name = "tier0";
+	std::string tier0_name = "";
 
-#if defined(__linux__) && defined(__x86_64__)
-	// Check if tier0_client is already loaded.
-	// If so, it's likely that we want that instead of the "server" tier0.
-	if (dlopen("libtier0_client.so", RTLD_LAZY | RTLD_NOLOAD))
-		tier0_name = "tier0_client";
+	std::string tier0_list[] = {
+#ifdef __linux__
+		"tier0_client",
+		"tier0_srv",
 #endif
+		"tier0",
+	};
+
+	// Find the first library in the list that is already loaded.
+	for (std::string &lib : tier0_list) {
+		if (isLibraryLoaded(lib)) {
+			tier0_name = lib;
+			break;
+		}
+	}
+
+	if (tier0_name.empty()) {
+		return false;
+	}
 
 	msg_func = reinterpret_cast<decltype(msg_func)>(getExport(tier0_name, "Msg"));
 	warn_func = reinterpret_cast<decltype(warn_func)>(getExport(tier0_name, "Warning"));
