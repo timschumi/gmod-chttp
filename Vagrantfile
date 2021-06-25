@@ -29,8 +29,9 @@ Vagrant.configure("2") do |config|
     test_centos7.vm.provision "shell", inline: "yum -y install glibc.i686 libstdc++.i686"
     test_centos7.vm.provision "shell", path: "vagrant-provision-gmodds.sh", privileged: false
     test_centos7.vm.provision "shell", privileged: false, inline: <<-SHELL
-      mkdir -p ~/gmodds/garrysmod/lua/bin
+      mkdir -p ~/gmodds/garrysmod/lua/bin ~/gmodds64/garrysmod/lua/bin
       ln -s /vagrant/dist/gmsv_chttp_linux-static.dll ~/gmodds/garrysmod/lua/bin/gmsv_chttp_linux.dll
+      ln -s /vagrant/dist/gmsv_chttp_linux64-static.dll ~/gmodds64/garrysmod/lua/bin/gmsv_chttp_linux64.dll
     SHELL
   end
 
