@@ -17,6 +17,8 @@ public:
 	T pop(bool block, P pred);
 	T pop(bool block);
 	T pop();
+
+	void try_unblock();
 };
 
 template<class T>
@@ -57,4 +59,9 @@ T LockableQueue<T>::pop(bool block) {
 template<class T>
 T LockableQueue<T>::pop() {
 	return pop(false);
+}
+
+template<class T>
+void LockableQueue<T>::try_unblock() {
+	cond.notify_one();
 }
