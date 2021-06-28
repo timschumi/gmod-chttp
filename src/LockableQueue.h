@@ -13,7 +13,10 @@ class LockableQueue {
 public:
 	void push(T element);
 
-	T pop(bool block = false);
+	template<typename P>
+	T pop(bool block, P pred);
+	T pop(bool block);
+	T pop();
 };
 
 template<class T>
@@ -29,11 +32,12 @@ void LockableQueue<T>::push(T element) {
 }
 
 template<class T>
-T LockableQueue<T>::pop(bool block) {
+template<typename P>
+T LockableQueue<T>::pop(bool block, P pred) {
 	std::unique_lock<std::mutex> lock(mutex);
 
 	if (block) {
-		this->cond.wait(lock, [this] { return !queue.empty(); });
+		this->cond.wait(lock, [this, pred] { return !queue.empty() || pred(); });
 	}
 
 	if (queue.empty())
@@ -43,4 +47,14 @@ T LockableQueue<T>::pop(bool block) {
 	queue.pop();
 
 	return element;
+}
+
+template<class T>
+T LockableQueue<T>::pop(bool block) {
+	return pop(block, [] { return false; });
+}
+
+template<class T>
+T LockableQueue<T>::pop() {
+	return pop(false);
 }
