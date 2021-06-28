@@ -4,8 +4,8 @@
 #include "GarrysMod/Lua/Interface.h"
 
 #include "Logger.h"
+#include "RequestWorker.h"
 #include "lua.h"
-#include "threading.h"
 
 /*
  * See https://wiki.facepunch.com/gmod/Global.HTTP for documentation.
@@ -83,11 +83,11 @@ LUA_FUNCTION(CHTTP) {
 	}
 	LUA->Pop();
 
-	getRequestQueue().push(request);
+	RequestWorker::the().requests().push(request);
 
 exit:
 	if (!failreason.empty()) {
-		getLuaTaskQueue().push(std::make_shared<FailCallbackTask>(request->failed, failreason));
+		RequestWorker::the().tasks().push(std::make_shared<FailCallbackTask>(request->failed, failreason));
 	}
 
 	LUA->PushBool(true); // Push result to the stack
@@ -96,7 +96,7 @@ exit:
 
 LUA_FUNCTION(threadingDoThink) {
 	while (true) {
-		auto data = getLuaTaskQueue().pop();
+		auto data = RequestWorker::the().tasks().pop();
 
 		if (data == nullptr)
 			break;
@@ -153,17 +153,17 @@ GMOD_MODULE_OPEN() {
 	LUA->Pop();
 
 	// Start the background thread
-	getBackgroundThread();
+	RequestWorker::the();
 
 	return 0;
 }
 
 GMOD_MODULE_CLOSE() {
 	// HACK: Terminate the background thread
-	getRequestQueue().push(nullptr);
+	RequestWorker::the().requests().push(nullptr);
 
 	// Synchronize with the main thread
-	getBackgroundThread().join();
+	RequestWorker::the().join();
 
 	// Cleanup curl
 	curl_global_cleanup();

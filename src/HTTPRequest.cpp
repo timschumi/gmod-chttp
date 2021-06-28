@@ -1,8 +1,8 @@
 #include <unistd.h>
 
 #include "HTTPRequest.h"
-#include "threading.h"
 #include "Logger.h"
+#include "RequestWorker.h"
 
 // Taken from the curl configure script
 static const char *capaths[] = {
@@ -130,7 +130,7 @@ bool HTTPRequest::run() {
 	curl = curl_easy_init();
 
 	if (!curl) {
-		getLuaTaskQueue().push(std::make_shared<FailCallbackTask>(this->failed, "Failed to init curl struct!"));
+		RequestWorker::the().tasks().push(std::make_shared<FailCallbackTask>(this->failed, "Failed to init curl struct!"));
 		return false;
 	}
 
@@ -192,7 +192,7 @@ resend:
 	cres = curl_easy_perform(curl);
 
 	if (cres != CURLE_OK) {
-		getLuaTaskQueue().push(std::make_shared<FailCallbackTask>(this->failed, curl_easy_strerror(cres)));
+		RequestWorker::the().tasks().push(std::make_shared<FailCallbackTask>(this->failed, curl_easy_strerror(cres)));
 		ret = false;
 		goto cleanup;
 	}
@@ -213,7 +213,7 @@ resend:
 
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response->code);
 
-	getLuaTaskQueue().push(response);
+	RequestWorker::the().tasks().push(response);
 
 cleanup:
 	curl_easy_cleanup(curl);
