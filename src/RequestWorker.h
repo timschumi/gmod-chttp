@@ -11,7 +11,7 @@ public:
 	LockableQueue<std::shared_ptr<HTTPRequest>> &requests() { return _requests; };
 	LockableQueue<std::shared_ptr<LuaTask>> &tasks() { return _tasks; };
 
-	void join() { return _thread.join(); };
+	void stop();
 
 	static RequestWorker &the();
 private:
@@ -20,6 +20,8 @@ private:
 	void run();
 
 	std::thread _thread;
+
+	bool exited = false;
 
 	LockableQueue<std::shared_ptr<HTTPRequest>> _requests;
 	LockableQueue<std::shared_ptr<LuaTask>> _tasks;

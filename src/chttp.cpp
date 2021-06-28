@@ -159,11 +159,8 @@ GMOD_MODULE_OPEN() {
 }
 
 GMOD_MODULE_CLOSE() {
-	// HACK: Terminate the background thread
-	RequestWorker::the().requests().push(nullptr);
-
-	// Synchronize with the main thread
-	RequestWorker::the().join();
+	// Stop the request worker
+	RequestWorker::the().stop();
 
 	// Cleanup curl
 	curl_global_cleanup();
