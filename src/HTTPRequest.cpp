@@ -168,6 +168,10 @@ bool HTTPRequest::run() {
 			postbody = this->body;
 		} else {
 			postbody = this->buildQueryString();
+
+			if (!postbody.empty()) {
+				this->headers["Content-Type"] = "application/x-www-form-urlencoded";
+			}
 		}
 
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, postbody.size());
