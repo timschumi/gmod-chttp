@@ -1,5 +1,6 @@
 #pragma once
 
+#include <curl/curl.h>
 #include <string>
 #include <map>
 #include <memory>
@@ -39,4 +40,7 @@ public:
 	std::string buildURL();
 
 	bool run();
+
+private:
+	CURL *curl = nullptr;
 };
