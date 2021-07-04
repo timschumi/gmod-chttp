@@ -19,7 +19,6 @@ static const char *src_if = nullptr;
 HTTPRequest::HTTPRequest() {
 	curl_version_info_data *info = curl_version_info(CURLVERSION_NOW);
 	this->headers["User-Agent"] = (std::string) "curl/" + info->version + " gmod-chttp/1.4.5";
-	this->headers["Content-Type"] = "text/plain; charset=utf-8";
 }
 
 std::string HTTPRequest::buildQueryString() {
@@ -166,12 +165,9 @@ bool HTTPRequest::run() {
 		// Do we have a request body?
 		if (!this->body.empty()) {
 			postbody = this->body;
+			this->headers["Content-Type"] = type;
 		} else {
 			postbody = this->buildQueryString();
-
-			if (!postbody.empty()) {
-				this->headers["Content-Type"] = "application/x-www-form-urlencoded";
-			}
 		}
 
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, postbody.size());

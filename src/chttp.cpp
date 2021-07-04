@@ -70,7 +70,7 @@ LUA_FUNCTION(CHTTP) {
 	// Fetch type
 	LUA->GetField(1, "type");
 	if (LUA->IsType(-1, GarrysMod::Lua::Type::String)) {
-		request->headers["Content-Type"] = LUA->GetString(-1);
+		request->type = LUA->GetString(-1);
 	}
 	LUA->Pop();
 
