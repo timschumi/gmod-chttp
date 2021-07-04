@@ -29,7 +29,15 @@ std::string HTTPRequest::buildQueryString() {
 		if (!params.empty())
 			params += "&";
 
-		params += e.first + "=" + e.second;
+		char *key = curl_easy_escape(curl, e.first.c_str(), e.first.length());
+		char *val = curl_easy_escape(curl, e.second.c_str(), e.second.length());
+
+		params += key;
+		params += "=";
+		params += val;
+
+		curl_free(key);
+		curl_free(val);
 	}
 
 	return params;
