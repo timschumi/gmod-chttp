@@ -162,6 +162,9 @@ GMOD_MODULE_CLOSE() {
 	// Stop the request worker
 	RequestWorker::the().stop();
 
+	// Run the remaining callbacks
+	threadingDoThink__Imp(LUA);
+
 	// Cleanup curl
 	curl_global_cleanup();
 
