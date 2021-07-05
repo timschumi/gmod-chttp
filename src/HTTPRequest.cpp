@@ -28,8 +28,8 @@ std::string HTTPRequest::buildQueryString() {
 		if (!params.empty())
 			params += "&";
 
-		char *key = curl_easy_escape(curl, e.first.c_str(), e.first.length());
-		char *val = curl_easy_escape(curl, e.second.c_str(), e.second.length());
+		char *key = curl_easy_escape(nullptr, e.first.c_str(), e.first.length());
+		char *val = curl_easy_escape(nullptr, e.second.c_str(), e.second.length());
 
 		params += key;
 		params += "=";
