@@ -1,3 +1,4 @@
+#include <curl/curl.h>
 #include <unistd.h>
 
 #include "HTTPRequest.h"
@@ -127,7 +128,7 @@ size_t curl_headermap_append(char *contents, size_t size, size_t nmemb, std::map
 }
 
 bool HTTPRequest::run() {
-	curl = curl_easy_init();
+	CURL *curl = curl_easy_init();
 
 	if (!curl) {
 		RequestWorker::the().tasks().push(std::make_shared<FailCallbackTask>(this->failed, "Failed to init curl struct!"));
