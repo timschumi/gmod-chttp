@@ -10,6 +10,9 @@ However, it doesn't yet behave like the original in all edge cases,
 especially when it comes to deviating from the spec (for example just
 omitting the request body on DELETE requests).
 
+If you like my work or otherwise profited from this module, consider
+[buying me a beer](https://paypal.me/schumact)!
+
 ## Installation
 
 The only thing required to install the library is to download the
