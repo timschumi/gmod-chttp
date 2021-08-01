@@ -19,7 +19,7 @@ static const char *src_if = nullptr;
 
 HTTPRequest::HTTPRequest() {
 	curl_version_info_data *info = curl_version_info(CURLVERSION_NOW);
-	this->headers["User-Agent"] = (std::string) "curl/" + info->version + " gmod-chttp/1.4.5";
+	this->headers["User-Agent"] = (std::string) "curl/" + info->version + " gmod-chttp/1.5.0";
 }
 
 std::string HTTPRequest::buildQueryString() {
