@@ -83,6 +83,13 @@ LUA_FUNCTION(CHTTP) {
 	}
 	LUA->Pop();
 
+	// Fetch timeout
+	LUA->GetField(1, "timeout");
+	if (LUA->IsType(-1, GarrysMod::Lua::Type::Number)) {
+		request->timeout = (long) LUA->GetNumber(-1);
+	}
+	LUA->Pop();
+
 	RequestWorker::the().requests().push(request);
 
 exit:

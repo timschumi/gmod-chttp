@@ -160,6 +160,10 @@ bool HTTPRequest::run() {
 		curl_easy_setopt(curl, CURLOPT_INTERFACE, src_if);
 	}
 
+	if (this->timeout != 0) {
+		curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
+	}
+
 	curlSetMethod(curl, this->method);
 
 	if (this->method.isLikePost()) {

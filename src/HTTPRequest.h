@@ -35,6 +35,9 @@ public:
 	// Request body type for POST-like requests
 	std::string type = "text/plain; charset=utf-8";
 
+	// Timeout for the request
+	long timeout = 0;
+
 	HTTPRequest();
 
 	std::string buildQueryString();
