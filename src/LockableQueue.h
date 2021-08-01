@@ -18,6 +18,8 @@ public:
 	T pop(bool block);
 	T pop();
 
+	bool empty();
+
 	void try_unblock();
 };
 
@@ -59,6 +61,13 @@ T LockableQueue<T>::pop(bool block) {
 template<class T>
 T LockableQueue<T>::pop() {
 	return pop(false);
+}
+
+template<class T>
+bool LockableQueue<T>::empty() {
+	std::unique_lock<std::mutex> lock(mutex);
+
+	return queue.empty();
 }
 
 template<class T>
