@@ -152,11 +152,13 @@ GMOD_MODULE_OPEN() {
 }
 
 GMOD_MODULE_CLOSE() {
+	// Process remaining requests and callbacks
+	while (RequestWorker::the().has_work()) {
+		RequestWorker::the().run_tasks(LUA);
+	}
+
 	// Stop the request worker
 	RequestWorker::the().stop();
-
-	// Run the remaining callbacks
-	RequestWorker::the().run_tasks(LUA);
 
 	// Cleanup curl
 	curl_global_cleanup();

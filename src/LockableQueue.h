@@ -13,6 +13,8 @@ class LockableQueue {
 public:
 	void push(T element);
 
+	template<typename P, typename P2>
+	T pop(bool block, P pred, P2 before_pop);
 	template<typename P>
 	T pop(bool block, P pred);
 	T pop(bool block);
@@ -36,8 +38,8 @@ void LockableQueue<T>::push(T element) {
 }
 
 template<class T>
-template<typename P>
-T LockableQueue<T>::pop(bool block, P pred) {
+template<typename P, typename P2>
+T LockableQueue<T>::pop(bool block, P pred, P2 before_pop) {
 	std::unique_lock<std::mutex> lock(mutex);
 
 	if (block) {
@@ -48,9 +50,18 @@ T LockableQueue<T>::pop(bool block, P pred) {
 		return nullptr;
 
 	T element = queue.front();
+
+	before_pop();
+
 	queue.pop();
 
 	return element;
+}
+
+template<class T>
+template<typename P>
+T LockableQueue<T>::pop(bool block, P pred) {
+	return pop(block, pred, [] {});
 }
 
 template<class T>

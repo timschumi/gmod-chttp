@@ -14,6 +14,7 @@ public:
 
 	void run_tasks(GarrysMod::Lua::ILuaBase *LUA);
 	void stop();
+	bool has_work();
 
 	static RequestWorker &the();
 private:
@@ -23,6 +24,7 @@ private:
 
 	std::thread _thread;
 
+	bool processing_request = false;
 	bool exited = false;
 
 	LockableQueue<std::shared_ptr<HTTPRequest>> _requests;

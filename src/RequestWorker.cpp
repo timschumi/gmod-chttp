@@ -7,12 +7,13 @@ RequestWorker &RequestWorker::the() {
 
 void RequestWorker::run() {
 	while (true) {
-		auto request = requests().pop(true, [this] { return exited; });
+		auto request = requests().pop(true, [this] { return exited; }, [this] { processing_request = true; });
 
 		if (request == nullptr)
 			break;
 
 		request->run();
+		processing_request = false;
 	}
 }
 
@@ -40,4 +41,8 @@ void RequestWorker::stop() {
 
 	// Wait until the background thread exits by itself
 	_thread.join();
+}
+
+bool RequestWorker::has_work() {
+	return !requests().empty() || !tasks().empty() || processing_request;
 }
