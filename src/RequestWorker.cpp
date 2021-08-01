@@ -16,6 +16,17 @@ void RequestWorker::run() {
 	}
 }
 
+void RequestWorker::run_tasks(GarrysMod::Lua::ILuaBase *LUA) {
+	while (true) {
+		auto data = tasks().pop();
+
+		if (data == nullptr)
+			break;
+
+		data->run(LUA);
+	}
+}
+
 RequestWorker::RequestWorker() {
 	_thread = std::thread([this] { run(); });
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GarrysMod/Lua/Interface.h"
 #include "HTTPRequest.h"
 #include "LockableQueue.h"
 #include "LuaTask.h"
@@ -11,6 +12,7 @@ public:
 	LockableQueue<std::shared_ptr<HTTPRequest>> &requests() { return _requests; };
 	LockableQueue<std::shared_ptr<LuaTask>> &tasks() { return _tasks; };
 
+	void run_tasks(GarrysMod::Lua::ILuaBase *LUA);
 	void stop();
 
 	static RequestWorker &the();

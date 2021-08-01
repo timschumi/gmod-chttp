@@ -95,14 +95,7 @@ exit:
 }
 
 LUA_FUNCTION(threadingDoThink) {
-	while (true) {
-		auto data = RequestWorker::the().tasks().pop();
-
-		if (data == nullptr)
-			break;
-
-		data->run(LUA);
-	}
+	RequestWorker::the().run_tasks(LUA);
 
 	return 0;
 }
@@ -163,7 +156,7 @@ GMOD_MODULE_CLOSE() {
 	RequestWorker::the().stop();
 
 	// Run the remaining callbacks
-	threadingDoThink__Imp(LUA);
+	RequestWorker::the().run_tasks(LUA);
 
 	// Cleanup curl
 	curl_global_cleanup();
