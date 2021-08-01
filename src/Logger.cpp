@@ -60,32 +60,30 @@ bool Logger::init() {
 	return msg_func && warn_func && devmsg_func && devwarn_func;
 }
 
-const char *Logger::format(const char *fmt, std::va_list args) {
+std::vector<char> Logger::format(const char *fmt, std::va_list args) {
 	// Copy args list so that we can use it twice
 	std::va_list args_copy;
 	va_copy(args_copy, args);
 
 	// Determine length of formatted string and create a memory location for it
 	int length = std::vsnprintf(nullptr, 0, fmt, args);
-	char *data = new char[length + 1];
+	std::vector<char> buf(length + 1);
 
 	// Actually generate the string
-	std::vsnprintf(data, length + 1, fmt, args_copy);
+	std::vsnprintf(&buf[0], length + 1, fmt, args_copy);
 
 	va_end(args_copy);
-	return data;
+	return buf;
 }
 
 #define FMT_WRAP(FUNC)                        \
 	void FUNC(const char *fmt, ...) {         \
 		std::va_list args;                    \
 		va_start(args, fmt);                  \
-		auto str = Logger::format(fmt, args); \
+		auto buf = Logger::format(fmt, args); \
 		va_end(args);                         \
                                               \
-		FUNC##_Impl(str);                     \
-                                              \
-		delete[] str;                         \
+		FUNC##_Impl(&buf[0]);                 \
 	}                                         \
 	void FUNC##_Impl(const char *str)
 

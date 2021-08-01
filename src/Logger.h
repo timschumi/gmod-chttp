@@ -2,6 +2,7 @@
 
 #include <cstdarg>
 #include <string>
+#include <vector>
 
 class Logger {
 public:
@@ -16,7 +17,7 @@ public:
 	static void devwarn(const char *fmt, ...);
 
 private:
-	static const char *format(const char *fmt, std::va_list args);
+	static std::vector<char> format(const char *fmt, std::va_list args);
 
 	static void msg_Impl(const char *str);
 
