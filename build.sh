@@ -17,12 +17,7 @@ cmake_args=()
 
 # Determine the correct file names and paths
 OUTPUT_FILE="gmsv_chttp_${BUILD_TARGET}"
-DIST_FILE="${OUTPUT_FILE}"
 BUILD_DIR="chttp-${BUILD_TARGET}-${BUILD_TYPE}"
-
-if [ "${BUILD_TYPE}" = "Debug" ]; then
-	DIST_FILE="${DIST_FILE}-dbg"
-fi
 
 for i in "${@:3}"; do
 	case "$i" in
@@ -42,7 +37,6 @@ for i in "${@:3}"; do
 done
 
 if [ "$build_static" = "1" ]; then
-	DIST_FILE="${DIST_FILE}-static"
 	BUILD_DIR="${BUILD_DIR}-static"
 	cmake_args+=("-DMORE_STATIC_LINKS:BOOL=ON")
 fi
@@ -63,5 +57,3 @@ cmake \
     "${cmake_args[@]}" \
     "${BASE_DIR}"
 make
-
-cp "${OUTPUT_FILE}.dll" "${BASE_DIR}/dist/${DIST_FILE}.dll"
