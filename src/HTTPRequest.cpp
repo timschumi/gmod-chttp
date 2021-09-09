@@ -1,4 +1,5 @@
 #include <curl/curl.h>
+#include <string.h>
 #include <unistd.h>
 
 #include "HTTPRequest.h"
@@ -127,6 +128,10 @@ size_t curl_headermap_append(char *contents, size_t size, size_t nmemb, std::map
 	return size * nmemb;
 }
 
+bool strstart(const char *string, const char *prefix) {
+	return strncmp(string, prefix, strlen(prefix)) == 0;
+}
+
 bool HTTPRequest::run() {
 	CURL *curl = curl_easy_init();
 
@@ -194,6 +199,16 @@ bool HTTPRequest::run() {
 	Logger::devmsg("Sending a request to '%s'...", built_url.c_str());
 
 resend:
+	char *effective_url;
+	curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &effective_url);
+
+	// Disallow requests with non-HTTP protocols
+	if (effective_url && !strstart(effective_url, "https://") && !strstart(effective_url, "http://")) {
+		RequestWorker::the().tasks().push(std::make_shared<FailCallbackTask>(this->failed, "Non-HTTP protocol"));
+		ret = false;
+		goto cleanup;
+	}
+
 	cres = curl_easy_perform(curl);
 
 	if (cres != CURLE_OK) {

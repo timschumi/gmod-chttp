@@ -5,6 +5,9 @@ set(CMAKE_CONFIGURATION_TYPES Release Debug)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Use curl builds that only have HTTP
+set(CURL_HTTPONLY ON)
+
 add_subdirectory(gmod-module-base/include)
 add_subdirectory(curl-static-bin)
 
