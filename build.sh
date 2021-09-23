@@ -7,9 +7,6 @@ if [ "$#" -lt 2 ]; then
 	exit 1
 fi
 
-# Ensure the output folder exists
-mkdir -p "${BASE_DIR}/dist"
-
 BUILD_TARGET="${1}"
 BUILD_TYPE="${2}"
 
