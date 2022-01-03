@@ -4,7 +4,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 apt update && apt -y upgrade
 
-apt -y install build-essential cmake wget
+apt -y install build-essential cmake curl
 
 if [ -n "$PROVISION_NEEDS_STATIC_CMAKE" ]; then
     # Make sure to remove the preinstalled CMake
@@ -17,7 +17,7 @@ if [ -n "$PROVISION_NEEDS_STATIC_CMAKE" ]; then
         CMAKE_ARCHIVE="cmake-linux-x86.tar.gz"
     fi
 
-    wget -q "https://github.com/timschumi/cmake-static/releases/download/${CMAKE_RELEASE}/${CMAKE_ARCHIVE}"
+    curl -L -o "${CMAKE_ARCHIVE}" "https://github.com/timschumi/cmake-static/releases/download/${CMAKE_RELEASE}/${CMAKE_ARCHIVE}"
     tar -xf "${CMAKE_ARCHIVE}" -C /usr/local
     rm -rf "${CMAKE_ARCHIVE}"
 fi
