@@ -66,28 +66,6 @@ void curlAddHeaders(CURL *curl, HTTPRequest *request) {
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 }
 
-void curlSetMethod(CURL *curl, HTTPMethod method) {
-	if (method.isLikePost())
-		curl_easy_setopt(curl, CURLOPT_POST, 1L);
-
-	// METHOD_GET and METHOD_POST are not listed here,
-	// since they don't require any specific setup
-	switch (method) {
-	case HTTPMethod::M_HEAD:
-		curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
-		break;
-	case HTTPMethod::M_PUT:
-	case HTTPMethod::M_DELETE:
-	case HTTPMethod::M_PATCH:
-	case HTTPMethod::M_OPTIONS:
-	case HTTPMethod::M_INVALID:
-		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method.toString().c_str());
-		break;
-	default:
-		break;
-	}
-}
-
 #ifdef __linux__
 
 const char *findCABundle() {
@@ -169,7 +147,28 @@ bool HTTPRequest::run() {
 		curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
 	}
 
-	curlSetMethod(curl, this->method);
+	// Set up the request method
+	switch (this->method) {
+	case HTTPMethod::M_GET:
+		// Default, does not require any additional setup
+		break;
+	case HTTPMethod::M_HEAD:
+		curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
+		break;
+	case HTTPMethod::M_POST:
+	case HTTPMethod::M_PUT:
+	case HTTPMethod::M_DELETE:
+	case HTTPMethod::M_PATCH:
+		curl_easy_setopt(curl, CURLOPT_POST, 1L);
+		// Intentional fallthrough to set request method name
+	case HTTPMethod::M_OPTIONS:
+	case HTTPMethod::M_INVALID:
+		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, this->method.toString().c_str());
+		break;
+	default:
+		Logger::warn("HTTP request method is neither valid nor INVALID: %d", this->method);
+		break;
+	}
 
 	if (this->method.isLikePost()) {
 		// Do we have a request body?
