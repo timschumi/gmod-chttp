@@ -56,17 +56,6 @@ std::string HTTPRequest::buildURL() {
 	return fullurl;
 }
 
-void curlAddHeaders(CURL *curl, HTTPRequest *request) {
-	struct curl_slist *headers = nullptr;
-
-	// Add all the headers from the request struct
-	for (auto const &e : request->headers)
-		headers = curl_slist_append(headers, (e.first + ": " + e.second).c_str());
-
-	// Add the header list to the curl struct
-	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-}
-
 #ifdef __linux__
 
 const char *findCABundle() {
@@ -219,7 +208,17 @@ bool HTTPRequest::run() {
 	}();
 #endif
 
-	curlAddHeaders(curl, this);
+	// Add headers to the mix
+	{
+		struct curl_slist *header_list = nullptr;
+
+		// Add all the headers from the request struct
+		for (auto const &e : this->headers)
+			header_list = curl_slist_append(header_list, (e.first + ": " + e.second).c_str());
+
+		// Add the header list to the curl struct
+		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header_list);
+	}
 
 	std::string built_url = this->buildURL();
 	curl_easy_setopt(curl, CURLOPT_URL, built_url.c_str());
