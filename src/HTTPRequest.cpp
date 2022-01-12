@@ -1,4 +1,5 @@
 #include <curl/curl.h>
+#include <fstream>
 #include <string.h>
 #include <unistd.h>
 
@@ -190,6 +191,33 @@ bool HTTPRequest::run() {
 	// Set up saving the headers
 	curl_easy_setopt(curl, CURLOPT_HEADERDATA, &response->headers);
 	curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, curl_headermap_append);
+
+#ifdef __linux__
+	// Check on the random generator
+	[&]() {
+		static bool already_checked = false;
+
+		if (already_checked)
+			return;
+
+		std::ifstream avail_node("/proc/sys/kernel/random/entropy_avail", std::ifstream::in);
+		std::ifstream wakeup_node("/proc/sys/kernel/random/read_wakeup_threshold", std::ifstream::in);
+
+		if (!avail_node || !wakeup_node)
+			return;
+
+		int avail, wakeup;
+		avail_node >> avail;
+		wakeup_node >> wakeup;
+
+		if (avail < wakeup) {
+			Logger::warn("/dev/random is configured to wake up at %d bits of entropy, but only has %d bits available.", wakeup, avail);
+			Logger::warn("This is likely to cause a block when trying to establish SSL connections.");
+		}
+
+		already_checked = true;
+	}();
+#endif
 
 	curlAddHeaders(curl, this);
 
