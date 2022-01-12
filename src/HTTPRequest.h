@@ -36,7 +36,7 @@ public:
 	std::string type = "text/plain; charset=utf-8";
 
 	// Timeout for the request
-	long timeout = 0;
+	long timeout = 60;
 
 	HTTPRequest();
 
