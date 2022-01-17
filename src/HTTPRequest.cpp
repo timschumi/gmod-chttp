@@ -16,7 +16,6 @@ static const char *capaths[] = {
 	"/etc/ssl/cert.pem",                        // OpenBSD, FreeBSD
 };
 
-static const char *cabundle = nullptr;
 static const char *src_if = nullptr;
 
 HTTPRequest::HTTPRequest() {
@@ -56,27 +55,6 @@ std::string HTTPRequest::buildURL() {
 	return fullurl;
 }
 
-#ifdef __linux__
-
-const char *findCABundle() {
-	if (auto capath = getenv("CHTTP_CAINFO")) {
-		Logger::msg("Forcing CAINFO to '%s'", capath);
-		return capath;
-	}
-
-	for (auto &capath : capaths) {
-		if (access(capath, R_OK) == 0) {
-			Logger::msg("Found accessible CAINFO in '%s'", capath);
-			return capath;
-		}
-	}
-
-	Logger::warn("Found no suitable CAINFO!");
-	return nullptr;
-}
-
-#endif
-
 // Write callback for appending to an std::string
 size_t curl_string_append(char *contents, size_t size, size_t nmemb, std::string *userp) {
 	userp->append(contents, size * nmemb);
@@ -115,9 +93,29 @@ bool HTTPRequest::run() {
 	const char *redirect;
 
 #ifdef __linux__
+	static const char *cabundle = nullptr;
+
 	// Find the CA bundle if not already cached
-	if (!cabundle)
-		cabundle = findCABundle();
+	[&]() {
+		if (cabundle)
+			return;
+
+		if (auto capath = getenv("CHTTP_CAINFO")) {
+			Logger::msg("Forcing CAINFO to '%s'", capath);
+			cabundle = capath;
+			return;
+		}
+
+		for (auto &capath : capaths) {
+			if (access(capath, R_OK) == 0) {
+				Logger::msg("Found accessible CAINFO at '%s'", capath);
+				cabundle = capath;
+				return;
+			}
+		}
+
+		Logger::warn("Found no suitable CAINFO!");
+	}();
 
 	// Set the CA path
 	curl_easy_setopt(curl, CURLOPT_CAINFO, cabundle);
