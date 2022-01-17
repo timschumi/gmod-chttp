@@ -6,21 +6,21 @@ CHTTP_DIR=$(realpath $(dirname $0))
 {
 if ! docker start chttp_x86; then
     docker run --name chttp_x86 -td -v ${CHTTP_DIR}:/vagrant --platform=linux/386 docker.io/debian:8
-    docker exec -e PROVISION_NEEDS_STATIC_CMAKE=1 chttp_x86 /vagrant/vagrant-provision.sh
+    docker exec -e PROVISION_NEEDS_STATIC_CMAKE=1 chttp_x86 /vagrant/provision-build.sh
 fi
 } 2>&1 | sed 's/^/x86 |  /' &
 
 {
 if ! docker start chttp_x64; then
     docker run --name chttp_x64 -td -v ${CHTTP_DIR}:/vagrant --platform=linux/amd64 docker.io/debian:8
-    docker exec -e PROVISION_NEEDS_STATIC_CMAKE=1 chttp_x64 /vagrant/vagrant-provision.sh
+    docker exec -e PROVISION_NEEDS_STATIC_CMAKE=1 chttp_x64 /vagrant/provision-build.sh
 fi
 } 2>&1 | sed 's/^/x64 |  /' &
 
 {
 if ! docker start chttp_win; then
     docker run --name chttp_win -td -v ${CHTTP_DIR}:/vagrant docker.io/debian:10
-    docker exec -e PROVISION_NEEDS_MINGW=1 chttp_win /vagrant/vagrant-provision.sh
+    docker exec -e PROVISION_NEEDS_MINGW=1 chttp_win /vagrant/provision-build.sh
 fi
 } 2>&1 | sed 's/^/win |  /' &
 
