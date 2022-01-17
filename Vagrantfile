@@ -9,8 +9,8 @@ Vagrant.configure("2") do |config|
     test_centos7.vm.provision "shell", path: "provision-server.sh", privileged: false
     test_centos7.vm.provision "shell", privileged: false, inline: <<-SHELL
       mkdir -p ~/gmodds/garrysmod/lua/bin ~/gmodds64/garrysmod/lua/bin
-      ln -s /vagrant/dist/gmsv_chttp_linux-static.dll ~/gmodds/garrysmod/lua/bin/gmsv_chttp_linux.dll
-      ln -s /vagrant/dist/gmsv_chttp_linux64-static.dll ~/gmodds64/garrysmod/lua/bin/gmsv_chttp_linux64.dll
+      ln -s /vagrant/dist/gmsv_chttp_linux.dll ~/gmodds/garrysmod/lua/bin/gmsv_chttp_linux.dll
+      ln -s /vagrant/dist/gmsv_chttp_linux64.dll ~/gmodds64/garrysmod/lua/bin/gmsv_chttp_linux64.dll
     SHELL
   end
 

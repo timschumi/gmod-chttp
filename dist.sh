@@ -5,15 +5,15 @@ CHTTP_DIR=$(realpath $(dirname $0))
 # Ensure the machines are up
 {
 if ! docker start chttp_x86; then
-    docker run --name chttp_x86 -td -v ${CHTTP_DIR}:/vagrant --platform=linux/386 docker.io/debian:8
-    docker exec -e PROVISION_NEEDS_STATIC_CMAKE=1 chttp_x86 /vagrant/provision-build.sh
+    docker run --name chttp_x86 -td -v ${CHTTP_DIR}:/vagrant registry.gitlab.steamos.cloud/steamrt/scout/sdk/i386
+    docker exec chttp_x86 /vagrant/provision-build.sh
 fi
 } 2>&1 | sed 's/^/x86 |  /' &
 
 {
 if ! docker start chttp_x64; then
-    docker run --name chttp_x64 -td -v ${CHTTP_DIR}:/vagrant --platform=linux/amd64 docker.io/debian:8
-    docker exec -e PROVISION_NEEDS_STATIC_CMAKE=1 chttp_x64 /vagrant/provision-build.sh
+    docker run --name chttp_x64 -td -v ${CHTTP_DIR}:/vagrant registry.gitlab.steamos.cloud/steamrt/scout/sdk
+    docker exec chttp_x64 /vagrant/provision-build.sh
 fi
 } 2>&1 | sed 's/^/x64 |  /' &
 
