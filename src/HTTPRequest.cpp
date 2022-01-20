@@ -187,6 +187,8 @@ bool HTTPRequest::run() {
 		if (already_checked)
 			return;
 
+		already_checked = true;
+
 		std::ifstream avail_node("/proc/sys/kernel/random/entropy_avail", std::ifstream::in);
 		std::ifstream wakeup_node("/proc/sys/kernel/random/read_wakeup_threshold", std::ifstream::in);
 
@@ -201,8 +203,6 @@ bool HTTPRequest::run() {
 			Logger::warn("/dev/random is configured to wake up at %d bits of entropy, but only has %d bits available.", wakeup, avail);
 			Logger::warn("This is likely to cause a block when trying to establish SSL connections.");
 		}
-
-		already_checked = true;
 	}();
 #endif
 
