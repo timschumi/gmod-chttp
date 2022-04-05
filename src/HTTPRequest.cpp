@@ -93,28 +93,25 @@ bool HTTPRequest::run() {
 	const char *redirect;
 
 #ifdef __linux__
-	static const char *cabundle = nullptr;
-
 	// Find the CA bundle if not already cached
-	[&]() {
+	static const char *cabundle = [&]() -> const char * {
 		if (cabundle)
-			return;
+			return cabundle;
 
 		if (auto capath = getenv("CHTTP_CAINFO")) {
 			Logger::msg("Forcing CAINFO to '%s'", capath);
-			cabundle = capath;
-			return;
+			return capath;
 		}
 
 		for (auto &capath : capaths) {
 			if (access(capath, R_OK) == 0) {
 				Logger::msg("Found accessible CAINFO at '%s'", capath);
-				cabundle = capath;
-				return;
+				return capath;
 			}
 		}
 
 		Logger::warn("Found no suitable CAINFO!");
+		return nullptr;
 	}();
 
 	// Set the CA path
