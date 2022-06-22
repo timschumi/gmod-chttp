@@ -46,3 +46,7 @@ void RequestWorker::stop() {
 bool RequestWorker::has_work() {
 	return !requests().empty() || !tasks().empty() || processing_request;
 }
+
+bool RequestWorker::should_exit() const {
+	return exited;
+}
