@@ -15,6 +15,7 @@ public:
 	void run_tasks(GarrysMod::Lua::ILuaBase *LUA);
 	void stop();
 	bool has_work();
+	bool should_exit() const;
 
 	static RequestWorker &the();
 private:
