@@ -133,24 +133,10 @@ GMOD_MODULE_OPEN() {
 	// at the stack offset mentioned in the parameter (again, -1 is the top)
 	LUA->SetTable(-3);
 
-
-	// Get the hook.Add method
-	LUA->GetField(-1, "hook");
-	LUA->GetField(-1, "Add");
-
-	// Push the new hook data
-	LUA->PushString("Think");
-	LUA->PushString("__chttpThinkHook");
-	LUA->PushCFunction(threadingDoThink);
-
-	// Add the hook
-	LUA->Call(3, 0);
-
-	// Pop the "hook" table
-	LUA->Pop();
-
 	// Pop the global table from the stack again
 	LUA->Pop();
+
+	registerHook(LUA, "Think", "__chttpThinkHook", threadingDoThink);
 
 	// Start the background thread
 	RequestWorker::the();
