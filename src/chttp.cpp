@@ -114,7 +114,7 @@ LUA_FUNCTION(threadingTimerWrap) {
 
 	threadingDoThink__Imp(LUA);
 
-	registerZeroDelayTimer(LUA, threadingTimerWrap);
+	// registerZeroDelayTimer(LUA, threadingTimerWrap);
 
 	return 0;
 }
@@ -153,7 +153,7 @@ GMOD_MODULE_OPEN() {
 		registerHook(LUA, "Think", "__chttpThinkHook", threadingDoThink);
 	} else {
 		Logger::msg("Processing requests using zero-delay timers...");
-		registerZeroDelayTimer(LUA, threadingTimerWrap);
+		registerZeroDelayTimer(LUA, "__chttpThinkHook", threadingTimerWrap);
 	}
 
 	// Start the background thread

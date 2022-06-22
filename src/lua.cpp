@@ -48,13 +48,15 @@ next:
 	}
 }
 
-void registerZeroDelayTimer(GarrysMod::Lua::ILuaBase *LUA, GarrysMod::Lua::CFunc function) {
+void registerZeroDelayTimer(GarrysMod::Lua::ILuaBase *LUA, char const* identifier, GarrysMod::Lua::CFunc function) {
 	LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
 	LUA->GetField(-1, "timer");
-	LUA->GetField(-1, "Simple");
-	LUA->PushNumber(0);
-	LUA->PushCFunction(function);
-	LUA->Call(2, 0);
+	LUA->GetField(-1, "Create");
+	LUA->PushString(identifier); // identifier
+	LUA->PushNumber(0); // delay
+	LUA->PushNumber(0); // repetitions
+	LUA->PushCFunction(function); // func
+	LUA->Call(4, 0);
 	LUA->Pop();
 	LUA->Pop();
 }
