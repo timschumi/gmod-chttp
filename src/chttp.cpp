@@ -136,7 +136,13 @@ GMOD_MODULE_OPEN() {
 	// Pop the global table from the stack again
 	LUA->Pop();
 
-	registerHook(LUA, "Think", "__chttpThinkHook", threadingDoThink);
+	if (getenv("CHTTP_FORCE_HOOK")) {
+		Logger::msg("Processing requests using a hook...");
+		registerHook(LUA, "Think", "__chttpThinkHook", threadingDoThink);
+	} else {
+		Logger::msg("Processing requests using a zero-delay timer...");
+		registerZeroDelayTimer(LUA, "__chttpThinkTimer", threadingDoThink);
+	}
 
 	// Start the background thread
 	RequestWorker::the();
