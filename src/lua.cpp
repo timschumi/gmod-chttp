@@ -47,3 +47,26 @@ next:
 		LUA->Pop();
 	}
 }
+
+void registerHook(GarrysMod::Lua::ILuaBase *LUA, char const* event, char const* identifier, GarrysMod::Lua::CFunc function) {
+	// We are working on the global table today
+	LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
+
+	// Get the hook.Add method
+	LUA->GetField(-1, "hook");
+	LUA->GetField(-1, "Add");
+
+	// Push the new hook data
+	LUA->PushString(event);
+	LUA->PushString(identifier);
+	LUA->PushCFunction(function);
+
+	// Add the hook
+	LUA->Call(3, 0);
+
+	// Pop the "hook" table
+	LUA->Pop();
+
+	// Pop the global table from the stack again
+	LUA->Pop();
+}
