@@ -85,6 +85,14 @@ The value is passed to libcurl as-is and is not checked for validity by CHTTP,
 so make sure to review the documentation for
 [libcurl's CURLOPT_INTERFACE option](https://curl.se/libcurl/c/CURLOPT_INTERFACE.html).
 
+### Zero-delay timers
+
+CHTTP has switched to using zero-delay timers instead of hooks to allow for running
+requests while in singleplayer or while the server is hibernating.
+
+In case there are any issues (bug reports greatly appreciated), you can return to
+using the old hooking method by setting the environment variable `CHTTP_FORCE_HOOKS`.
+
 ## Addon development
 
 This is only required for developers who want to use CHTTP in their addons.

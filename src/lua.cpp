@@ -48,6 +48,17 @@ next:
 	}
 }
 
+void registerZeroDelayTimer(GarrysMod::Lua::ILuaBase *LUA, GarrysMod::Lua::CFunc function) {
+	LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
+	LUA->GetField(-1, "timer");
+	LUA->GetField(-1, "Simple");
+	LUA->PushNumber(0);
+	LUA->PushCFunction(function);
+	LUA->Call(2, 0);
+	LUA->Pop();
+	LUA->Pop();
+}
+
 void registerHook(GarrysMod::Lua::ILuaBase *LUA, char const* event, char const* identifier, GarrysMod::Lua::CFunc function) {
 	// We are working on the global table today
 	LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);

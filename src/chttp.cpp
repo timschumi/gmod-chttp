@@ -107,6 +107,18 @@ LUA_FUNCTION(threadingDoThink) {
 	return 0;
 }
 
+// This is horrible. But this is Garry's Mod, so it fits the picture just fine.
+LUA_FUNCTION(threadingTimerWrap) {
+	if (RequestWorker::the().should_exit())
+		return 0;
+
+	threadingDoThink__Imp(LUA);
+
+	registerZeroDelayTimer(LUA, threadingTimerWrap);
+
+	return 0;
+}
+
 GMOD_MODULE_OPEN() {
 	// Set up logging
 	if (!Logger::init()) {
@@ -136,7 +148,13 @@ GMOD_MODULE_OPEN() {
 	// Pop the global table from the stack again
 	LUA->Pop();
 
-	registerHook(LUA, "Think", "__chttpThinkHook", threadingDoThink);
+	if (getenv("CHTTP_FORCE_HOOKS")) {
+		Logger::msg("Processing requests using hooks...");
+		registerHook(LUA, "Think", "__chttpThinkHook", threadingDoThink);
+	} else {
+		Logger::msg("Processing requests using zero-delay timers...");
+		registerZeroDelayTimer(LUA, threadingTimerWrap);
+	}
 
 	// Start the background thread
 	RequestWorker::the();
