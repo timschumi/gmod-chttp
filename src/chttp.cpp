@@ -133,6 +133,10 @@ GMOD_MODULE_OPEN() {
 	// at the stack offset mentioned in the parameter (again, -1 is the top)
 	LUA->SetTable(-3);
 
+	LUA->PushString("CHTTP_VERSION");
+	LUA->PushString(CHTTP_VERSION);
+	LUA->SetTable(-3);
+
 	// Pop the global table from the stack again
 	LUA->Pop();
 
