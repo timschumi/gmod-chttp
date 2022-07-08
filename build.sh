@@ -46,11 +46,16 @@ if [ "$build_clean" = "1" ]; then
 	rm -rf "${BUILD_DIR}"
 fi
 
+if [ -z "${CHTTP_VERSION}" ]; then
+	CHTTP_VERSION="release"
+fi
+
 mkdir -p "${BUILD_DIR}"
 cd "${BUILD_DIR}"
 cmake \
     -DCMAKE_TOOLCHAIN_FILE=toolchain-${BUILD_TARGET}.cmake \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+    -DCHTTP_VERSION=${CHTTP_VERSION} \
     "${cmake_args[@]}" \
     "${BASE_DIR}"
 make

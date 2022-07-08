@@ -26,26 +26,28 @@ fi
 
 wait
 
+CHTTP_VERSION=$(git -C "${CHTTP_DIR}" describe --tags | sed 's/^v//')
+
 # Build the different configurations
 {
-docker exec -u vagrant -w /home/vagrant chttp_x86 /vagrant/build.sh linux Debug $*
-docker exec -u vagrant -w /home/vagrant chttp_x86 /vagrant/build.sh linux Release $*
-docker exec -u vagrant -w /home/vagrant chttp_x86 /vagrant/build.sh linux Debug static $*
-docker exec -u vagrant -w /home/vagrant chttp_x86 /vagrant/build.sh linux Release static $*
+docker exec -u vagrant -w /home/vagrant -e CHTTP_VERSION="${CHTTP_VERSION}" chttp_x86 /vagrant/build.sh linux Debug $*
+docker exec -u vagrant -w /home/vagrant -e CHTTP_VERSION="${CHTTP_VERSION}" chttp_x86 /vagrant/build.sh linux Release $*
+docker exec -u vagrant -w /home/vagrant -e CHTTP_VERSION="${CHTTP_VERSION}" chttp_x86 /vagrant/build.sh linux Debug static $*
+docker exec -u vagrant -w /home/vagrant -e CHTTP_VERSION="${CHTTP_VERSION}" chttp_x86 /vagrant/build.sh linux Release static $*
 } &
 
 {
-docker exec -u vagrant -w /home/vagrant chttp_x64 /vagrant/build.sh linux64 Debug $*
-docker exec -u vagrant -w /home/vagrant chttp_x64 /vagrant/build.sh linux64 Release $*
-docker exec -u vagrant -w /home/vagrant chttp_x64 /vagrant/build.sh linux64 Debug static $*
-docker exec -u vagrant -w /home/vagrant chttp_x64 /vagrant/build.sh linux64 Release static $*
+docker exec -u vagrant -w /home/vagrant -e CHTTP_VERSION="${CHTTP_VERSION}" chttp_x64 /vagrant/build.sh linux64 Debug $*
+docker exec -u vagrant -w /home/vagrant -e CHTTP_VERSION="${CHTTP_VERSION}" chttp_x64 /vagrant/build.sh linux64 Release $*
+docker exec -u vagrant -w /home/vagrant -e CHTTP_VERSION="${CHTTP_VERSION}" chttp_x64 /vagrant/build.sh linux64 Debug static $*
+docker exec -u vagrant -w /home/vagrant -e CHTTP_VERSION="${CHTTP_VERSION}" chttp_x64 /vagrant/build.sh linux64 Release static $*
 } &
 
 {
-docker exec -u vagrant -w /home/vagrant chttp_win /vagrant/build.sh win32 Debug $*
-docker exec -u vagrant -w /home/vagrant chttp_win /vagrant/build.sh win32 Release $*
-docker exec -u vagrant -w /home/vagrant chttp_win /vagrant/build.sh win64 Debug $*
-docker exec -u vagrant -w /home/vagrant chttp_win /vagrant/build.sh win64 Release $*
+docker exec -u vagrant -w /home/vagrant -e CHTTP_VERSION="${CHTTP_VERSION}" chttp_win /vagrant/build.sh win32 Debug $*
+docker exec -u vagrant -w /home/vagrant -e CHTTP_VERSION="${CHTTP_VERSION}" chttp_win /vagrant/build.sh win32 Release $*
+docker exec -u vagrant -w /home/vagrant -e CHTTP_VERSION="${CHTTP_VERSION}" chttp_win /vagrant/build.sh win64 Debug $*
+docker exec -u vagrant -w /home/vagrant -e CHTTP_VERSION="${CHTTP_VERSION}" chttp_win /vagrant/build.sh win64 Release $*
 } &
 
 wait
