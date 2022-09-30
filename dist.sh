@@ -26,7 +26,9 @@ fi
 
 wait
 
-CHTTP_VERSION=$(git -C "${CHTTP_DIR}" describe --tags | sed 's/^v//')
+if [ -z "${CHTTP_VERSION}" ]; then
+    CHTTP_VERSION=$(git -C "${CHTTP_DIR}" describe --tags | sed 's/^v//')
+fi
 
 # Build the different configurations
 {
