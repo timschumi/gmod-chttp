@@ -1,9 +1,12 @@
-name: Build
+name: New Version Tag
 
-on: [push, pull_request]
+on:
+  push:
+    tags:
+      - 'v*'
 
 jobs:
-  dist:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,8 +22,11 @@ jobs:
         echo "CHTTP_VERSION=${CHTTP_VERSION}" >> $GITHUB_ENV
         ./dist.sh
 
-    - name: Upload binaries
-      uses: actions/upload-artifact@v3
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
       with:
-        name: gmod-chttp-${{ env.CHTTP_VERSION }}-binaries
-        path: dist/*
+        draft: true
+        fail_on_unmatched_files: true
+        generate_release_notes: true
+        files: |
+          dist/*

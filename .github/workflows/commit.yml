@@ -1,0 +1,26 @@
+name: New Commit
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        submodules: true
+
+    - name: Build
+      run: |
+        export CHTTP_VERSION=$(git describe --tags | sed 's/^v//')
+        echo "CHTTP_VERSION=${CHTTP_VERSION}" >> $GITHUB_ENV
+        ./dist.sh
+
+    - name: Upload binaries
+      uses: actions/upload-artifact@v3
+      with:
+        name: gmod-chttp-${{ env.CHTTP_VERSION }}-binaries
+        path: dist/*
