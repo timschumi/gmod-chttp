@@ -22,5 +22,5 @@ jobs:
     - name: Upload binaries
       uses: actions/upload-artifact@v3
       with:
-        name: chttp-${{ env.CHTTP_VERSION }}-binaries
+        name: gmod-chttp-${{ env.CHTTP_VERSION }}-binaries
         path: dist/*
