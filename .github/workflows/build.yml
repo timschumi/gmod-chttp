@@ -15,9 +15,9 @@ jobs:
 
     - name: Build
       run: |
-        CHTTP_VERSION=$(git describe --tags | sed 's/^v//')
+        export CHTTP_VERSION=$(git describe --tags | sed 's/^v//')
         echo "CHTTP_VERSION=${CHTTP_VERSION}" >> $GITHUB_ENV
-        CHTTP_VERSION=${CHTTP_VERSION}-github ./dist.sh
+        ./dist.sh
 
     - name: Upload binaries
       uses: actions/upload-artifact@v3
