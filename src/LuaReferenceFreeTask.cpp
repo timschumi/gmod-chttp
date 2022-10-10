@@ -1,15 +1,15 @@
 #include "LuaReferenceFreeTask.h"
 
 LuaReferenceFreeTask::LuaReferenceFreeTask(int ref)
-    : reference(ref)
+    : m_reference(ref)
 {
 }
 
 void LuaReferenceFreeTask::run(GarrysMod::Lua::ILuaBase* LUA)
 {
-    if (!reference)
+    if (!m_reference)
         return;
 
-    LUA->ReferenceFree(reference);
-    reference = 0;
+    LUA->ReferenceFree(m_reference);
+    m_reference = 0;
 }

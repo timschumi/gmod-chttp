@@ -5,34 +5,34 @@
 class HTTPMethod {
 public:
     enum Method {
-        M_INVALID = 0,
-        M_GET,
-        M_HEAD,
-        M_POST,
-        M_PUT,
-        M_DELETE,
-        M_OPTIONS,
-        M_PATCH,
+        Invalid = 0,
+        Get,
+        Head,
+        Post,
+        Put,
+        Delete,
+        Options,
+        Patch,
     };
 
     HTTPMethod() = default;
 
     constexpr HTTPMethod(Method m)
-        : method(m) {};
+        : m_method(m) {};
 
     operator Method() const
     {
-        return method;
+        return m_method;
     }
 
     explicit operator bool() = delete;
 
-    bool isLikePost();
+    bool is_like_post();
 
-    std::string toString();
+    std::string to_string();
 
-    static HTTPMethod fromString(std::string method);
+    static HTTPMethod from_string(std::string method);
 
 private:
-    Method method;
+    Method m_method;
 };

@@ -6,7 +6,7 @@
 #    include <dlfcn.h>
 #endif
 
-static void* getExport(std::string const& library, std::string const& symbol)
+static void* get_export(std::string const& library, std::string const& symbol)
 {
 #ifdef _WIN32
     HMODULE handle = GetModuleHandle((library + ".dll").c_str());
@@ -17,7 +17,7 @@ static void* getExport(std::string const& library, std::string const& symbol)
 #endif
 }
 
-static bool isLibraryLoaded(std::string const& library)
+static bool is_library_loaded(std::string const& library)
 {
 #ifdef _WIN32
     return GetModuleHandle((library + ".dll").c_str());
@@ -45,7 +45,7 @@ bool Logger::init()
 
     // Find the first library in the list that is already loaded.
     for (std::string& lib : tier0_list) {
-        if (isLibraryLoaded(lib)) {
+        if (is_library_loaded(lib)) {
             tier0_name = lib;
             break;
         }
@@ -55,10 +55,10 @@ bool Logger::init()
         return false;
     }
 
-    msg_func = reinterpret_cast<decltype(msg_func)>(getExport(tier0_name, "Msg"));
-    warn_func = reinterpret_cast<decltype(warn_func)>(getExport(tier0_name, "Warning"));
-    devmsg_func = reinterpret_cast<decltype(devmsg_func)>(getExport(tier0_name, "DevMsg"));
-    devwarn_func = reinterpret_cast<decltype(devwarn_func)>(getExport(tier0_name, "DevWarning"));
+    msg_func = reinterpret_cast<decltype(msg_func)>(get_export(tier0_name, "Msg"));
+    warn_func = reinterpret_cast<decltype(warn_func)>(get_export(tier0_name, "Warning"));
+    devmsg_func = reinterpret_cast<decltype(devmsg_func)>(get_export(tier0_name, "DevMsg"));
+    devwarn_func = reinterpret_cast<decltype(devwarn_func)>(get_export(tier0_name, "DevWarning"));
 
     return msg_func && warn_func && devmsg_func && devwarn_func;
 }

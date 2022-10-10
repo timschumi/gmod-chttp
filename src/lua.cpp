@@ -2,7 +2,7 @@
 #include "Logger.h"
 
 // Builds a LUA table from a map and leaves it on the stack
-void mapToLuaTable(GarrysMod::Lua::ILuaBase* LUA, std::map<std::string, std::string> const& map)
+void map_to_lua_table(GarrysMod::Lua::ILuaBase* LUA, std::map<std::string, std::string> const& map)
 {
     // Create a new table on the stack
     LUA->CreateTable();
@@ -21,7 +21,7 @@ void mapToLuaTable(GarrysMod::Lua::ILuaBase* LUA, std::map<std::string, std::str
 
 // Transfers values from a LUA Table on the stack (at the given offset)
 // into the given map.
-void luaTableToMap(GarrysMod::Lua::ILuaBase* LUA, int index, std::map<std::string, std::string>& map)
+void lua_table_to_map(GarrysMod::Lua::ILuaBase* LUA, int index, std::map<std::string, std::string>& map)
 {
     // Query the first entry (we're querying by key, nil = 1st)
     LUA->PushNil();
@@ -50,7 +50,7 @@ void luaTableToMap(GarrysMod::Lua::ILuaBase* LUA, int index, std::map<std::strin
     }
 }
 
-void registerZeroDelayTimer(GarrysMod::Lua::ILuaBase* LUA, char const* identifier, GarrysMod::Lua::CFunc function)
+void register_zero_delay_timer(GarrysMod::Lua::ILuaBase* LUA, char const* identifier, GarrysMod::Lua::CFunc function)
 {
     LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
     LUA->GetField(-1, "timer");
@@ -64,7 +64,7 @@ void registerZeroDelayTimer(GarrysMod::Lua::ILuaBase* LUA, char const* identifie
     LUA->Pop();
 }
 
-void registerHook(GarrysMod::Lua::ILuaBase* LUA, char const* event, char const* identifier, GarrysMod::Lua::CFunc function)
+void register_hook(GarrysMod::Lua::ILuaBase* LUA, char const* event, char const* identifier, GarrysMod::Lua::CFunc function)
 {
     // We are working on the global table today
     LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);

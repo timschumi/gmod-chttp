@@ -16,7 +16,7 @@ public:
 
 class RequestCallbackTask : public LuaTask {
 protected:
-    std::shared_ptr<LuaReference> callback;
+    std::shared_ptr<LuaReference> m_callback;
 
 public:
     explicit RequestCallbackTask(std::shared_ptr<LuaReference> callback);
@@ -36,7 +36,7 @@ public:
 
 class FailCallbackTask : public RequestCallbackTask {
 private:
-    std::string reason;
+    std::string m_reason;
 
 public:
     FailCallbackTask(std::shared_ptr<LuaReference> callback, std::string reason);

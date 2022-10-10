@@ -32,7 +32,7 @@ LUA_FUNCTION(CHTTP)
     // Fetch method
     LUA->GetField(1, "method");
     if (LUA->IsType(-1, GarrysMod::Lua::Type::String)) {
-        request->method = HTTPMethod::fromString(LUA->GetString(-1));
+        request->method = HTTPMethod::from_string(LUA->GetString(-1));
     }
     LUA->Pop();
 
@@ -57,14 +57,14 @@ LUA_FUNCTION(CHTTP)
     // Fetch headers
     LUA->GetField(1, "headers");
     if (LUA->IsType(-1, GarrysMod::Lua::Type::Table)) {
-        luaTableToMap(LUA, -1, request->headers);
+        lua_table_to_map(LUA, -1, request->headers);
     }
     LUA->Pop();
 
     // Fetch parameters
     LUA->GetField(1, "parameters");
     if (LUA->IsType(-1, GarrysMod::Lua::Type::Table)) {
-        luaTableToMap(LUA, -1, request->parameters);
+        lua_table_to_map(LUA, -1, request->parameters);
     }
     LUA->Pop();
 
@@ -78,9 +78,9 @@ LUA_FUNCTION(CHTTP)
     // Fetch body
     LUA->GetField(1, "body");
     if (LUA->IsType(-1, GarrysMod::Lua::Type::String)) {
-        unsigned int bodylen;
-        char const* body = LUA->GetString(-1, &bodylen);
-        request->body = std::string(body, bodylen);
+        unsigned int body_length;
+        char const* body = LUA->GetString(-1, &body_length);
+        request->body = std::string(body, body_length);
     }
     LUA->Pop();
 
@@ -102,7 +102,7 @@ exit:
     return 1;            // We are returning a single value
 }
 
-LUA_FUNCTION(threadingDoThink)
+LUA_FUNCTION(lua_run_tasks)
 {
     RequestWorker::the().run_tasks(LUA);
 
@@ -145,10 +145,10 @@ GMOD_MODULE_OPEN()
 
     if (getenv("CHTTP_FORCE_HOOK")) {
         Logger::msg("Processing requests using a hook...");
-        registerHook(LUA, "Think", "__chttpThinkHook", threadingDoThink);
+        register_hook(LUA, "Think", "__chttpThinkHook", lua_run_tasks);
     } else {
         Logger::msg("Processing requests using a zero-delay timer...");
-        registerZeroDelayTimer(LUA, "__chttpThinkTimer", threadingDoThink);
+        register_zero_delay_timer(LUA, "__chttpThinkTimer", lua_run_tasks);
     }
 
     // Start the background thread

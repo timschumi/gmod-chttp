@@ -4,7 +4,7 @@
 
 class LuaReference {
 private:
-    int reference;
+    int m_reference;
 
 public:
     explicit LuaReference(GarrysMod::Lua::ILuaBase* LUA);

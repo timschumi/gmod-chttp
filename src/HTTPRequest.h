@@ -18,7 +18,7 @@ public:
     std::shared_ptr<LuaReference> success = nullptr;
 
     // Request method for the request
-    HTTPMethod method = HTTPMethod::M_GET;
+    HTTPMethod method = HTTPMethod::Get;
 
     // Well, what could that be?
     std::string url;
@@ -40,9 +40,9 @@ public:
 
     HTTPRequest();
 
-    std::string buildQueryString();
+    std::string build_query_string();
 
-    std::string buildURL();
+    std::string build_url();
 
     bool run();
 };

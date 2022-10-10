@@ -6,7 +6,7 @@
 #include "lua.h"
 
 RequestCallbackTask::RequestCallbackTask(std::shared_ptr<LuaReference> callback)
-    : callback(std::move(callback))
+    : m_callback(std::move(callback))
 {
 }
 
@@ -17,31 +17,31 @@ SuccessCallbackTask::SuccessCallbackTask(std::shared_ptr<LuaReference> callback)
 
 void SuccessCallbackTask::run(GarrysMod::Lua::ILuaBase* LUA)
 {
-    if (!this->callback) {
+    if (!this->m_callback) {
         return;
     }
 
-    callback->push(LUA);
+    m_callback->push(LUA);
     LUA->PushNumber(this->code);
     LUA->PushString(this->body.c_str(), this->body.size());
-    mapToLuaTable(LUA, this->headers);
+    map_to_lua_table(LUA, this->headers);
     LUA->Call(3, 0);
 }
 
 FailCallbackTask::FailCallbackTask(std::shared_ptr<LuaReference> callback, std::string reason)
     : RequestCallbackTask(std::move(callback))
-    , reason(std::move(reason))
+    , m_reason(std::move(reason))
 {
 }
 
 void FailCallbackTask::run(GarrysMod::Lua::ILuaBase* LUA)
 {
-    if (!this->callback) {
-        Logger::warn("Request failed without a fail hander: '%s'", reason.c_str());
+    if (!this->m_callback) {
+        Logger::warn("Request failed without a fail hander: '%s'", m_reason.c_str());
         return;
     }
 
-    callback->push(LUA);
-    LUA->PushString(reason.c_str());
+    m_callback->push(LUA);
+    LUA->PushString(m_reason.c_str());
     LUA->Call(1, 0);
 }

@@ -4,18 +4,18 @@
 
 LuaReference::LuaReference(GarrysMod::Lua::ILuaBase* LUA)
 {
-    reference = LUA->ReferenceCreate();
+    m_reference = LUA->ReferenceCreate();
 }
 
 LuaReference::~LuaReference()
 {
-    if (!reference)
+    if (!m_reference)
         return;
 
-    RequestWorker::the().tasks().push(std::make_shared<LuaReferenceFreeTask>(reference));
+    RequestWorker::the().tasks().push(std::make_shared<LuaReferenceFreeTask>(m_reference));
 }
 
 void LuaReference::push(GarrysMod::Lua::ILuaBase* LUA) const
 {
-    LUA->ReferencePush(reference);
+    LUA->ReferencePush(m_reference);
 }

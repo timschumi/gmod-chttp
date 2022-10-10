@@ -8,7 +8,7 @@
 #include "RequestWorker.h"
 
 // Taken from the curl configure script
-static char const* capaths[] = {
+static char const* ca_paths[] = {
     "/etc/ssl/certs/ca-certificates.crt",     // Debian
     "/etc/pki/tls/certs/ca-bundle.crt",       // Redhat and Mandriva
     "/usr/share/ssl/certs/ca-bundle.crt",     // Old Redhat
@@ -16,7 +16,7 @@ static char const* capaths[] = {
     "/etc/ssl/cert.pem",                      // OpenBSD, FreeBSD
 };
 
-static char const* src_if = nullptr;
+static char const* source_interface = nullptr;
 
 HTTPRequest::HTTPRequest()
 {
@@ -24,7 +24,7 @@ HTTPRequest::HTTPRequest()
     this->headers["User-Agent"] = (std::string) "curl/" + info->version + " gmod-chttp/" CHTTP_VERSION;
 }
 
-std::string HTTPRequest::buildQueryString()
+std::string HTTPRequest::build_query_string()
 {
     std::string params;
 
@@ -46,16 +46,16 @@ std::string HTTPRequest::buildQueryString()
     return params;
 }
 
-std::string HTTPRequest::buildURL()
+std::string HTTPRequest::build_url()
 {
-    std::string fullurl = this->url;
+    std::string full_url = this->url;
 
     // Do we need a query string?
-    if (!this->method.isLikePost() && !this->parameters.empty()) {
-        fullurl += "?" + this->buildQueryString();
+    if (!this->method.is_like_post() && !this->parameters.empty()) {
+        full_url += "?" + this->build_query_string();
     }
 
-    return fullurl;
+    return full_url;
 }
 
 // Write callback for appending to an std::string
@@ -93,27 +93,27 @@ bool HTTPRequest::run()
         return false;
     }
 
-    CURLcode cres;
+    CURLcode curl_result;
     bool ret = true;
     auto response = std::make_shared<SuccessCallbackTask>(this->success);
-    std::string postbody;
+    std::string post_body;
     char const* redirect;
 
 #ifdef __linux__
     // Find the CA bundle if not already cached
-    static char const* cabundle = [&]() -> char const* {
-        if (cabundle)
-            return cabundle;
+    static char const* ca_bundle_path = [&]() -> char const* {
+        if (ca_bundle_path)
+            return ca_bundle_path;
 
         if (auto capath = getenv("CHTTP_CAINFO")) {
             Logger::msg("Forcing CAINFO to '%s'", capath);
             return capath;
         }
 
-        for (auto& capath : capaths) {
-            if (access(capath, R_OK) == 0) {
-                Logger::msg("Found accessible CAINFO at '%s'", capath);
-                return capath;
+        for (auto& ca_path : ca_paths) {
+            if (access(ca_path, R_OK) == 0) {
+                Logger::msg("Found accessible CAINFO at '%s'", ca_path);
+                return ca_path;
             }
         }
 
@@ -122,17 +122,17 @@ bool HTTPRequest::run()
     }();
 
     // Set the CA path
-    curl_easy_setopt(curl, CURLOPT_CAINFO, cabundle);
+    curl_easy_setopt(curl, CURLOPT_CAINFO, ca_bundle_path);
 #endif
 
     // Query the source interface from the environment variables
-    if (!src_if && (src_if = getenv("CHTTP_INTERFACE"))) {
-        Logger::msg("Forcing INTERFACE to '%s'", src_if);
+    if (!source_interface && (source_interface = getenv("CHTTP_INTERFACE"))) {
+        Logger::msg("Forcing INTERFACE to '%s'", source_interface);
     }
 
     // Override the source interface if set
-    if (src_if) {
-        curl_easy_setopt(curl, CURLOPT_INTERFACE, src_if);
+    if (source_interface) {
+        curl_easy_setopt(curl, CURLOPT_INTERFACE, source_interface);
     }
 
     if (this->timeout != 0) {
@@ -141,38 +141,38 @@ bool HTTPRequest::run()
 
     // Set up the request method
     switch (this->method) {
-    case HTTPMethod::M_GET:
+    case HTTPMethod::Get:
         // Default, does not require any additional setup
         break;
-    case HTTPMethod::M_HEAD:
+    case HTTPMethod::Head:
         curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
         break;
-    case HTTPMethod::M_POST:
-    case HTTPMethod::M_PUT:
-    case HTTPMethod::M_DELETE:
-    case HTTPMethod::M_PATCH:
+    case HTTPMethod::Post:
+    case HTTPMethod::Put:
+    case HTTPMethod::Delete:
+    case HTTPMethod::Patch:
         curl_easy_setopt(curl, CURLOPT_POST, 1L);
         // Intentional fallthrough to set request method name
-    case HTTPMethod::M_OPTIONS:
-    case HTTPMethod::M_INVALID:
-        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, this->method.toString().c_str());
+    case HTTPMethod::Options:
+    case HTTPMethod::Invalid:
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, this->method.to_string().c_str());
         break;
     default:
         Logger::warn("HTTP request method is neither valid nor INVALID: %d", this->method);
         break;
     }
 
-    if (this->method.isLikePost()) {
+    if (this->method.is_like_post()) {
         // Do we have a request body?
         if (!this->body.empty()) {
-            postbody = this->body;
+            post_body = this->body;
             this->headers["Content-Type"] = type;
         } else {
-            postbody = this->buildQueryString();
+            post_body = this->build_query_string();
         }
 
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, postbody.size());
-        curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, postbody.c_str());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, post_body.size());
+        curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, post_body.c_str());
     }
 
     // Set up saving the response body
@@ -222,7 +222,7 @@ bool HTTPRequest::run()
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header_list);
     }
 
-    std::string built_url = this->buildURL();
+    std::string built_url = this->build_url();
     curl_easy_setopt(curl, CURLOPT_URL, built_url.c_str());
     Logger::devmsg("Sending a request to '%s'...", built_url.c_str());
 
@@ -237,10 +237,10 @@ resend:
         goto cleanup;
     }
 
-    cres = curl_easy_perform(curl);
+    curl_result = curl_easy_perform(curl);
 
-    if (cres != CURLE_OK) {
-        RequestWorker::the().tasks().push(std::make_shared<FailCallbackTask>(this->failed, curl_easy_strerror(cres)));
+    if (curl_result != CURLE_OK) {
+        RequestWorker::the().tasks().push(std::make_shared<FailCallbackTask>(this->failed, curl_easy_strerror(curl_result)));
         ret = false;
         goto cleanup;
     }

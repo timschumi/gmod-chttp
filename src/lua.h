@@ -5,10 +5,10 @@
 
 #include "GarrysMod/Lua/Interface.h"
 
-void mapToLuaTable(GarrysMod::Lua::ILuaBase* LUA, std::map<std::string, std::string> const& map);
+void map_to_lua_table(GarrysMod::Lua::ILuaBase* LUA, std::map<std::string, std::string> const& map);
 
-void luaTableToMap(GarrysMod::Lua::ILuaBase* LUA, int index, std::map<std::string, std::string>& map);
+void lua_table_to_map(GarrysMod::Lua::ILuaBase* LUA, int index, std::map<std::string, std::string>& map);
 
-void registerZeroDelayTimer(GarrysMod::Lua::ILuaBase* LUA, char const* identifier, GarrysMod::Lua::CFunc function);
+void register_zero_delay_timer(GarrysMod::Lua::ILuaBase* LUA, char const* identifier, GarrysMod::Lua::CFunc function);
 
-void registerHook(GarrysMod::Lua::ILuaBase* LUA, char const* event, char const* identifier, GarrysMod::Lua::CFunc function);
+void register_hook(GarrysMod::Lua::ILuaBase* LUA, char const* event, char const* identifier, GarrysMod::Lua::CFunc function);

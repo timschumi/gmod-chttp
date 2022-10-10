@@ -1,60 +1,60 @@
 #include "HTTPMethod.h"
 
-bool HTTPMethod::isLikePost()
+bool HTTPMethod::is_like_post()
 {
-    switch (this->method) {
-    case HTTPMethod::M_POST:
-    case HTTPMethod::M_PUT:
-    case HTTPMethod::M_DELETE:
-    case HTTPMethod::M_PATCH:
+    switch (this->m_method) {
+    case HTTPMethod::Post:
+    case HTTPMethod::Put:
+    case HTTPMethod::Delete:
+    case HTTPMethod::Patch:
         return true;
     default:
         return false;
     }
 }
 
-std::string HTTPMethod::toString()
+std::string HTTPMethod::to_string()
 {
-    switch (this->method) {
-    case HTTPMethod::M_GET:
+    switch (this->m_method) {
+    case HTTPMethod::Get:
         return "GET";
-    case HTTPMethod::M_POST:
+    case HTTPMethod::Post:
         return "POST";
-    case HTTPMethod::M_HEAD:
+    case HTTPMethod::Head:
         return "HEAD";
-    case HTTPMethod::M_PUT:
+    case HTTPMethod::Put:
         return "PUT";
-    case HTTPMethod::M_DELETE:
+    case HTTPMethod::Delete:
         return "DELETE";
-    case HTTPMethod::M_PATCH:
+    case HTTPMethod::Patch:
         return "PATCH";
-    case HTTPMethod::M_OPTIONS:
+    case HTTPMethod::Options:
         return "OPTIONS";
     default:
         return "INVALID";
     }
 }
 
-HTTPMethod HTTPMethod::fromString(std::string method)
+HTTPMethod HTTPMethod::from_string(std::string method)
 {
     for (auto& c : method) {
         c = std::toupper(c);
     }
 
     if (method == "GET")
-        return HTTPMethod::M_GET;
+        return HTTPMethod::Get;
     if (method == "POST")
-        return HTTPMethod::M_POST;
+        return HTTPMethod::Post;
     if (method == "HEAD")
-        return HTTPMethod::M_HEAD;
+        return HTTPMethod::Head;
     if (method == "PUT")
-        return HTTPMethod::M_PUT;
+        return HTTPMethod::Put;
     if (method == "DELETE")
-        return HTTPMethod::M_DELETE;
+        return HTTPMethod::Delete;
     if (method == "PATCH")
-        return HTTPMethod::M_PATCH;
+        return HTTPMethod::Patch;
     if (method == "OPTIONS")
-        return HTTPMethod::M_OPTIONS;
+        return HTTPMethod::Options;
 
-    return HTTPMethod::M_INVALID;
+    return HTTPMethod::Invalid;
 }

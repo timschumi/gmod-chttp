@@ -4,7 +4,7 @@
 
 class LuaReferenceFreeTask : public LuaTask {
 private:
-    int reference;
+    int m_reference;
 
 public:
     explicit LuaReferenceFreeTask(int ref);
