@@ -1,87 +1,94 @@
 #pragma once
 
-#include <queue>
-#include <mutex>
 #include <condition_variable>
+#include <mutex>
+#include <queue>
 
 template<class T>
 class LockableQueue {
-	std::queue<T> queue;
-	std::mutex mutex;
-	std::condition_variable cond;
+    std::queue<T> queue;
+    std::mutex mutex;
+    std::condition_variable cond;
 
 public:
-	void push(T element);
+    void push(T element);
 
-	template<typename P, typename P2>
-	T pop(bool block, P pred, P2 before_pop);
-	template<typename P>
-	T pop(bool block, P pred);
-	T pop(bool block);
-	T pop();
+    template<typename P, typename P2>
+    T pop(bool block, P pred, P2 before_pop);
+    template<typename P>
+    T pop(bool block, P pred);
+    T pop(bool block);
+    T pop();
 
-	bool empty();
+    bool empty();
 
-	void try_unblock();
+    void try_unblock();
 };
 
 template<class T>
-void LockableQueue<T>::push(T element) {
-	std::unique_lock<std::mutex> lock(mutex);
+void LockableQueue<T>::push(T element)
+{
+    std::unique_lock<std::mutex> lock(mutex);
 
-	queue.push(element);
+    queue.push(element);
 
-	// Unlock manually so that cond doesn't immediately wait again.
-	lock.unlock();
+    // Unlock manually so that cond doesn't immediately wait again.
+    lock.unlock();
 
-	this->cond.notify_one();
+    this->cond.notify_one();
 }
 
 template<class T>
 template<typename P, typename P2>
-T LockableQueue<T>::pop(bool block, P pred, P2 before_pop) {
-	std::unique_lock<std::mutex> lock(mutex);
+T LockableQueue<T>::pop(bool block, P pred, P2 before_pop)
+{
+    std::unique_lock<std::mutex> lock(mutex);
 
-	if (block) {
-		this->cond.wait(lock, [this, pred] { return !queue.empty() || pred(); });
-	}
+    if (block) {
+        this->cond.wait(lock, [this, pred] { return !queue.empty() || pred(); });
+    }
 
-	if (queue.empty())
-		return nullptr;
+    if (queue.empty())
+        return nullptr;
 
-	T element = queue.front();
+    T element = queue.front();
 
-	before_pop();
+    before_pop();
 
-	queue.pop();
+    queue.pop();
 
-	return element;
+    return element;
 }
 
 template<class T>
 template<typename P>
-T LockableQueue<T>::pop(bool block, P pred) {
-	return pop(block, pred, [] {});
+T LockableQueue<T>::pop(bool block, P pred)
+{
+    return pop(block, pred, [] {});
 }
 
 template<class T>
-T LockableQueue<T>::pop(bool block) {
-	return pop(block, [] { return false; });
+T LockableQueue<T>::pop(bool block)
+{
+    return pop(block, [] { return false; });
 }
 
 template<class T>
-T LockableQueue<T>::pop() {
-	return pop(false);
+T LockableQueue<T>::pop()
+{
+    return pop(false);
 }
 
 template<class T>
-bool LockableQueue<T>::empty() {
-	std::unique_lock<std::mutex> lock(mutex);
+bool LockableQueue<T>::empty()
+{
+    std::unique_lock<std::mutex> lock(mutex);
 
-	return queue.empty();
+    return queue.empty();
 }
 
 template<class T>
-void LockableQueue<T>::try_unblock() {
-	cond.notify_one();
+void LockableQueue<T>::try_unblock()
+{
+    cond.notify_one();
 }

@@ -2,17 +2,20 @@
 #include "LuaReferenceFreeTask.h"
 #include "RequestWorker.h"
 
-LuaReference::LuaReference(GarrysMod::Lua::ILuaBase *LUA) {
-	reference = LUA->ReferenceCreate();
+LuaReference::LuaReference(GarrysMod::Lua::ILuaBase* LUA)
+{
+    reference = LUA->ReferenceCreate();
 }
 
-LuaReference::~LuaReference() {
-	if (!reference)
-		return;
+LuaReference::~LuaReference()
+{
+    if (!reference)
+        return;
 
-	RequestWorker::the().tasks().push(std::make_shared<LuaReferenceFreeTask>(reference));
+    RequestWorker::the().tasks().push(std::make_shared<LuaReferenceFreeTask>(reference));
 }
 
-void LuaReference::push(GarrysMod::Lua::ILuaBase *LUA) const {
-	LUA->ReferencePush(reference);
+void LuaReference::push(GarrysMod::Lua::ILuaBase* LUA) const
+{
+    LUA->ReferencePush(reference);
 }

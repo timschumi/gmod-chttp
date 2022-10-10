@@ -9,26 +9,26 @@
 
 class RequestWorker {
 public:
-	LockableQueue<std::shared_ptr<HTTPRequest>> &requests() { return _requests; };
-	LockableQueue<std::shared_ptr<LuaTask>> &tasks() { return _tasks; };
+    LockableQueue<std::shared_ptr<HTTPRequest>>& requests() { return _requests; };
+    LockableQueue<std::shared_ptr<LuaTask>>& tasks() { return _tasks; };
 
-	void run_tasks(GarrysMod::Lua::ILuaBase *LUA);
-	void stop();
-	bool has_work();
-	bool should_exit() const;
+    void run_tasks(GarrysMod::Lua::ILuaBase* LUA);
+    void stop();
+    bool has_work();
+    bool should_exit() const;
 
-	static RequestWorker &the();
+    static RequestWorker& the();
+
 private:
-	RequestWorker();
+    RequestWorker();
 
-	void run();
+    void run();
 
-	std::thread _thread;
+    std::thread _thread;
 
-	bool processing_request = false;
-	bool exited = false;
+    bool processing_request = false;
+    bool exited = false;
 
-	LockableQueue<std::shared_ptr<HTTPRequest>> _requests;
-	LockableQueue<std::shared_ptr<LuaTask>> _tasks;
+    LockableQueue<std::shared_ptr<HTTPRequest>> _requests;
+    LockableQueue<std::shared_ptr<LuaTask>> _tasks;
 };
-

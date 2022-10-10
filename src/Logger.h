@@ -6,32 +6,32 @@
 
 class Logger {
 public:
-	static bool init();
+    static bool init();
 
-	static void msg(const char *fmt, ...);
+    static void msg(char const* fmt, ...);
 
-	static void warn(const char *fmt, ...);
+    static void warn(char const* fmt, ...);
 
-	static void devmsg(const char *fmt, ...);
+    static void devmsg(char const* fmt, ...);
 
-	static void devwarn(const char *fmt, ...);
+    static void devwarn(char const* fmt, ...);
 
 private:
-	static std::vector<char> format(const char *fmt, std::va_list args);
+    static std::vector<char> format(char const* fmt, std::va_list args);
 
-	static void msg_Impl(const char *str);
+    static void msg_Impl(char const* str);
 
-	static void warn_Impl(const char *str);
+    static void warn_Impl(char const* str);
 
-	static void devmsg_Impl(const char *str);
+    static void devmsg_Impl(char const* str);
 
-	static void devwarn_Impl(const char *str);
+    static void devwarn_Impl(char const* str);
 
-	static void (*msg_func)(const char *, ...);
+    static void (*msg_func)(char const*, ...);
 
-	static void (*warn_func)(const char *, ...);
+    static void (*warn_func)(char const*, ...);
 
-	static void (*devmsg_func)(int, const char *, ...);
+    static void (*devmsg_func)(int, char const*, ...);
 
-	static void (*devwarn_func)(int, const char *, ...);
+    static void (*devwarn_func)(int, char const*, ...);
 };

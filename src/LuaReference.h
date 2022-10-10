@@ -4,12 +4,12 @@
 
 class LuaReference {
 private:
-	int reference;
+    int reference;
 
 public:
-	explicit LuaReference(GarrysMod::Lua::ILuaBase *LUA);
+    explicit LuaReference(GarrysMod::Lua::ILuaBase* LUA);
 
-	~LuaReference();
+    ~LuaReference();
 
-	void push(GarrysMod::Lua::ILuaBase *LUA) const;
+    void push(GarrysMod::Lua::ILuaBase* LUA) const;
 };
