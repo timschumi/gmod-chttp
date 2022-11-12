@@ -44,3 +44,57 @@ jobs:
 
       - name: Check for changes
         run: git diff --exit-code
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout gmod-chttp
+        uses: actions/checkout@v3
+        with:
+          path: 'gmod-chttp'
+          fetch-depth: 0
+          submodules: true
+
+      - name: Build gmod-chttp
+        working-directory: 'gmod-chttp'
+        run: |
+          export CHTTP_VERSION=$(git describe --tags | sed 's/^v//')
+          echo "CHTTP_VERSION=${CHTTP_VERSION}" >> $GITHUB_ENV
+          ./dist.sh
+
+      - name: Checkout gmod-lua-runner
+        uses: actions/checkout@v3
+        with:
+          repository: 'timschumi/gmod-lua-runner'
+          path: 'gmod-lua-runner'
+          submodules: true
+
+      - name: Build gmod-lua-runner
+        run: |
+          cmake -B gmod-lua-runner-build -DCMAKE_TOOLCHAIN_FILE=toolchain-linux64.cmake gmod-lua-runner
+          cmake --build gmod-lua-runner-build --target package
+
+      - name: Checkout GLuaTest
+        uses: actions/checkout@v3
+        with:
+          repository: 'timschumi/GLuaTest'
+          path: 'GLuaTest'
+
+      - name: Create folder structure
+        run: |
+          tar -xf gmod-lua-runner-build/gmod-lua-runner-*-linux64.tar.gz
+          mv gmod-lua-runner-*-linux64 gmod-lua-runner-install
+          mkdir -p "gmod-lua-runner-install/garrysmod/lua/autorun"
+          mkdir -p "gmod-lua-runner-install/garrysmod/lua/bin"
+          mkdir -p "gmod-lua-runner-install/garrysmod/lua/tests"
+          ln -Tsv "${GITHUB_WORKSPACE}/GLuaTest/lua/autorun/gluatest.lua" "gmod-lua-runner-install/garrysmod/lua/autorun/gluatest.lua"
+          ln -Tsv "${GITHUB_WORKSPACE}/GLuaTest/lua/gluatest" "gmod-lua-runner-install/garrysmod/lua/gluatest"
+          ln -Tsv "${GITHUB_WORKSPACE}/gmod-chttp/tests" "gmod-lua-runner-install/garrysmod/lua/tests/gmod-chttp"
+          ln -sv "${GITHUB_WORKSPACE}/gmod-chttp/dist/"* "gmod-lua-runner-install/garrysmod/lua/bin/"
+          ln -Tsv "${GITHUB_WORKSPACE}/gmod-lua-runner/test.lua" "gmod-lua-runner-install/test.lua"
+
+      - name: Run tests
+        working-directory: 'gmod-lua-runner-install'
+        run: |
+          ./runner test.lua
