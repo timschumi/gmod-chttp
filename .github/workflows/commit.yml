@@ -78,7 +78,7 @@ jobs:
       - name: Checkout GLuaTest
         uses: actions/checkout@v3
         with:
-          repository: 'timschumi/GLuaTest'
+          repository: 'CFC-Servers/GLuaTest'
           path: 'GLuaTest'
 
       - name: Create folder structure
