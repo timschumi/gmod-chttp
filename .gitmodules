@@ -1,6 +1,7 @@
 [submodule "gmod-module-base"]
 	path = gmod-module-base
-	url = https://github.com/timschumi/gmod-module-base
+	url = https://github.com/Facepunch/gmod-module-base
+	branch = development
 [submodule "curl-static-bin"]
 	path = curl-static-bin
 	url = https://github.com/timschumi/curl-static-bin
