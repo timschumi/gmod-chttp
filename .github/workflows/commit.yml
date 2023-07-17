@@ -49,6 +49,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install dependencies
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          sudo apt install -y python3-flask
+
       - name: Checkout gmod-chttp
         uses: actions/checkout@v3
         with:
@@ -97,4 +102,7 @@ jobs:
       - name: Run tests
         working-directory: 'gmod-lua-runner-install'
         run: |
+          "${GITHUB_WORKSPACE}/gmod-chttp/tests/server.py" 1>/dev/null 2>&1 &
+          until curl --silent "http://127.0.0.1:5000" 1>/dev/null 2>&1; do sleep 1; done
           ./runner test.lua
+          kill $!
