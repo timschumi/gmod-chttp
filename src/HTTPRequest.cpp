@@ -73,7 +73,16 @@ size_t curl_headermap_append(char* contents, size_t size, size_t nmemb, std::map
     std::size_t found = header.find_first_of(':');
 
     if (found != std::string::npos) {
-        (*userp)[header.substr(0, found)] = header.substr(found + 2, header.length() - found - 4);
+        auto name = header.substr(0, found);
+        auto value = header.substr(found + 2, header.length() - found - 4);
+
+        auto existing_value = userp->find(name);
+        if (existing_value != userp->end()) {
+            existing_value->second.append(",");
+            existing_value->second.append(value);
+        } else {
+            userp->insert({ name, value });
+        }
     }
 
     return size * nmemb;
