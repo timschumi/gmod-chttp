@@ -29,6 +29,20 @@ def response_multiple_cookies():
     )
 
 
+@app.route("/response_multiple_cookies_with_expires", methods=["GET"])
+def response_multiple_cookies_with_expires():
+    return (
+        b"Hello World!",
+        200,
+        {
+            "Set-Cookie": [
+                "CookieA=1; Expires=Sat, 02 Feb 2002 12:17:00 GMT",
+                "CookieB=2; Expires=Fri, 21 Jul 2023 13:36:35 GMT",
+            ],
+        },
+    )
+
+
 @app.route("/response_multiple_warning", methods=["GET"])
 def response_multiple_warning():
     return (

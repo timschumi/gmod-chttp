@@ -68,6 +68,31 @@ return {
             end
         },
         {
+            name = "Response has multiple cookies with Expires properties",
+            async = true,
+            timeout = 1,
+            func = function()
+                CHTTP({
+                    url = "http://127.0.0.1:5000/response_multiple_cookies_with_expires",
+                    success = function(code, body, headers)
+                        expect(code).to.equal(200)
+                        expect(body).to.equal("Hello World!")
+
+                        local cookie_a = "CookieA=1; Expires=Sat, 02 Feb 2002 12:17:00 GMT"
+                        local cookie_b = "CookieB=2; Expires=Fri, 21 Jul 2023 13:36:35 GMT"
+
+                        -- Header order is nondeterministic
+                        expect((headers["Set-Cookie"] == (cookie_a .. "," .. cookie_b)) or (headers["Set-Cookie"] == (cookie_b .. "," .. cookie_a))).to.beTrue()
+                        done()
+                    end,
+                    failed = function(err)
+                        error("HTTP request failed: " .. err)
+                        done()
+                    end
+                })
+            end
+        },
+        {
             name = "Response has multiple warnings",
             async = true,
             timeout = 1,
