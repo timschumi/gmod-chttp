@@ -7,6 +7,13 @@
 #include "RequestWorker.h"
 #include "lua.h"
 
+LUA_FUNCTION(lua_run_tasks)
+{
+    RequestWorker::the().run_tasks(LUA);
+
+    return 0;
+}
+
 /*
  * See https://wiki.facepunch.com/gmod/Global.HTTP for documentation.
  * The function takes a single table argument, based off the HTTPRequest structure.
@@ -91,6 +98,25 @@ LUA_FUNCTION(CHTTP)
     }
     LUA->Pop();
 
+    if (!getenv("CHTTP_FORCE_HOOK")) {
+        // If we are using timers, ensure that the timer is still present.
+        // It might have gotten destroyed if there was an exception while running a callback.
+        LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
+        LUA->GetField(-1, "timer");
+        LUA->GetField(-1, "Exists");
+        LUA->PushString("__chttpThinkTimer");
+        LUA->Call(1, 1);
+        auto exists = LUA->GetBool(-1);
+        LUA->Pop();
+        LUA->Pop();
+        LUA->Pop();
+
+        if (!exists) {
+            Logger::msg("Recreating timer for processing requests...");
+            register_zero_delay_timer(LUA, "__chttpThinkTimer", lua_run_tasks);
+        }
+    }
+
     RequestWorker::the().requests().push(request);
 
 exit:
@@ -100,13 +126,6 @@ exit:
 
     LUA->PushBool(true); // Push result to the stack
     return 1;            // We are returning a single value
-}
-
-LUA_FUNCTION(lua_run_tasks)
-{
-    RequestWorker::the().run_tasks(LUA);
-
-    return 0;
 }
 
 GMOD_MODULE_OPEN()
