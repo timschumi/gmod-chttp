@@ -114,5 +114,46 @@ return {
                 })
             end
         },
+        {
+            name = "Redirect followed",
+            async = true,
+            timeout = 1,
+            func = function()
+                CHTTP({
+                    url = "http://127.0.0.1:5000/response_redirect",
+                    success = function(code, body, headers)
+                        expect(code).to.equal(200)
+                        expect(body).to.equal("Redirected!")
+                        done()
+                    end,
+                    failed = function(err)
+                        error("HTTP request failed: " .. err)
+                        done()
+                    end
+                })
+            end
+        },
+        {
+            name = "Redirect not followed",
+            async = true,
+            timeout = 1,
+            noredirect = true,
+            func = function()
+                CHTTP({
+                    url = "http://127.0.0.1:5000/response_redirect",
+                    success = function(code, body, headers)
+                        expect(code).to.equal(307)
+                        expect(body).to.equal("Redirecting...")
+
+                        expect(headers["Location"] == "/response_redirect_landing").to.beTrue()
+                        done()
+                    end,
+                    failed = function(err)
+                        error("HTTP request failed: " .. err)
+                        done()
+                    end
+                })
+            end
+        },
     }
 }

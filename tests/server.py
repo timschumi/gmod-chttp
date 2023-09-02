@@ -56,6 +56,19 @@ def response_multiple_warning():
         },
     )
 
+@app.route("/response_redirect", methods=["GET"])
+def response_redirect():
+    return (
+        b"Redirecting...",
+        307,
+        {
+            "Location": "/response_redirect_landing",
+        },
+    )
+
+@app.route("/response_redirect_landing", methods=["GET"])
+def response_redirect_landing():
+    return b"Redirected!", 200
 
 if __name__ == "__main__":
     app.run(debug=False, host="0.0.0.0")
