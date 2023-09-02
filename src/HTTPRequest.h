@@ -38,6 +38,10 @@ public:
     // Timeout for the request
     long timeout = 60;
 
+    // Optionally prevent redirects (30x)
+    // NOTE: Not in GMod HTTP
+    bool noredirect = false;
+
     HTTPRequest();
 
     std::string build_query_string();
