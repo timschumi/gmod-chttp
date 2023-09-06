@@ -137,10 +137,10 @@ return {
             name = "Redirect not followed",
             async = true,
             timeout = 1,
-            noredirect = true,
             func = function()
                 CHTTP({
                     url = "http://127.0.0.1:5000/response_redirect",
+                    noredirect = true,
                     success = function(code, body, headers)
                         expect(code).to.equal(307)
                         expect(body).to.equal("Redirecting...")
