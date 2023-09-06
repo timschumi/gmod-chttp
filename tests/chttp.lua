@@ -144,8 +144,7 @@ return {
                     success = function(code, body, headers)
                         expect(code).to.equal(307)
                         expect(body).to.equal("Redirecting...")
-
-                        expect(headers["Location"] == "/response_redirect_landing").to.beTrue()
+                        expect(headers["Location"]).to.equal("/response_redirect_landing")
                         done()
                     end,
                     failed = function(err)
