@@ -98,6 +98,13 @@ LUA_FUNCTION(CHTTP)
     }
     LUA->Pop();
 
+    // Fetch noredirect toggle
+    LUA->GetField(1, "noredirect");
+    if (LUA->IsType(-1, GarrysMod::Lua::Type::Bool)) {
+        request->noredirect = (bool)LUA->GetBool(-1);
+    }
+    LUA->Pop();
+
     if (!getenv("CHTTP_FORCE_HOOK")) {
         // If we are using timers, ensure that the timer is still present.
         // It might have gotten destroyed if there was an exception while running a callback.

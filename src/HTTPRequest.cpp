@@ -255,7 +255,7 @@ resend:
     }
 
     curl_easy_getinfo(curl, CURLINFO_REDIRECT_URL, &redirect);
-    if (redirect) {
+    if (!this->noredirect && redirect) {
         // Clear out saved headers and body
         response->headers.clear();
         response->body.clear();
