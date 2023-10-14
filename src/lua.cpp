@@ -29,7 +29,7 @@ void lua_table_to_map(GarrysMod::Lua::ILuaBase* LUA, int index, std::map<std::st
     // ->Next() gets the last key from the stack and pushes
     // the key-value pair that follows that to the stack.
     // key will now be top-2 and value will be top-1
-    while (LUA->Next(index - 1) != 0) {
+    while (LUA->Next(index < 0 ? index - 1 : index) != 0) {
         // Remove entries with non-string keys
         if (!LUA->IsType(-2, GarrysMod::Lua::Type::String)) {
             Logger::devwarn("Ignoring non-string key in table!");

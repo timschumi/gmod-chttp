@@ -104,5 +104,7 @@ jobs:
         run: |
           "${GITHUB_WORKSPACE}/gmod-chttp/tests/server.py" 1>/dev/null 2>&1 &
           until curl --silent "http://127.0.0.1:5000" 1>/dev/null 2>&1; do sleep 1; done
+          export CHTTP_DISABLE_UPDATE_NOTIFICATION=1
+          export CHTTP_DISABLE_TELEMETRY=1
           ./runner test.lua
           kill $!

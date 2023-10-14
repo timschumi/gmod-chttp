@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.10)
 project(gmod-chttp LANGUAGES CXX)
 
 set(CHTTP_VERSION "dev" CACHE STRING "The user-visible CHTTP version")
+set(CHTTP_BUILD_TARGET "unset" CACHE STRING "")
+set(CHTTP_BUILD_TYPE "unset" CACHE STRING "")
+set(CHTTP_BUILD_STATIC "unset" CACHE STRING "")
 
 set(CMAKE_CONFIGURATION_TYPES Release Debug)
 set(CMAKE_CXX_STANDARD 11)
@@ -30,6 +33,9 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 endif()
 
 target_compile_definitions(chttp PRIVATE "CHTTP_VERSION=\"${CHTTP_VERSION}\"")
+target_compile_definitions(chttp PRIVATE "CHTTP_BUILD_TARGET=\"${CHTTP_BUILD_TARGET}\"")
+target_compile_definitions(chttp PRIVATE "CHTTP_BUILD_TYPE=\"${CHTTP_BUILD_TYPE}\"")
+target_compile_definitions(chttp PRIVATE "CHTTP_BUILD_STATIC=\"${CHTTP_BUILD_STATIC}\"")
 
 set_gmod_suffix_prefix(chttp)
 

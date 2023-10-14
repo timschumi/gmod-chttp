@@ -93,6 +93,37 @@ requests while in singleplayer or while the server is hibernating.
 In case there are any issues (bug reports greatly appreciated), you can return to
 using the old hooking method by setting the environment variable `CHTTP_FORCE_HOOK`.
 
+### Update notifications and telemetry
+
+CHTTP automatically checks for new updates and transmits light telemetry data
+when the module is loaded. This behavior can be disabled by setting the
+`CHTTP_DISABLE_UPDATE_NOTIFICATION` and `CHTTP_DISABLE_TELEMETRY` environment
+variables respectively.
+
+Unless both features are disabled (in which case no request is sent at all),
+the current module version is always transmitted (for the purpose of checking
+if any newer versions are available).
+
+If telemetry isn't disabled, the following additional properties are sent as well:
+
+* `build_target`: `win32`, `win64`, `linux` or `linux64`
+* `build_type`: `Release` or `Debug`
+* `build_static` `0` or `1` (depending on whether the `-static` file is in use)
+
+If telemetry isn't disabled and the host OS is Linux, the following additional
+properties are sent:
+
+* `os_sysname`: `Linux`
+* `os_release`: Linux kernel version (e.g. `6.5.7-arch1-1` on Arch Linux)
+* `os_version`: Linux kernel build string (e.g. `#1 SMP PREEMPT_DYNAMIC Tue, 10 Oct 2023 21:10:21 +0000`)
+* `os_machine`: Processor architecture (e.g. `x86_64`)
+* `dist_name`: Distribution name (e.g. `ubuntu`)
+* `dist_version`: Distribution version (if present; e.g. `22.04`)
+
+I'm collecting and aggregating this data for my own curiosity, as well as getting
+an informed guess on how fast updates propagate and what systems the module is run on.
+If you have any feedback regarding either feature, feel free to leave it [here](https://github.com/timschumi/gmod-chttp/discussions/29).
+
 ## Addon development
 
 This is only required for developers who want to use CHTTP in their addons.

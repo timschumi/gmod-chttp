@@ -1,5 +1,11 @@
+#include <algorithm>
 #include <curl/curl.h>
+#include <fstream>
+#include <sstream>
 #include <string>
+#ifdef __linux__
+#    include <sys/utsname.h>
+#endif
 
 #include "GarrysMod/Lua/Interface.h"
 
@@ -135,6 +141,113 @@ exit:
     return 1;            // We are returning a single value
 }
 
+LUA_FUNCTION(handle_update_response)
+{
+    double code = LUA->GetNumber(1);
+
+    // Both code 204 (no update) and all other codes (server down?) will be ignored silently.
+    if (code != 200)
+        return 0;
+
+    std::map<std::string, std::string> headers;
+    lua_table_to_map(LUA, 3, headers);
+
+    // Treat responses without the magic header as malformed.
+    std::string version_header_name = "Chttp-Update-Message-Version";
+    if (headers.count(version_header_name) == 0) {
+        version_header_name = "chttp-update-message-version";
+        if (headers.count(version_header_name) == 0)
+            return 0;
+    }
+
+    auto version = std::stoi(headers[version_header_name]);
+    if (version < 1)
+        return 0;
+
+    if (version > 1) {
+        Logger::warn("The update server responded with a newer-than-supported message version.");
+        Logger::warn("Please manually check the GitHub page for new updates:");
+        Logger::warn("https://github.com/timschumi/gmod-chttp/releases");
+        return 0;
+    }
+
+    unsigned int raw_body_length;
+    char const* raw_body = LUA->GetString(2, &raw_body_length);
+    std::string body(raw_body, raw_body_length);
+
+    std::istringstream body_stream(body);
+    std::string line;
+
+    while (std::getline(body_stream, line)) {
+        Logger::warn("%s", line.c_str());
+    }
+
+    return 0;
+}
+
+void handle_updates_or_telemetry(GarrysMod::Lua::ILuaBase* LUA)
+{
+    bool disable_update_notification = getenv("CHTTP_DISABLE_UPDATE_NOTIFICATION");
+    bool disable_telemetry = getenv("CHTTP_DISABLE_TELEMETRY");
+
+    // No need to do anything if we don't want update information and don't want to check in.
+    if (disable_update_notification && disable_telemetry)
+        return;
+
+    auto request = std::make_shared<HTTPRequest>();
+    request->method = HTTPMethod::Post;
+    request->url = "https://chttp.timschumi.net/checkin";
+    request->timeout = 5;
+
+    if (!disable_update_notification) {
+        LUA->PushCFunction(handle_update_response);
+        request->success = std::make_shared<LuaReference>(LUA);
+    }
+
+    request->parameters["version"] = CHTTP_VERSION;
+    if (!disable_telemetry) {
+        request->parameters["build_target"] = CHTTP_BUILD_TARGET;
+        request->parameters["build_type"] = CHTTP_BUILD_TYPE;
+        request->parameters["build_static"] = CHTTP_BUILD_STATIC;
+
+#ifdef __linux__
+        struct utsname utsname { };
+        if (uname(&utsname) >= 0) {
+            // As much as I'd like to for deduplication purposes, the nodename (i.e. hostname) is not sent.
+            request->parameters["os_sysname"] = utsname.sysname;
+            request->parameters["os_release"] = utsname.release;
+            request->parameters["os_version"] = utsname.version;
+            request->parameters["os_machine"] = utsname.machine;
+        }
+
+        std::ifstream os_release_file("/etc/os-release");
+        std::string os_release_line;
+
+        while (std::getline(os_release_file, os_release_line)) {
+            std::string key;
+            std::string value;
+
+            if (os_release_line.rfind("ID=", 0) == 0) {
+                key = "dist_name";
+                value = os_release_line.substr(3);
+            } else if (os_release_line.rfind("VERSION_ID=", 0) == 0) {
+                key = "dist_version";
+                value = os_release_line.substr(11);
+            } else {
+                continue;
+            }
+
+            // Strip quotes from the value.
+            value.erase(std::remove(value.begin(), value.end(), '"'), value.end());
+
+            request->parameters[key] = value;
+        }
+#endif
+    }
+
+    RequestWorker::the().requests().push(request);
+}
+
 GMOD_MODULE_OPEN()
 {
     // Set up logging
@@ -179,6 +292,8 @@ GMOD_MODULE_OPEN()
 
     // Start the background thread
     RequestWorker::the();
+
+    handle_updates_or_telemetry(LUA);
 
     return 0;
 }

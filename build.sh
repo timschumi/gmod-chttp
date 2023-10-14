@@ -56,6 +56,9 @@ cmake \
     -DCMAKE_TOOLCHAIN_FILE=toolchain-${BUILD_TARGET}.cmake \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
     -DCHTTP_VERSION=${CHTTP_VERSION} \
+    -DCHTTP_BUILD_TARGET=${BUILD_TARGET} \
+    -DCHTTP_BUILD_TYPE=${BUILD_TYPE} \
+    -DCHTTP_BUILD_STATIC=${build_static:-0} \
     "${cmake_args[@]}" \
     "${BASE_DIR}"
 make
