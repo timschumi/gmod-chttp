@@ -154,5 +154,112 @@ return {
                 })
             end
         },
+        {
+            name = "Content-Type for GET request",
+            async = true,
+            timeout = 1,
+            func = function()
+                CHTTP({
+                    method = "GET",
+                    url = "http://127.0.0.1:5000/echo_content_type",
+                    success = function(code, body, headers)
+                        expect(code).to.equal(404)
+                        done()
+                    end,
+                    failed = function(err)
+                        error("HTTP request failed: " .. err)
+                        done()
+                    end
+                })
+            end
+        },
+        {
+            name = "Content-Type for POST request",
+            async = true,
+            timeout = 1,
+            func = function()
+                CHTTP({
+                    method = "POST",
+                    url = "http://127.0.0.1:5000/echo_content_type",
+                    success = function(code, body, headers)
+                        expect(code).to.equal(200)
+                        expect(body).to.equal("application/x-www-form-urlencoded")
+                        done()
+                    end,
+                    failed = function(err)
+                        error("HTTP request failed: " .. err)
+                        done()
+                    end
+                })
+            end
+        },
+        {
+            name = "Content-Type for POST request with body",
+            async = true,
+            timeout = 1,
+            func = function()
+                CHTTP({
+                    method = "POST",
+                    url = "http://127.0.0.1:5000/echo_content_type",
+                    body = "Hello world!",
+                    success = function(code, body, headers)
+                        expect(code).to.equal(200)
+                        expect(body).to.equal("text/plain; charset=utf-8")
+                        done()
+                    end,
+                    failed = function(err)
+                        error("HTTP request failed: " .. err)
+                        done()
+                    end
+                })
+            end
+        },
+        {
+            name = "Content-Type for POST request with header override",
+            async = true,
+            timeout = 1,
+            func = function()
+                CHTTP({
+                    method = "POST",
+                    url = "http://127.0.0.1:5000/echo_content_type",
+                    headers = {
+                        ["Content-Type"] = "application/octet-stream",
+                    },
+                    success = function(code, body, headers)
+                        expect(code).to.equal(200)
+                        expect(body).to.equal("application/octet-stream")
+                        done()
+                    end,
+                    failed = function(err)
+                        error("HTTP request failed: " .. err)
+                        done()
+                    end
+                })
+            end
+        },
+        {
+            name = "Content-Type for POST request with body and header override",
+            async = true,
+            timeout = 1,
+            func = function()
+                CHTTP({
+                    method = "POST",
+                    url = "http://127.0.0.1:5000/echo_content_type",
+                    headers = {
+                        ["Content-Type"] = "application/octet-stream",
+                    },
+                    body = "Hello world!",
+                    success = function(code, body, headers)
+                        expect(code).to.equal(200)
+                        expect(body).to.equal("application/octet-stream")
+                        done()
+                    end,
+                    failed = function(err)
+                        error("HTTP request failed: " .. err)
+                        done()
+                    end
+                })
+            end
+        },
     }
 }
