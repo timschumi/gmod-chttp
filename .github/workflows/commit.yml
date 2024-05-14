@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Checkout repository
@@ -46,13 +46,14 @@ jobs:
         run: git diff --exit-code
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Install dependencies
         run: |
           export DEBIAN_FRONTEND=noninteractive
-          sudo apt install -y python3-flask
+          sudo apt-get update
+          sudo apt-get install -y python3-flask
 
       - name: Checkout gmod-chttp
         uses: actions/checkout@v3
