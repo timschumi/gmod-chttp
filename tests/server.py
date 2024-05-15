@@ -10,6 +10,14 @@ def response_normal():
     return b"Hello World!", 200
 
 
+@app.route("/echo_content_type", methods=["GET", "POST"])
+def echo_content_type():
+    if "Content-Type" not in flask.request.headers:
+        return b"", 404
+
+    return flask.request.headers["Content-Type"], 200
+
+
 @app.route("/response_null_byte_in_body", methods=["GET"])
 def response_null_byte_in_body():
     return b"Hello World\0!", 200

@@ -175,7 +175,10 @@ bool HTTPRequest::run()
         // Do we have a request body?
         if (!this->body.empty()) {
             post_body = this->body;
-            this->headers["Content-Type"] = type;
+
+            // The manually set Content-Type always takes precedence over the `type` parameter.
+            // std::map::insert() ignores operations if the respective key already exists.
+            this->headers.insert(std::make_pair("Content-Type", type));
         } else {
             post_body = this->build_query_string();
         }
