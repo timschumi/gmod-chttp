@@ -9,8 +9,8 @@
 
 class RequestWorker {
 public:
-    LockableQueue<std::shared_ptr<HTTPRequest>>& requests() { return m_requests; };
-    LockableQueue<std::shared_ptr<LuaTask>>& tasks() { return m_tasks; };
+    LockableQueue<std::shared_ptr<HTTPRequest>>& requests() { return m_requests; }
+    LockableQueue<std::shared_ptr<LuaTask>>& tasks() { return m_tasks; }
 
     void run_tasks(GarrysMod::Lua::ILuaBase* LUA);
     void stop();

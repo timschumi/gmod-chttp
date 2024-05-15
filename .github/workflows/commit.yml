@@ -35,12 +35,12 @@ jobs:
       - name: Install clang-format
         run: |
           curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          sudo add-apt-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main'
+          sudo add-apt-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-18 main'
           sudo apt-get update
-          sudo apt-get install -y clang-format-15
+          sudo apt-get install -y clang-format-18
 
       - name: Run clang-format
-        run: clang-format-15 -style=file -i src/*.cpp src/*.h
+        run: clang-format-18 -style=file -i src/*.cpp src/*.h
 
       - name: Check for changes
         run: git diff --exit-code
