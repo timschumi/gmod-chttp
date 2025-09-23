@@ -8,7 +8,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
         submodules: true
@@ -20,7 +20,7 @@ jobs:
         ./dist.sh
 
     - name: Upload binaries
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: gmod-chttp-${{ env.CHTTP_VERSION }}-binaries
         path: dist/*
@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Install clang-format
         run: |
@@ -56,7 +56,7 @@ jobs:
           sudo apt-get install -y python3-flask
 
       - name: Checkout gmod-chttp
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
         with:
           path: 'gmod-chttp'
           fetch-depth: 0
@@ -70,7 +70,7 @@ jobs:
           ./dist.sh
 
       - name: Checkout gmod-lua-runner
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
         with:
           repository: 'timschumi/gmod-lua-runner'
           ref: '9c3a8529cfb52c1264c07a88c946d3f0ee379141'
@@ -83,7 +83,7 @@ jobs:
           cmake --build gmod-lua-runner-build --target package
 
       - name: Checkout GLuaTest
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
         with:
           repository: 'CFC-Servers/GLuaTest'
           ref: '1369ded8ec933157dc21a67888802f8e58f81b1e'
