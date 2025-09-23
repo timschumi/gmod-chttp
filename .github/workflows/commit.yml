@@ -73,6 +73,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: 'timschumi/gmod-lua-runner'
+          ref: '9c3a8529cfb52c1264c07a88c946d3f0ee379141'
           path: 'gmod-lua-runner'
           submodules: true
 
@@ -85,6 +86,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: 'CFC-Servers/GLuaTest'
+          ref: '1369ded8ec933157dc21a67888802f8e58f81b1e'
           path: 'GLuaTest'
 
       - name: Create folder structure
