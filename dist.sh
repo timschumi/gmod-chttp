@@ -21,7 +21,7 @@ fi
 
 {
 if ! docker start chttp_win; then
-    docker run --name chttp_win -td -v ${CHTTP_DIR}:/vagrant docker.io/debian:11
+    docker run --name chttp_win -td -v ${CHTTP_DIR}:/vagrant docker.io/debian:13
     docker exec -e PROVISION_NEEDS_MINGW=1 chttp_win /vagrant/provision-build.sh
 fi
 } 2>&1 | sed 's/^/win |  /' &
