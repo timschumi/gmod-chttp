@@ -73,7 +73,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           repository: 'timschumi/gmod-lua-runner'
-          ref: '9c3a8529cfb52c1264c07a88c946d3f0ee379141'
+          ref: 'f53300f74214fdf4fdf1813ae249d39a3f3a4d18'
           path: 'gmod-lua-runner'
           submodules: true
 
