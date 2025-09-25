@@ -1,4 +1,6 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+
+set -e
 
 CHTTP_DIR=$(realpath $(dirname $0))
 
