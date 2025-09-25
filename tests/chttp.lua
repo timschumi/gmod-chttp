@@ -261,5 +261,79 @@ return {
                 })
             end
         },
+        {
+            name = "OnCHTTPRequest is called with request data",
+            async = true,
+            timeout = 1,
+            func = function()
+                hook.Add("OnCHTTPRequest", "testsuite", function(req)
+                   expect(req.url).to.equal("http://127.0.0.1:5000")
+                end)
+
+                CHTTP({
+                    url = "http://127.0.0.1:5000",
+                    success = function(code, body, headers)
+                        done()
+                    end,
+                    failed = function(err)
+                        error("HTTP request failed: " .. err)
+                        done()
+                    end
+                })
+            end,
+            cleanup = function()
+                hook.Remove("OnCHTTPRequest", "testsuite")
+            end,
+        },
+        {
+            name = "OnCHTTPRequest can reject launched requests",
+            async = true,
+            timeout = 1,
+            func = function()
+                hook.Add("OnCHTTPRequest", "testsuite", function(req)
+                   return "computer says no"
+                end)
+
+                CHTTP({
+                    url = "http://127.0.0.1:5000",
+                    success = function(code, body, headers)
+                        error("HTTP request succeeded")
+                        done()
+                    end,
+                    failed = function(err)
+                        expect(err).to.equal("computer says no")
+                        done()
+                    end
+                })
+            end,
+            cleanup = function()
+                hook.Remove("OnCHTTPRequest", "testsuite")
+            end,
+        },
+        {
+            name = "OnCHTTPRequest rejection reason defaults to non-empty string",
+            async = true,
+            timeout = 1,
+            func = function()
+                hook.Add("OnCHTTPRequest", "testsuite", function(req)
+                   return ""
+                end)
+
+                CHTTP({
+                    url = "http://127.0.0.1:5000",
+                    success = function(code, body, headers)
+                        error("HTTP request succeeded")
+                        done()
+                    end,
+                    failed = function(err)
+                        expect(string.len(err) > 0).to.beTrue()
+                        done()
+                    end
+                })
+            end,
+            cleanup = function()
+                hook.Remove("OnCHTTPRequest", "testsuite")
+            end,
+        },
     }
 }

@@ -162,3 +162,17 @@ invalid values in parameter or header tables are skipped.
 To receive those messages in the console the developer log level has to be set to
 a non-null value. This can be done by entering `developer 1` as a command, after
 which additional messages should start showing up.
+
+### Filter HTTP requests
+
+CHTTP queries the `OnCHTTPRequest` hook with the `HTTPRequest` structure as an argument
+and will adjust its behavior depending on the type of the returned value.
+
+The following return types are currently defined:
+
+- Returning a single `string` will intercept the request and use the return value
+  as the failure message.
+
+- Returning no value will launch the request as normal.
+
+Other combinations of return value types are reserved for future use.

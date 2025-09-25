@@ -20,6 +20,36 @@ LUA_FUNCTION(lua_run_tasks)
     return 0;
 }
 
+std::string handle_request_hook(GarrysMod::Lua::ILuaBase* LUA, int request_index)
+{
+    std::string result;
+
+    LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
+    LUA->GetField(-1, "hook");
+
+    int initial_top = LUA->Top();
+    LUA->GetField(-1, "Run");
+    LUA->PushString("OnCHTTPRequest");
+    LUA->Push(request_index < 0 ? request_index - 4 : request_index);
+    LUA->Call(2, -1);
+    int number_of_values = LUA->Top() - initial_top;
+
+    // Hook returned a fail reason.
+    if (number_of_values == 1 && LUA->IsType(-1, GarrysMod::Lua::Type::String)) {
+        unsigned int failreason_length;
+        char const* failreason = LUA->GetString(-1, &failreason_length);
+        result = std::string(failreason, failreason_length);
+        if (result.empty())
+            result = "request rejected by hook";
+    }
+
+    LUA->Pop(number_of_values);
+    LUA->Pop();
+    LUA->Pop();
+
+    return result;
+}
+
 /*
  * See https://wiki.facepunch.com/gmod/Global.HTTP for documentation.
  * The function takes a single table argument, based off the HTTPRequest structure.
@@ -32,7 +62,6 @@ LUA_FUNCTION(CHTTP)
     }
 
     auto request = std::make_shared<HTTPRequest>();
-    std::string failreason;
 
     // Fetch failed handler
     LUA->GetField(1, "failed");
@@ -41,6 +70,10 @@ LUA_FUNCTION(CHTTP)
     } else {
         LUA->Pop();
     }
+
+    std::string failreason = handle_request_hook(LUA, -1);
+    if (!failreason.empty())
+        goto exit;
 
     // Fetch method
     LUA->GetField(1, "method");
