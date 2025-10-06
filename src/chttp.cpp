@@ -61,6 +61,7 @@ LUA_FUNCTION(CHTTP)
         return 0;
     }
 
+    std::string failreason = handle_request_hook(LUA, -1);
     auto request = std::make_shared<HTTPRequest>();
 
     // Fetch failed handler
@@ -71,7 +72,6 @@ LUA_FUNCTION(CHTTP)
         LUA->Pop();
     }
 
-    std::string failreason = handle_request_hook(LUA, -1);
     if (!failreason.empty())
         goto exit;
 
