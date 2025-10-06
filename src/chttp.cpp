@@ -34,6 +34,13 @@ std::string handle_request_hook(GarrysMod::Lua::ILuaBase* LUA, int request_index
     LUA->Call(2, -1);
     int number_of_values = LUA->Top() - initial_top;
 
+    // Prune away extraneous returned nil values.
+    // hook.Call has great code quality and is without faults.
+    while (number_of_values > 0 && LUA->IsType(-1, GarrysMod::Lua::Type::Nil)) {
+        LUA->Pop();
+        number_of_values--;
+    }
+
     // Hook returned a fail reason.
     if (number_of_values == 1 && LUA->IsType(-1, GarrysMod::Lua::Type::String)) {
         unsigned int failreason_length;
