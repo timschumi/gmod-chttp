@@ -1,6 +1,11 @@
 #include "lua.h"
 #include "Logger.h"
 
+int lua_ref_hook_Add = -1;
+int lua_ref_hook_Run = -1;
+int lua_ref_timer_Create = -1;
+int lua_ref_timer_Exists = -1;
+
 // Builds a LUA table from a map and leaves it on the stack
 void map_to_lua_table(GarrysMod::Lua::ILuaBase* LUA, std::map<std::string, std::string> const& map)
 {
@@ -52,26 +57,17 @@ void lua_table_to_map(GarrysMod::Lua::ILuaBase* LUA, int index, std::map<std::st
 
 void register_zero_delay_timer(GarrysMod::Lua::ILuaBase* LUA, char const* identifier, GarrysMod::Lua::CFunc function)
 {
-    LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
-    LUA->GetField(-1, "timer");
-    LUA->GetField(-1, "Create");
+    LUA->ReferencePush(lua_ref_timer_Create);
     LUA->PushString(identifier);
     LUA->PushNumber(0);
     LUA->PushNumber(0);
     LUA->PushCFunction(function);
     LUA->Call(4, 0);
-    LUA->Pop();
-    LUA->Pop();
 }
 
 void register_hook(GarrysMod::Lua::ILuaBase* LUA, char const* event, char const* identifier, GarrysMod::Lua::CFunc function)
 {
-    // We are working on the global table today
-    LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
-
-    // Get the hook.Add method
-    LUA->GetField(-1, "hook");
-    LUA->GetField(-1, "Add");
+    LUA->ReferencePush(lua_ref_hook_Add);
 
     // Push the new hook data
     LUA->PushString(event);
@@ -80,10 +76,4 @@ void register_hook(GarrysMod::Lua::ILuaBase* LUA, char const* event, char const*
 
     // Add the hook
     LUA->Call(3, 0);
-
-    // Pop the "hook" table
-    LUA->Pop();
-
-    // Pop the global table from the stack again
-    LUA->Pop();
 }

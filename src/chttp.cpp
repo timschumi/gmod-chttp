@@ -24,13 +24,10 @@ std::string handle_request_hook(GarrysMod::Lua::ILuaBase* LUA, int request_index
 {
     std::string result;
 
-    LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
-    LUA->GetField(-1, "hook");
-
     int initial_top = LUA->Top();
-    LUA->GetField(-1, "Run");
+    LUA->ReferencePush(lua_ref_hook_Run);
     LUA->PushString("OnCHTTPRequest");
-    LUA->Push(request_index < 0 ? request_index - 4 : request_index);
+    LUA->Push(request_index < 0 ? request_index - 2 : request_index);
     LUA->Call(2, -1);
     int number_of_values = LUA->Top() - initial_top;
 
@@ -51,8 +48,6 @@ std::string handle_request_hook(GarrysMod::Lua::ILuaBase* LUA, int request_index
     }
 
     LUA->Pop(number_of_values);
-    LUA->Pop();
-    LUA->Pop();
 
     return result;
 }
@@ -154,14 +149,10 @@ LUA_FUNCTION(CHTTP)
     if (!getenv("CHTTP_FORCE_HOOK")) {
         // If we are using timers, ensure that the timer is still present.
         // It might have gotten destroyed if there was an exception while running a callback.
-        LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
-        LUA->GetField(-1, "timer");
-        LUA->GetField(-1, "Exists");
+        LUA->ReferencePush(lua_ref_timer_Exists);
         LUA->PushString("__chttpThinkTimer");
         LUA->Call(1, 1);
         auto exists = LUA->GetBool(-1);
-        LUA->Pop();
-        LUA->Pop();
         LUA->Pop();
 
         if (!exists) {
@@ -305,6 +296,20 @@ GMOD_MODULE_OPEN()
     // We are working on the global table today
     LUA->PushSpecial(GarrysMod::Lua::SPECIAL_GLOB);
 
+    // Obtain some function references.
+    LUA->GetField(-1, "hook");
+    LUA->GetField(-1, "Add");
+    lua_ref_hook_Add = LUA->ReferenceCreate();
+    LUA->GetField(-1, "Run");
+    lua_ref_hook_Run = LUA->ReferenceCreate();
+    LUA->Pop();
+    LUA->GetField(-1, "timer");
+    LUA->GetField(-1, "Create");
+    lua_ref_timer_Create = LUA->ReferenceCreate();
+    LUA->GetField(-1, "Exists");
+    lua_ref_timer_Exists = LUA->ReferenceCreate();
+    LUA->Pop();
+
     // Push the function mapping (first is the key/function name,
     // second is the value/actual function)
     LUA->PushString("CHTTP");
@@ -350,6 +355,11 @@ GMOD_MODULE_CLOSE()
 
     // Cleanup curl
     curl_global_cleanup();
+
+    LUA->ReferenceFree(lua_ref_hook_Add);
+    LUA->ReferenceFree(lua_ref_hook_Run);
+    LUA->ReferenceFree(lua_ref_timer_Create);
+    LUA->ReferenceFree(lua_ref_timer_Exists);
 
     return 0;
 }
