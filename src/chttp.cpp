@@ -227,30 +227,36 @@ void handle_updates_or_telemetry(GarrysMod::Lua::ILuaBase* LUA)
     if (disable_update_notification && disable_telemetry)
         return;
 
-    auto request = std::make_shared<HTTPRequest>();
-    request->method = HTTPMethod::Post;
-    request->url = "https://chttp.timschumi.net/checkin";
-    request->timeout = 5;
+    LUA->PushCFunction(CHTTP);
+
+    LUA->CreateTable();
+    LUA->PushString("POST");
+    LUA->SetField(-2, "method");
+    LUA->PushString("https://chttp.timschumi.net/checkin");
+    LUA->SetField(-2, "url");
+    LUA->PushNumber(5);
+    LUA->SetField(-2, "timeout");
 
     if (!disable_update_notification) {
         LUA->PushCFunction(handle_update_response);
-        request->success = std::make_shared<LuaReference>(LUA);
+        LUA->SetField(-2, "success");
     }
 
-    request->parameters["version"] = CHTTP_VERSION;
+    std::map<std::string, std::string> parameters;
+    parameters["version"] = CHTTP_VERSION;
     if (!disable_telemetry) {
-        request->parameters["build_target"] = CHTTP_BUILD_TARGET;
-        request->parameters["build_type"] = CHTTP_BUILD_TYPE;
-        request->parameters["build_static"] = CHTTP_BUILD_STATIC;
+        parameters["build_target"] = CHTTP_BUILD_TARGET;
+        parameters["build_type"] = CHTTP_BUILD_TYPE;
+        parameters["build_static"] = CHTTP_BUILD_STATIC;
 
 #ifdef __linux__
         struct utsname utsname { };
         if (uname(&utsname) >= 0) {
             // As much as I'd like to for deduplication purposes, the nodename (i.e. hostname) is not sent.
-            request->parameters["os_sysname"] = utsname.sysname;
-            request->parameters["os_release"] = utsname.release;
-            request->parameters["os_version"] = utsname.version;
-            request->parameters["os_machine"] = utsname.machine;
+            parameters["os_sysname"] = utsname.sysname;
+            parameters["os_release"] = utsname.release;
+            parameters["os_version"] = utsname.version;
+            parameters["os_machine"] = utsname.machine;
         }
 
         std::ifstream os_release_file("/etc/os-release");
@@ -273,12 +279,15 @@ void handle_updates_or_telemetry(GarrysMod::Lua::ILuaBase* LUA)
             // Strip quotes from the value.
             value.erase(std::remove(value.begin(), value.end(), '"'), value.end());
 
-            request->parameters[key] = value;
+            parameters[key] = value;
         }
 #endif
     }
 
-    RequestWorker::the().requests().push(request);
+    map_to_lua_table(LUA, parameters);
+    LUA->SetField(-2, "parameters");
+
+    LUA->Call(1, 0);
 }
 
 GMOD_MODULE_OPEN()
