@@ -67,7 +67,7 @@ jobs:
         run: |
           export CHTTP_VERSION=$(git describe --tags | sed 's/^v//')
           echo "CHTTP_VERSION=${CHTTP_VERSION}" >> $GITHUB_ENV
-          ./dist.sh
+          ./dist.sh linux64
 
       - name: Checkout gmod-lua-runner
         uses: actions/checkout@v5
