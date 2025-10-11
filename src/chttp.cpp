@@ -13,6 +13,8 @@
 #include "RequestWorker.h"
 #include "lua.h"
 
+static bool force_hook = false;
+
 LUA_FUNCTION(lua_run_tasks)
 {
     RequestWorker::the().run_tasks(LUA);
@@ -146,7 +148,7 @@ LUA_FUNCTION(CHTTP)
     }
     LUA->Pop();
 
-    if (!getenv("CHTTP_FORCE_HOOK")) {
+    if (!force_hook) {
         // If we are using timers, ensure that the timer is still present.
         // It might have gotten destroyed if there was an exception while running a callback.
         LUA->ReferencePush(lua_ref_timer_Exists);
@@ -327,7 +329,8 @@ GMOD_MODULE_OPEN()
     // Pop the global table from the stack again
     LUA->Pop();
 
-    if (getenv("CHTTP_FORCE_HOOK")) {
+    force_hook = getenv("CHTTP_FORCE_HOOK");
+    if (force_hook) {
         Logger::msg("Processing requests using a hook...");
         register_hook(LUA, "Think", "__chttpThinkHook", lua_run_tasks);
     } else {
