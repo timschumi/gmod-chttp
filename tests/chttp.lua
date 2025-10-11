@@ -20,8 +20,7 @@ return {
                         done()
                     end,
                     failed = function(err)
-                        error("HTTP request failed: " .. err)
-                        done()
+                        fail("HTTP request failed: " .. err)
                     end
                 })
             end
@@ -39,8 +38,7 @@ return {
                         done()
                     end,
                     failed = function(err)
-                        error("HTTP request failed: " .. err)
-                        done()
+                        fail("HTTP request failed: " .. err)
                     end
                 })
             end
@@ -61,8 +59,7 @@ return {
                         done()
                     end,
                     failed = function(err)
-                        error("HTTP request failed: " .. err)
-                        done()
+                        fail("HTTP request failed: " .. err)
                     end
                 })
             end
@@ -86,8 +83,7 @@ return {
                         done()
                     end,
                     failed = function(err)
-                        error("HTTP request failed: " .. err)
-                        done()
+                        fail("HTTP request failed: " .. err)
                     end
                 })
             end
@@ -108,8 +104,7 @@ return {
                         done()
                     end,
                     failed = function(err)
-                        error("HTTP request failed: " .. err)
-                        done()
+                        fail("HTTP request failed: " .. err)
                     end
                 })
             end
@@ -127,8 +122,7 @@ return {
                         done()
                     end,
                     failed = function(err)
-                        error("HTTP request failed: " .. err)
-                        done()
+                        fail("HTTP request failed: " .. err)
                     end
                 })
             end
@@ -148,8 +142,7 @@ return {
                         done()
                     end,
                     failed = function(err)
-                        error("HTTP request failed: " .. err)
-                        done()
+                        fail("HTTP request failed: " .. err)
                     end
                 })
             end
@@ -167,8 +160,7 @@ return {
                         done()
                     end,
                     failed = function(err)
-                        error("HTTP request failed: " .. err)
-                        done()
+                        fail("HTTP request failed: " .. err)
                     end
                 })
             end
@@ -187,8 +179,7 @@ return {
                         done()
                     end,
                     failed = function(err)
-                        error("HTTP request failed: " .. err)
-                        done()
+                        fail("HTTP request failed: " .. err)
                     end
                 })
             end
@@ -208,8 +199,7 @@ return {
                         done()
                     end,
                     failed = function(err)
-                        error("HTTP request failed: " .. err)
-                        done()
+                        fail("HTTP request failed: " .. err)
                     end
                 })
             end
@@ -231,8 +221,7 @@ return {
                         done()
                     end,
                     failed = function(err)
-                        error("HTTP request failed: " .. err)
-                        done()
+                        fail("HTTP request failed: " .. err)
                     end
                 })
             end
@@ -255,8 +244,7 @@ return {
                         done()
                     end,
                     failed = function(err)
-                        error("HTTP request failed: " .. err)
-                        done()
+                        fail("HTTP request failed: " .. err)
                     end
                 })
             end
@@ -276,8 +264,7 @@ return {
                         done()
                     end,
                     failed = function(err)
-                        error("HTTP request failed: " .. err)
-                        done()
+                        fail("HTTP request failed: " .. err)
                     end
                 })
             end,
@@ -297,8 +284,7 @@ return {
                 CHTTP({
                     url = "http://127.0.0.1:5000",
                     success = function(code, body, headers)
-                        error("HTTP request succeeded")
-                        done()
+                        fail("HTTP request succeeded")
                     end,
                     failed = function(err)
                         expect(err).to.equal("computer says no")
@@ -322,8 +308,7 @@ return {
                 CHTTP({
                     url = "http://127.0.0.1:5000",
                     success = function(code, body, headers)
-                        error("HTTP request succeeded")
-                        done()
+                        fail("HTTP request succeeded")
                     end,
                     failed = function(err)
                         expect(string.len(err) > 0).to.beTrue()
