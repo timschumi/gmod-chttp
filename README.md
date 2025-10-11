@@ -99,6 +99,8 @@ CHTTP automatically checks for new updates and transmits light telemetry data
 when the module is loaded. This behavior can be disabled by setting the
 `CHTTP_DISABLE_UPDATE_NOTIFICATION` and `CHTTP_DISABLE_TELEMETRY` environment
 variables respectively.
+This behavior can additionally be disabled by utilizing the `OnCHTTPRequest` hook,
+ready-to-use examples for this can be found in the [`filter`](filter/) directory.
 
 Unless both features are disabled (in which case no request is sent at all),
 the current module version is always transmitted (for the purpose of checking
@@ -178,3 +180,5 @@ The following return types are currently defined:
 Other combinations of return value types are reserved for future use.
 
 Editing the passed HTTPRequest structure will affect the request that is sent.
+
+Examples for hook utilization can be found in the [`filter`](filter/) directory.
