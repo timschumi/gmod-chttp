@@ -320,5 +320,30 @@ return {
                 hook.Remove("OnCHTTPRequest", "testsuite")
             end,
         },
+        {
+            name = "OnCHTTPRequest can modify launched requests",
+            async = true,
+            timeout = 1,
+            func = function()
+                hook.Add("OnCHTTPRequest", "testsuite", function(req)
+                   req.url = "http://127.0.0.1:5000/response_redirect_landing"
+                end)
+
+                CHTTP({
+                    url = "http://127.0.0.1:5000",
+                    success = function(code, body, headers)
+                        expect(code).to.equal(200)
+                        expect(body).to.equal("Redirected!")
+                        done()
+                    end,
+                    failed = function(err)
+                        fail("HTTP request failed: " .. err)
+                    end
+                })
+            end,
+            cleanup = function()
+                hook.Remove("OnCHTTPRequest", "testsuite")
+            end,
+        },
     }
 }

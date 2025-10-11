@@ -176,3 +176,5 @@ The following return types are currently defined:
 - Returning no value will launch the request as normal.
 
 Other combinations of return value types are reserved for future use.
+
+Editing the passed HTTPRequest structure will affect the request that is sent.
