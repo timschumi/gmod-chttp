@@ -317,6 +317,31 @@ return {
             end
         },
         {
+            name = "system.HTTPDisabled works",
+            func = function()
+                expect(CHTTP({})).to.beTrue()
+            end
+        },
+        {
+            name = "Missing HTTPRequest throws error",
+            func = function()
+                expect(CHTTP).to.err()
+            end
+        },
+        {
+            name = "Unset URL calls failure handler",
+            async = true,
+            timeout = 1,
+            func = function()
+                CHTTP({
+                    failed = function(err)
+                        expect(err).to.equal("invalid url or GET parameters")
+                        done()
+                    end,
+                })
+            end
+        },
+        {
             name = "OnCHTTPRequest is called with request data",
             async = true,
             timeout = 1,

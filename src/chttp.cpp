@@ -61,9 +61,7 @@ std::string handle_request_hook(GarrysMod::Lua::ILuaBase* LUA, int request_index
  */
 LUA_FUNCTION(CHTTP)
 {
-    if (!LUA->IsType(1, GarrysMod::Lua::Type::Table)) {
-        return 0;
-    }
+    LUA->CheckType(1, GarrysMod::Lua::Type::Table);
 
     std::string failreason = handle_request_hook(LUA, -1);
     auto request = std::make_shared<HTTPRequest>();
@@ -95,7 +93,7 @@ LUA_FUNCTION(CHTTP)
     if (LUA->IsType(-1, GarrysMod::Lua::Type::String)) {
         request->url = LUA->GetString(-1);
     } else {
-        failreason = "invalid url";
+        failreason = "invalid url or GET parameters";
         goto exit;
     }
     LUA->Pop();

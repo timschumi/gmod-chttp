@@ -246,7 +246,7 @@ resend:
 
     // Disallow requests with non-HTTP protocols
     if (effective_url && !strstart(effective_url, "https://") && !strstart(effective_url, "http://")) {
-        RequestWorker::the().tasks().push(std::make_shared<FailCallbackTask>(this->failed, "Non-HTTP protocol"));
+        RequestWorker::the().tasks().push(std::make_shared<FailCallbackTask>(this->failed, "invalid url or GET parameters"));
         ret = false;
         goto cleanup;
     }
