@@ -1,3 +1,4 @@
+#include <cassert>
 #include <curl/curl.h>
 #include <fstream>
 #include <string.h>
@@ -163,11 +164,12 @@ bool HTTPRequest::run()
         curl_easy_setopt(curl, CURLOPT_POST, 1L);
         // Intentional fallthrough to set request method name
     case HTTPMethod::Options:
-    case HTTPMethod::Invalid:
         curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, this->method.to_string().c_str());
         break;
+    case HTTPMethod::Invalid:
     default:
-        Logger::warn("HTTP request method is neither valid nor INVALID: %d", this->method);
+        // This should be impossible since we validate this in CHTTP().
+        assert(false && "Invalid HTTP method while sending");
         break;
     }
 

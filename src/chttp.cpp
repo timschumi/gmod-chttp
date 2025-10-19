@@ -85,6 +85,10 @@ LUA_FUNCTION(CHTTP)
         request->method = HTTPMethod::from_string(LUA->GetString(-1));
     }
     LUA->Pop();
+    if (request->method == HTTPMethod::Invalid) {
+        failreason = "invalid method";
+        goto exit;
+    }
 
     // Fetch url
     LUA->GetField(1, "url");

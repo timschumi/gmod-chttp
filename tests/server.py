@@ -18,6 +18,11 @@ def echo_content_type():
     return flask.request.headers["Content-Type"], 200
 
 
+@app.route("/echo_method", methods=["GET", "HEAD", "OPTIONS", "TRACE", "PUT", "DELETE", "POST", "PATCH", "CONNECT"])
+def echo_method():
+    return flask.request.method, 200
+
+
 @app.route("/response_null_byte_in_body", methods=["GET"])
 def response_null_byte_in_body():
     return b"Hello World\0!", 200

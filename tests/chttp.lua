@@ -250,6 +250,73 @@ return {
             end
         },
         {
+            name = "Request methods are checked and translated",
+            async = true,
+            timeout = 1,
+            func = function()
+                -- We have to check multiple async requests, so we effectively implement something like a semaphore here.
+                -- We initialize to 1 and decrement once after all requests have been queued so we can reliably check at all exits.
+                local pending_requests = 1
+
+                local function on_request_done()
+                    pending_requests = pending_requests - 1
+                    if pending_requests == 0 then
+                        done()
+                    end
+                end
+
+                local function test_method(method_in, method_out)
+                    pending_requests = pending_requests + 1
+
+                    local queued = CHTTP({
+                        method = method_in,
+                        url = "http://127.0.0.1:5000/echo_method",
+                        success = function(code, body, headers)
+                            expect(code).to.equal(200)
+                            expect(body).to.equal(method_out)
+                            on_request_done()
+                        end,
+                        failed = function(err)
+                            expect(err).to.equal("invalid method")
+                            on_request_done()
+                        end,
+                    })
+                    expect(queued).to.beTrue()
+                end
+
+                -- An unset method should default to GET
+                test_method(nil, "GET")
+
+                -- Request methods noted as supported in Structures/HTTPRequest
+                test_method("get", "GET")
+                test_method("GET", "GET")
+                test_method("post", "POST")
+                test_method("POST", "POST")
+                test_method("put", "PUT")
+                test_method("PUT", "PUT")
+                test_method("delete", "DELETE")
+                test_method("DELETE", "DELETE")
+                test_method("patch", "PATCH")
+                test_method("PATCH", "PATCH")
+                test_method("options", "OPTIONS")
+                test_method("OPTIONS", "OPTIONS")
+
+                -- HEAD is also one of those, but we don't get back the response body.
+                test_method("head", "")
+                test_method("HEAD", "")
+
+                -- Other request methods defined by RFC 9110, those are unsupported.
+                test_method("trace", nil)
+                test_method("TRACE", nil)
+                test_method("connect", nil)
+                test_method("CONNECT", nil)
+
+                -- All requests scheduled, check just in case the scheduler beat us every time.
+                -- That said, the way GLuaTest runs tests should make this impossible.
+                on_request_done()
+            end
+        },
+        {
             name = "OnCHTTPRequest is called with request data",
             async = true,
             timeout = 1,
