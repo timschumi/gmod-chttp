@@ -279,7 +279,7 @@ void handle_updates_or_telemetry(GarrysMod::Lua::ILuaBase* LUA)
             }
 
             // Strip quotes from the value.
-            value.erase(std::remove(value.begin(), value.end(), '"'), value.end());
+            value.erase(std::remove_if(value.begin(), value.end(), [](char c) { return c == '"' || c == '\''; }), value.end());
 
             parameters[key] = value;
         }
